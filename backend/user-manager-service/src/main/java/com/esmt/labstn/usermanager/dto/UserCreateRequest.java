@@ -26,6 +26,9 @@ public class UserCreateRequest {
     @NotBlank(message = "Le rôle est obligatoire")
     private String roleLibelle;
 
+    // Mot de passe temporaire (facultatif)
+    private String temporaryPassword;
+
     // Champ spécifique au doctorant
     private String matricule;
     private String statut;

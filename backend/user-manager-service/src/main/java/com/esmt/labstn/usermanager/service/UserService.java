@@ -5,6 +5,7 @@ import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
+import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
@@ -65,19 +66,19 @@ public class UserService {
 
     /**
      * Crée un compte utilisateur dans Keycloak.
-     * Le mot de passe n'est pas créé par le microservice.
-     * Keycloak demande à l'utilisateur de définir lui-même son mot de passe à partir du lien reçu par e-mail.
-     * @param nom       nom de l'utilisateur
-     * @param prenom    prénom de l'utilisateur
-     * @param email     adresse e-mail
-     * @param role      rôle métier de l'utilisateur
+     * @param nom               nom de l'utilisateur
+     * @param prenom            prénom de l'utilisateur
+     * @param email             adresse e-mail
+     * @param role              rôle métier de l'utilisateur
+     * @param temporaryPassword mot de passe temporaire (facultatif)
      * @return identifiant Keycloak de l'utilisateur créé
      */
     public String createUser(
             String nom,
             String prenom,
             String email,
-            String role) {
+            String role,
+            String temporaryPassword) {
 
         // 1. Vérification et normalisation du rôle
         String roleKeycloak = normaliserEtVerifierRole(role);
@@ -101,9 +102,17 @@ public class UserService {
             user.setLastName(nom);
             user.setEnabled(true);
 
+            // Attribuer un mot de passe temporaire si fourni
+            if (temporaryPassword != null && !temporaryPassword.isBlank()) {
+                CredentialRepresentation credential = new CredentialRepresentation();
+                credential.setType(CredentialRepresentation.PASSWORD);
+                credential.setValue(temporaryPassword);
+                credential.setTemporary(true); // Oblige l'utilisateur à changer le mot de passe à la 1ère connexion !
+                user.setCredentials(Collections.singletonList(credential));
+            }
+
             /*
-             * L'utilisateur doit définir son propre mot de passe.
-             * Keycloak lui demandera de réaliser cette action lors de son activation.
+             * L'utilisateur devra obligatoirement changer/définir son mot de passe lors de sa 1ère connexion.
              */
             user.setRequiredActions(
                     Collections.singletonList(
@@ -118,6 +127,12 @@ public class UserService {
                             .create(user);
 
             try {
+
+                if (response.getStatus() == 409) {
+                    throw new IllegalArgumentException(
+                            "Un utilisateur existe déjà dans Keycloak avec cet e-mail."
+                    );
+                }
 
                 if (response.getStatus() >= 300) {
 
@@ -214,9 +229,9 @@ public class UserService {
                 .serverUrl(serverUrl)
 
                 /*
-                 * Le client user-manager-admin est créé dans le realm master.
+                 * Le client user-manager-admin est créé dans lab-stn-realm.
                  */
-                .realm("master")
+                .realm(realm)
 
                 /*
                  * Authentification de type Client Credentials.
@@ -252,31 +267,36 @@ public class UserService {
             String userId,
             String roleName) {
 
-        /*
-         * Récupération du rôle dans Keycloak.
-         */
-        RoleRepresentation role =
-                realmResource
-                        .roles()
-                        .get(roleName)
-                        .toRepresentation();
+        try {
+            /*
+             * Récupération du rôle dans Keycloak.
+             */
+            RoleRepresentation role =
+                    realmResource
+                            .roles()
+                            .get(roleName)
+                            .toRepresentation();
 
-        /*
-         * Récupération de l'utilisateur.
-         */
-        UserResource user =
-                realmResource
-                        .users()
-                        .get(userId);
+            /*
+             * Récupération de l'utilisateur.
+             */
+            UserResource user =
+                    realmResource
+                            .users()
+                            .get(userId);
 
-        /*
-         * Attribution du rôle Realm à l'utilisateur.
-         */
-        user.roles()
-                .realmLevel()
-                .add(
-                        List.of(role)
-                );
+            /*
+             * Attribution du rôle Realm à l'utilisateur.
+             */
+            user.roles()
+                    .realmLevel()
+                    .add(
+                            List.of(role)
+                    );
+        } catch (Exception e) {
+            org.slf4j.LoggerFactory.getLogger(UserService.class)
+                    .warn("Impossible d'attribuer le rôle Keycloak {} à l'utilisateur {} : {}", roleName, userId, e.getMessage());
+        }
     }
 
     /**
@@ -286,11 +306,18 @@ public class UserService {
             RealmResource realmResource,
             String userId) {
 
-        realmResource
-                .users()
-                .get(userId)
-                .executeActionsEmail(
-                        List.of("UPDATE_PASSWORD")
-                );
+        try {
+            realmResource
+                    .users()
+                    .get(userId)
+                    .executeActionsEmail(
+                            List.of("UPDATE_PASSWORD")
+                    );
+        } catch (Exception e) {
+            // En environnement de dev/test sans serveur SMTP configuré dans Keycloak,
+            // on intercepte l'erreur pour ne pas bloquer la création de l'utilisateur.
+            org.slf4j.LoggerFactory.getLogger(UserService.class)
+                    .warn("Impossible d'envoyer l'e-mail d'activation (Serveur SMTP probablement non configuré dans Keycloak) : {}", e.getMessage());
+        }
     }
 }

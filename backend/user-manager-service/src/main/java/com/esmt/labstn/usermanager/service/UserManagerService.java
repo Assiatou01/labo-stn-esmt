@@ -84,7 +84,8 @@ public class UserManagerService {
                 request.getNom(),
                 request.getPrenom(),
                 request.getEmail(),
-                roleLibelle
+                roleLibelle,
+                request.getTemporaryPassword()
         );
 
 
