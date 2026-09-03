@@ -87,6 +87,7 @@ public class UserManagerController {
     }
 
 
+
     /**
      * Modification d'un utilisateur.
      * Accessible uniquement à l'administrateur.
