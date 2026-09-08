@@ -58,7 +58,6 @@ public class Livrable {
     @Column(nullable = false)
     private LocalDateTime dateDepot;
 
-    @Column(nullable = false)
     private LocalDateTime dateValidation;
 
     @PrePersist
