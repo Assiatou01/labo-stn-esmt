@@ -21,7 +21,7 @@ public class TheseController {
     private final TheseService theseService;
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTION', 'ENCADREUR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTEUR_RECHERCHE', 'ENCADREUR')")
     public ResponseEntity<TheseResponse> createThese(@Valid @RequestBody TheseCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(theseService.createThese(request));
     }
@@ -47,7 +47,7 @@ public class TheseController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTION', 'ENCADREUR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTEUR_RECHERCHE', 'ENCADREUR')")
     public ResponseEntity<TheseResponse> updateThese(@PathVariable Long id, @RequestBody TheseUpdateRequest request) {
         return ResponseEntity.ok(theseService.updateThese(id, request));
     }
