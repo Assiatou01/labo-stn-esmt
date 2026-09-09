@@ -6,8 +6,6 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Data
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -20,7 +18,7 @@ public class LivrableResponse {
     private String nomStocke;
     private String typeMime;
     private Long taille;
-    private String cheminAccess;
+    private String cheminAcces;
     private StatutLivrable statutValidation;
     private String commentaire;
     private Long theseId;
@@ -28,4 +26,5 @@ public class LivrableResponse {
     private Long encadreurId;
     private LocalDateTime dateDepot;
     private LocalDateTime dateValidation;
+
 }

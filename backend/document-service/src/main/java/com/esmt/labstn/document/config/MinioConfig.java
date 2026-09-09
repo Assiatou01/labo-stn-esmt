@@ -11,17 +11,19 @@ import org.springframework.context.annotation.Configuration;
 public class MinioConfig {
 
     @Value("${minio.url:http://localhost:9000}")
-    private String miniourl;
+    private String minioUrl;
 
     @Value("${minio.access-key:minioadmin}")
     private String accessKey;
 
-    @Value("${minio.secret-key:minioadmin")
+    @Value("${minio.secret-key:minioadmin}")
     private String secretKey;
 
     @Bean
     public MinioClient minioClient() {
-        return MinioClient.builder().endpoint(miniourl)
-                .credentials(accessKey, secretKey).build();
+        return MinioClient.builder()
+                .endpoint(minioUrl)
+                .credentials(accessKey, secretKey)
+                .build();
     }
 }

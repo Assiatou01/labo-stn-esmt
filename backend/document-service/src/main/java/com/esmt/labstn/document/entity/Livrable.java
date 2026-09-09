@@ -8,8 +8,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "livrables")
 @Data
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -37,13 +35,13 @@ public class Livrable {
 
     private Long taille;
 
-    private String cheminAccess;
+    private String cheminAcces;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StatutLivrable statutValidation;
 
-    @Column(columnDefinition = "Text")
+    @Column(columnDefinition = "TEXT")
     private String commentaire;
 
     @Column(nullable = false)
@@ -52,7 +50,6 @@ public class Livrable {
     @Column(nullable = false)
     private Long doctorantId;
 
-    @Column(nullable = false)
     private Long encadreurId;
 
     @Column(nullable = false)
@@ -62,10 +59,10 @@ public class Livrable {
 
     @PrePersist
     public void onCreate() {
-        if (dateDepot==null) {
+        if (dateDepot == null) {
             dateDepot = LocalDateTime.now();
         }
-        if (statutValidation==null) {
+        if (statutValidation == null) {
             statutValidation = StatutLivrable.EN_ATTENTE_VALIDATION;
         }
     }

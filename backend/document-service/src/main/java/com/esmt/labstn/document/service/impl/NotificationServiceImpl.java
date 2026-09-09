@@ -8,26 +8,18 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class NotificationServiceImpl implements NotificationService {
+
     @Override
     public void notifierEncadreurLivrableADepose(Livrable livrable) {
-        // Etape 10 du diagramme de séquence : Notifier livrable à valider
-        log.info("[NOTIFICATION]: Notification envoyée à l'encadreur '{}' (ID: {}) déposé par le doctorant (ID: {}).",
-                livrable.getEncadreurId(),
-                livrable.getTitre(),
-                livrable.getId(),
-                livrable.getDoctorantId());
+        // Étape 10 du diagramme de séquence : Notifier livrable à valider
+        log.info("[NOTIFICATION] Étape 10 Sequence Diagram: Notification envoyée à l'encadreur (ID: {}) pour le livrable '{}' (ID: {}) déposé par le doctorant (ID: {}).",
+                livrable.getEncadreurId(), livrable.getTitre(), livrable.getId(), livrable.getDoctorantId());
     }
 
     @Override
     public void notifierDoctorantValidationOuCorrection(Livrable livrable) {
-        // Etape du diagramme de séquence : Notification de correction ou confirmation de validation
-        log.info("[NOTIFICATION] Notification envoyée  au doctorant (ID: {}) : Le statut du livrable '{}' " +
-                        "(ID: {}) a été mis à jour à '{}'. Commentaire : '{}'",
-                livrable.getDoctorantId(),
-                livrable.getTitre(),
-                livrable.getId(),
-                livrable.getStatutValidation(),
-                livrable.getCommentaire()
-                );
+        // Étape du diagramme de séquence : Notification de correction ou Confirmation de validation
+        log.info("[NOTIFICATION] Notification envoyée au doctorant (ID: {}) : Le statut du livrable '{}' (ID: {}) a été mis à jour à '{}'. Commentaire : '{}'",
+                livrable.getDoctorantId(), livrable.getTitre(), livrable.getId(), livrable.getStatutValidation(), livrable.getCommentaire());
     }
 }
