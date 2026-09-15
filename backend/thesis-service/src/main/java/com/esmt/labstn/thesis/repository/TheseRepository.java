@@ -11,6 +11,5 @@ import java.util.List;
 public interface TheseRepository extends JpaRepository<These, Long> {
 
     List<These> findByDoctorantId(Long doctorantId);
-    List<These> findByEncadreurId(Long encadreurId);
-    List<These> findByStatut(StatutThese statut);
+
 }
