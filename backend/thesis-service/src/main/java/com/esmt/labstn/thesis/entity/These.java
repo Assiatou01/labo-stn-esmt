@@ -42,4 +42,7 @@ public class These {
     @Column(name = "encadreur_id", nullable = false)
     private Long encadreurId;
 
+    @Column(name = "domaine_recherche_id")
+    private Long domaineRechercheId;
+
 }

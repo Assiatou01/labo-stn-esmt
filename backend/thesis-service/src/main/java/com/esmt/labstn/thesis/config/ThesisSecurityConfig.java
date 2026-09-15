@@ -22,22 +22,19 @@ public class ThesisSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable).sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/api/v1/theses/**",
-                                "/api/v1/jalon/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/theses/**").hasAnyRole(
-                                "ADMIN", "DIRECTEUR_RECHERCHE", "ENCADREUR")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/theses/**").hasAnyRole(
-                                "ADMIN","DIRECTEUR_RECHERCHE", "ENCADREUR")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/theses/**", "/api/v1/jalons/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/theses/**").hasAnyRole("ADMIN", "DIRECTION", "ENCADREUR")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/theses/**").hasAnyRole("ADMIN", "DIRECTION", "ENCADREUR")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/theses/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-                        .oauth2ResourceServer(oauth2 -> oauth2
-                                .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter))
-                        );
-                return http.build();
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter))
+                );
 
+        return http.build();
     }
 }

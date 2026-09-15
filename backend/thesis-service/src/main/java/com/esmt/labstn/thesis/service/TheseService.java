@@ -12,6 +12,6 @@ public interface TheseService {
     TheseResponse updateThese(Long id, TheseUpdateRequest request);
     void deleteThese(Long id);
 
-    // Méthode officielle du diagramme de classe UML (+suivreAvancement)
+
     TheseResponse suivreAvancement(Long id);
 }
