@@ -1,7 +1,8 @@
 package com.esmt.labstn.ai.service.impl;
 
 import com.esmt.labstn.ai.dto.*;
-import com.esmt.labstn.ai.repository.AiAuditLogRepository;
+import com.esmt.labstn.ai.entity.AiAuditLog;
+import com.esmt.labstn.ai.service.AuditLoggerService;
 import com.esmt.labstn.ai.service.LlmService;
 import com.esmt.labstn.ai.service.RagChatService;
 import com.esmt.labstn.ai.service.SemanticSearchService;
@@ -25,7 +26,7 @@ public class RagChatServiceImpl implements RagChatService {
 
     private final SemanticSearchService searchService;
     private final LlmService llmService;
-    private final AiAuditLogRepository auditLogRepository;
+    private final AuditLoggerService auditLoggerService;
 
     @Value("${app.ai.llm.model:gpt-3.5-turbo}")
     private String modelName;
@@ -70,23 +71,19 @@ public class RagChatServiceImpl implements RagChatService {
 
         long execTime = System.currentTimeMillis() - startTime;
 
-        // 4. Log d'audit éthique
-        try {
-            auditLogRepository.save(com.esmt.labstn.ai.entity.AiAuditLog.builder()
-                    .actionType("RAG_CHAT")
-                    .queryText(question)
-                    .resultsCount(citations.size())
-                    .executionTimeMs(execTime)
-                    .build());
-        } catch (Exception e) {
-            log.warn("Erreur enregistrement audit RAG : {}", e.getMessage());
-        }
+        // 4. Log d'audit éthique isolé
+        auditLoggerService.log(AiAuditLog.builder()
+                .actionType("RAG_CHAT")
+                .queryText(question)
+                .resultsCount(citations.size())
+                .executionTimeMs(execTime)
+                .build());
 
         return RagChatResponse.builder()
                 .question(question)
                 .answer(answer)
                 .modelUsed(modelName)
-                .responseTimeMs(String.valueOf(execTime))
+                .responseTimeMs(execTime)
                 .sources(citations)
                 .generatedAt(LocalDateTime.now())
                 .build();

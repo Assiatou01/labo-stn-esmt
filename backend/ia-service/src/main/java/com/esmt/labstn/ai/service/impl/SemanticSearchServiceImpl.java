@@ -3,6 +3,7 @@ package com.esmt.labstn.ai.service.impl;
 import com.esmt.labstn.ai.dto.SearchResultItem;
 import com.esmt.labstn.ai.dto.SemanticSearchRequest;
 import com.esmt.labstn.ai.dto.SemanticSearchResponse;
+import com.esmt.labstn.ai.entity.AiAuditLog;
 import com.esmt.labstn.ai.entity.DocumentEmbedding;
 import com.esmt.labstn.ai.entity.StatutIndexation;
 import com.esmt.labstn.ai.repository.AiAuditLogRepository;
@@ -32,7 +33,7 @@ public class SemanticSearchServiceImpl implements SemanticSearchService {
     private final AiAuditLogRepository auditLogRepository;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public SemanticSearchResponse search(SemanticSearchRequest request) {
         long startTime = System.currentTimeMillis();
         String query = request.getQuery();
@@ -94,7 +95,7 @@ public class SemanticSearchServiceImpl implements SemanticSearchService {
 
         // 5. Journalisation d'audit (Gouvernance IA)
         try {
-            auditLogRepository.save(com.esmt.labstn.ai.entity.AiAuditLog.builder()
+            auditLogRepository.save(AiAuditLog.builder()
                     .actionType("RECHERCHE_SEMANTIQUE")
                     .queryText(query)
                     .resultsCount(topResults.size())
@@ -112,4 +113,3 @@ public class SemanticSearchServiceImpl implements SemanticSearchService {
                 .build();
     }
 }
-

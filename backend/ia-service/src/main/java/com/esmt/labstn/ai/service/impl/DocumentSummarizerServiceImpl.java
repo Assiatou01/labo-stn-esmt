@@ -2,10 +2,11 @@ package com.esmt.labstn.ai.service.impl;
 
 import com.esmt.labstn.ai.dto.SummaryRequest;
 import com.esmt.labstn.ai.dto.SummaryResponse;
+import com.esmt.labstn.ai.entity.AiAuditLog;
 import com.esmt.labstn.ai.entity.DocumentEmbedding;
 import com.esmt.labstn.ai.exception.ResourceNotFoundException;
-import com.esmt.labstn.ai.repository.AiAuditLogRepository;
 import com.esmt.labstn.ai.repository.DocumentEmbeddingRepository;
+import com.esmt.labstn.ai.service.AuditLoggerService;
 import com.esmt.labstn.ai.service.DocumentSummarizerService;
 import com.esmt.labstn.ai.service.LlmService;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class DocumentSummarizerServiceImpl implements DocumentSummarizerService 
 
     private final DocumentEmbeddingRepository embeddingRepository;
     private final LlmService llmService;
-    private final AiAuditLogRepository auditLogRepository;
+    private final AuditLoggerService auditLoggerService;
 
     @Override
     public SummaryResponse generateSummary(SummaryRequest request) {
@@ -60,16 +61,12 @@ public class DocumentSummarizerServiceImpl implements DocumentSummarizerService 
 
         long execTime = System.currentTimeMillis() - startTime;
 
-        try {
-            auditLogRepository.save(com.esmt.labstn.ai.entity.AiAuditLog.builder()
-                    .actionType("RESUME_DOCUMENT")
-                    .queryText("Résumé livrable ID: " + livrableId)
-                    .resultsCount(1)
-                    .executionTimeMs(execTime)
-                    .build());
-        } catch (Exception e) {
-            log.warn("Erreur log audit : {}", e.getMessage());
-        }
+        auditLoggerService.log(AiAuditLog.builder()
+                .actionType("RESUME_DOCUMENT")
+                .queryText("Résumé livrable ID: " + livrableId)
+                .resultsCount(1)
+                .executionTimeMs(execTime)
+                .build());
 
         return SummaryResponse.builder()
                 .livrableId(livrableId)
