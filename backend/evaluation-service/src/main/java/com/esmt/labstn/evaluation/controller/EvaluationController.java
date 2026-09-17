@@ -15,14 +15,17 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/evaluations")
-@RequiredArgsConstructor
 public class EvaluationController {
 
     private final EvaluationService evaluationService;
 
-    // Étapes 05-07 : Charger la grille TRL pour une thèse (Encadreur / Direction)
+    public EvaluationController(EvaluationService evaluationService) {
+        this.evaluationService = evaluationService;
+    }
+
+    // Étapes 05-07 : Charger la grille TRL pour une thèse (Encadreur)
     @GetMapping("/grille-trl")
-    @PreAuthorize("hasAnyRole('ENCADREUR', 'ADMIN', 'DIRECTEUR', 'DIRECTION')")
+    @PreAuthorize("hasAnyRole('ENCADREUR', 'ADMIN', 'DIRECTEUR_RECHERCHE')")
     public ResponseEntity<GrilleTRLResponse> getGrilleTRL(@RequestParam(required = false) Long theseId) {
         return ResponseEntity.ok(evaluationService.getGrilleTRL(theseId));
     }
@@ -34,9 +37,9 @@ public class EvaluationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(evaluationService.soumettreEvaluation(request));
     }
 
-    // Étapes 18, 21, 22 : Décision de la Direction (Approuver / Demander correction / Refuser)
+    // Étapes 18, 21, 22 : Validation par le Directeur (Approuver / Demander correction / Refuser)
     @PutMapping("/{id}/validation")
-    @PreAuthorize("hasAnyRole('DIRECTEUR', 'ADMIN', 'DIRECTION')")
+    @PreAuthorize("hasAnyRole('DIRECTEUR_RECHERCHE', 'ADMIN')")
     public ResponseEntity<EvaluationResponse> validerEvaluation(
             @PathVariable Long id,
             @Valid @RequestBody EvaluationValidationRequest request) {
@@ -45,14 +48,14 @@ public class EvaluationController {
 
     // Consulter une évaluation par ID
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('DOCTORANT', 'ENCADREUR', 'DIRECTEUR', 'ADMIN', 'DIRECTION')")
+    @PreAuthorize("hasAnyRole('DOCTORANT', 'ENCADREUR', 'DIRECTEUR_RECHERCHE', 'ADMIN', 'PARTENAIRE')")
     public ResponseEntity<EvaluationResponse> getEvaluationById(@PathVariable Long id) {
         return ResponseEntity.ok(evaluationService.getEvaluationById(id));
     }
 
-    // Consulter la liste des évaluations
+    // Consulter les évaluations (filtrable par thèse, statut, encadreur, doctorant)
     @GetMapping
-    @PreAuthorize("hasAnyRole('DOCTORANT', 'ENCADREUR', 'DIRECTEUR', 'ADMIN', 'DIRECTION')")
+    @PreAuthorize("hasAnyRole('DOCTORANT', 'ENCADREUR', 'DIRECTEUR_RECHERCHE', 'ADMIN', 'PARTENAIRE')")
     public ResponseEntity<List<EvaluationResponse>> getAllEvaluations(
             @RequestParam(required = false) Long theseId,
             @RequestParam(required = false) Long encadreurId,
@@ -63,7 +66,7 @@ public class EvaluationController {
 
     // Consulter le niveau de maturité actuel d'une thèse
     @GetMapping("/these/{theseId}/actuelle")
-    @PreAuthorize("hasAnyRole('DOCTORANT', 'ENCADREUR', 'DIRECTEUR', 'ADMIN', 'DIRECTION')")
+    @PreAuthorize("hasAnyRole('DOCTORANT', 'ENCADREUR', 'DIRECTEUR_RECHERCHE', 'ADMIN', 'PARTENAIRE')")
     public ResponseEntity<EvaluationResponse> getDerniereEvaluationThese(@PathVariable Long theseId) {
         return ResponseEntity.ok(evaluationService.getDerniereEvaluationThese(theseId));
     }
