@@ -20,10 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Configuration de sécurité OAuth2 / Keycloak pour ai-service.
- * Extrait les rôles du token JWT Keycloak (realm_access.roles) et applique les permissions.
- */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -35,9 +31,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Endpoints publics pour les vérifications de statut ou la doc
                         .requestMatchers("/actuator/**", "/api/ai/public/**").permitAll()
-                        // Tous les autres endpoints d'IA nécessitent une authentification valide
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
@@ -47,8 +41,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter() {
+    private Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter() {
         return new Converter<Jwt, AbstractAuthenticationToken>() {
             @Override
             public AbstractAuthenticationToken convert(Jwt jwt) {
