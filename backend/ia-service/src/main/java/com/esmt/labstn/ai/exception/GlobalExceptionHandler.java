@@ -60,5 +60,15 @@ public class GlobalExceptionHandler {
                         .success(false)
                         .build());
     }
+
+    @ExceptionHandler(org.springframework.web.HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<MessageResponse> handleMediaTypeNotSupported(org.springframework.web.HttpMediaTypeNotSupportedException ex) {
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                .body(MessageResponse.builder()
+                        .message("Format de contenu non supporté. Veuillez envoyer du Content-Type: application/json.")
+                        .success(false)
+                        .build());
+    }
+
 }
 

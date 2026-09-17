@@ -83,7 +83,7 @@ public class AiIndexController {
      * Supprime l'index d'un livrable.
      */
     @DeleteMapping("/{livrableId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTION')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTEUR_RECHERCHE')")
     public ResponseEntity<MessageResponse> deleteIndex(@PathVariable Long livrableId) {
         vectorIndexService.removeIndex(livrableId);
         return ResponseEntity.ok(MessageResponse.builder()
