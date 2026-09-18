@@ -46,8 +46,7 @@ public class ThesisSecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter() {
+    private Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter() {
         return jwt -> {
             Collection<GrantedAuthority> authorities = extractRealmRoles(jwt);
             return new JwtAuthenticationToken(jwt, authorities, jwt.getClaimAsString("preferred_username"));
