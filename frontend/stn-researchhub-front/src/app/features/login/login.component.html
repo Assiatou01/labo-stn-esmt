@@ -1,63 +1,58 @@
-<div class="min-h-screen bg-esmt-dark flex items-center justify-center p-4 relative overflow-hidden">
-  <!-- Cercles lumineux d'ambiance aux couleurs ESMT -->
-  <div class="absolute -top-32 -left-32 w-96 h-96 bg-esmt-cyan/20 rounded-full blur-3xl pointer-events-none"></div>
-  <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-esmt-green/20 rounded-full blur-3xl pointer-events-none"></div>
-
-  <div class="glass-panel w-full max-w-md rounded-3xl border border-esmt-cyan/30 overflow-hidden shadow-2xl p-8 space-y-6 relative z-10">
+<div class="min-h-screen w-full bg-gradient-to-br from-slate-100 via-blue-50/40 to-slate-100 flex items-center justify-center p-4 relative">
+  <!-- Carte Centrale Élégante sur Fond Blanc -->
+  <div class="bg-white w-full max-w-md rounded-3xl border border-slate-200/80 shadow-2xl p-8 space-y-6 relative z-10">
     
-    <!-- Logo Officiel ESMT -->
+    <!-- En-tête Logo ESMT -->
     <div class="text-center space-y-3">
-      <div class="w-24 h-24 mx-auto bg-white p-2 rounded-2xl shadow-xl flex items-center justify-center border border-slate-200">
-        <img src="assets/logo-esmt.png" alt="Logo ESMT" class="w-full h-full object-contain" />
+      <div class="w-24 h-24 mx-auto bg-white p-2 rounded-2xl shadow-md border border-slate-100 flex items-center justify-center">
+        <img src="assets/logo-esmt.png" alt="Logo Officiel ESMT" class="w-full h-full object-contain" />
       </div>
       <div>
-        <h1 class="text-2xl font-black text-white tracking-tight">
-          <span>STN </span><span class="text-esmt-cyan">ResearchHub</span>
+        <h1 class="text-2xl font-black text-[#002B49] tracking-tight">
+          <span>STN </span><span class="text-[#00A3E0]">ResearchHub</span>
         </h1>
-        <p class="text-xs text-esmt-green font-semibold">École Supérieure Multinationale des Télécommunications</p>
-        <p class="text-[11px] text-slate-400 mt-0.5">Portail Scientifique & Valorisation TRL</p>
+        <p class="text-xs font-bold text-[#84BD00] uppercase tracking-wide mt-0.5">École Supérieure Multinationale des Télécommunications</p>
+        <p class="text-[11px] text-slate-500 mt-1 font-medium">Système de Gestion Doctorale & Évaluation TRL</p>
       </div>
     </div>
 
     <!-- Formulaire de Connexion -->
     <form (ngSubmit)="onLogin()" class="space-y-4">
       <div>
-        <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Identifiant / Email Académique</label>
-        <input type="text" [(ngModel)]="username" name="username" required class="glass-input w-full px-4 py-3 rounded-xl text-sm" placeholder="prenom.nom@esmt.sn" />
+        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Identifiant ou Email Institutionnel</label>
+        <input type="text" [(ngModel)]="username" name="username" required class="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-[#00A3E0] focus:ring-2 focus:ring-[#00A3E0]/20 transition" placeholder="prenom.nom@esmt.sn" />
       </div>
 
       <div>
-        <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Mot de Passe</label>
-        <input type="password" [(ngModel)]="password" name="password" required class="glass-input w-full px-4 py-3 rounded-xl text-sm" placeholder="••••••••" />
+        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Mot de Passe</label>
+        <input type="password" [(ngModel)]="password" name="password" required class="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-[#00A3E0] focus:ring-2 focus:ring-[#00A3E0]/20 transition" placeholder="••••••••" />
       </div>
 
       <div>
-        <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Profil & Rôle</label>
-        <select [(ngModel)]="selectedRole" name="role" class="glass-input w-full px-4 py-3 rounded-xl text-sm bg-slate-900 text-white font-medium cursor-pointer">
+        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Profil & Rôle à tester</label>
+        <select [(ngModel)]="selectedRole" name="role" class="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:border-[#00A3E0] cursor-pointer">
           <option value="ROLE_DOCTORANT">👨‍🎓 Doctorant Chercheur</option>
           <option value="ROLE_ENCADREUR">👨‍🏫 Directeur de Thèse / Encadreur</option>
-          <option value="ROLE_DIRECTION">👩‍💼 Direction du Laboratoire STN</option>
+          <option value="ROLE_DIRECTEUR_RECHERCHE">👩‍💼 Directeur de la Recherche</option>
           <option value="ROLE_PARTENAIRE">🏢 Partenaire Industriel / Évaluateur TRL</option>
           <option value="ROLE_ADMIN">⚙️ Administrateur Système</option>
         </select>
       </div>
 
-      <button type="submit" class="w-full py-3 bg-gradient-to-r from-esmt-navy via-slate-900 to-esmt-cyan hover:opacity-95 text-white font-bold text-sm rounded-xl shadow-lg shadow-esmt-cyan/20 transition flex items-center justify-center gap-2">
-        <span>Se Connecter (Keycloak SSO)</span>
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <button type="submit" class="w-full py-3.5 bg-[#002B49] hover:bg-[#003c66] text-white font-bold text-sm rounded-xl shadow-lg shadow-[#002B49]/20 transition flex items-center justify-center gap-2">
+        <span>Se Connecter (SSO Keycloak)</span>
+        <svg class="w-4 h-4 text-[#00A3E0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
         </svg>
       </button>
     </form>
 
-    <!-- Footer drapeaux symboliques ESMT -->
-    <div class="pt-4 border-t border-slate-800 text-center">
-      <div class="flex items-center justify-center gap-2 text-xs text-slate-400">
-        <span class="w-2 h-2 rounded-full bg-esmt-cyan"></span>
-        <span class="w-2 h-2 rounded-full bg-esmt-green"></span>
-        <span class="w-2 h-2 rounded-full bg-esmt-yellow"></span>
-        <span>7 Pays Membres • ESMT Dakar</span>
-      </div>
+    <!-- Pied de page -->
+    <div class="pt-4 border-t border-slate-100 flex items-center justify-center gap-2 text-xs text-slate-400 font-medium">
+      <span class="w-2 h-2 rounded-full bg-[#00A3E0]"></span>
+      <span class="w-2 h-2 rounded-full bg-[#84BD00]"></span>
+      <span class="w-2 h-2 rounded-full bg-[#FFC72C]"></span>
+      <span>7 Pays Membres • ESMT Dakar © 2026</span>
     </div>
 
   </div>

@@ -37,13 +37,13 @@ export class AuthService {
       doctorants: ['Mamadou Sow', 'Fatou Kiné Fall'],
       permissions: ['VIEW_SUPERVISED_THESES', 'VALIDATE_DOCUMENTS', 'SUBMIT_EVALUATION', 'USE_AI_ASSISTANT']
     },
-    'ROLE_DIRECTION': {
+    'ROLE_DIRECTEUR_RECHERCHE': {
       id: 'dir-001',
       username: 'directeur.labo',
       nom: 'Ndiaye',
       prenom: 'Dr. Awa',
       email: 'awa.ndiaye@esmt.sn',
-      role: 'ROLE_DIRECTION',
+      role: 'ROLE_DIRECTEUR_RECHERCHE',
       roleLabel: 'Directrice Laboratoire STN',
       avatar: '👩‍💼',
       specialite: 'Direction de la Recherche & Valorisation',

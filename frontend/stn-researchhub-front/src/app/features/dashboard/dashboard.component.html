@@ -1,74 +1,141 @@
-<div class="min-h-screen bg-[#020617] text-slate-100 flex flex-col md:flex-row antialiased">
-  <!-- Sidebar ESMT -->
-  <aside class="w-full md:w-72 bg-slate-900/90 border-r border-slate-800/80 flex flex-col justify-between shrink-0 p-5 backdrop-blur-xl z-20 min-h-screen">
-    <div>
-      <div class="flex items-center gap-3 px-2 py-2 mb-6 bg-slate-950/60 p-2.5 rounded-2xl border border-slate-800/80 shadow-md">
-        <div class="w-12 h-12 rounded-xl bg-white p-1 flex items-center justify-center shadow-lg shrink-0 overflow-hidden border border-slate-700">
-          <img src="assets/logo-esmt.png" alt="Logo ESMT" class="w-full h-full object-contain" />
-        </div>
-        <div class="min-w-0">
-          <h1 class="font-black text-white tracking-tight text-sm leading-tight uppercase flex items-center gap-1">
-            <span>STN</span>
-            <span class="text-[#00A3E0] font-extrabold">Hub</span>
-          </h1>
-          <p class="text-[10px] text-[#84BD00] font-semibold truncate">ESMT Dakar • Lab STN</p>
-        </div>
+<div class="space-y-6">
+  <!-- Banner Blanc aux accents ESMT -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+    <div class="flex items-center gap-4">
+      <div class="w-14 h-14 rounded-2xl bg-[#002B49] text-white flex items-center justify-center text-2xl font-bold shadow-md">
+        STN
       </div>
+      <div>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#00A3E0]/10 text-[#00A3E0] mb-1">
+          ESMT Dakar • Laboratoire STN
+        </span>
+        <h1 class="text-2xl font-bold text-[#002B49]">Bienvenue, {{ currentUser.prenom }} {{ currentUser.nom }}</h1>
+        <p class="text-slate-500 text-xs mt-0.5">Espace : <strong class="text-[#00A3E0]">{{ currentUser.roleLabel }}</strong> • Spécialité : {{ currentUser.specialite || 'Systèmes & Réseaux' }}</p>
+      </div>
+    </div>
+  </div>
 
-      <nav class="space-y-1.5 text-sm">
-        <a class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-semibold bg-[#002B49] text-[#00A3E0] border border-[#00A3E0]/30 shadow-md">
-          <span>📊</span><span>Tableau de Bord</span>
-        </a>
-      </nav>
+  <!-- Métriques KPIs (Cartes Blanches) -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <div class="glass-card p-5 rounded-2xl bg-white border border-slate-200">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold tracking-wider text-slate-500 uppercase">Thèses Actives</span>
+        <span class="p-2 rounded-xl bg-blue-50 text-blue-600">📚</span>
+      </div>
+      <div class="mt-3 flex items-baseline gap-2">
+        <span class="text-3xl font-extrabold text-[#002B49]">12</span>
+        <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">+3 ce mois</span>
+      </div>
     </div>
 
-    <div class="pt-4 border-t border-slate-800/80">
-      <button (click)="logout()" class="w-full py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-2">
-        <span>🚪 Déconnexion</span>
-      </button>
+    <div class="glass-card p-5 rounded-2xl bg-white border border-slate-200">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold tracking-wider text-slate-500 uppercase">Livrables / Articles</span>
+        <span class="p-2 rounded-xl bg-purple-50 text-purple-600">📄</span>
+      </div>
+      <div class="mt-3 flex items-baseline gap-2">
+        <span class="text-3xl font-extrabold text-[#002B49]">28</span>
+        <span class="text-xs font-semibold text-[#00A3E0] bg-sky-50 px-2 py-0.5 rounded-full">100% Indexés RAG</span>
+      </div>
     </div>
-  </aside>
 
-  <!-- Main Content -->
-  <div class="flex-1 flex flex-col min-w-0">
-    <header class="h-16 border-b border-slate-800/80 bg-slate-900/70 backdrop-blur-xl px-6 flex items-center justify-between sticky top-0 z-10">
-      <div class="flex items-center gap-2 text-xs text-slate-400">
-        <span class="w-2 h-2 rounded-full bg-[#84BD00] animate-pulse"></span>
-        <span class="font-semibold text-slate-200">Portail Scientifique & TRL</span>
+    <div class="glass-card p-5 rounded-2xl bg-white border border-slate-200">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold tracking-wider text-slate-500 uppercase">Maturité Moyenne</span>
+        <span class="p-2 rounded-xl bg-emerald-50 text-emerald-600">🚀</span>
+      </div>
+      <div class="mt-3 flex items-baseline gap-2">
+        <span class="text-3xl font-extrabold text-[#84BD00]">TRL 5.4</span>
+        <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">Prototypage</span>
+      </div>
+    </div>
+
+    <div class="glass-card p-5 rounded-2xl bg-white border border-slate-200">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold tracking-wider text-slate-500 uppercase">Microservices</span>
+        <span class="p-2 rounded-xl bg-amber-50 text-amber-600">⚡</span>
+      </div>
+      <div class="mt-3 flex items-baseline gap-2">
+        <span class="text-3xl font-extrabold text-[#002B49]">8 / 8</span>
+        <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Gateway OK</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRAPHIQUES STATISTIQUES (FOND BLANC) -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    
+    <!-- Graphique 1 : Répartition des Thèses par Axe Scientifique -->
+    <div class="glass-panel p-6 rounded-2xl bg-white border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h2 class="text-sm font-bold text-[#002B49] uppercase tracking-wider">Répartition des Thèses par Axe Scientifique</h2>
+        <span class="text-xs text-slate-400 font-mono">12 Projets</span>
       </div>
 
-      <div class="flex items-center gap-4">
-        <select [value]="currentUser.role" (change)="onRoleChange($event)" class="glass-input px-3 py-1.5 rounded-lg text-xs bg-slate-900 text-slate-200 border-slate-700 font-medium">
-          <option value="ROLE_DOCTORANT">👨‍🎓 Doctorant Chercheur</option>
-          <option value="ROLE_ENCADREUR">👨‍🏫 Directeur / Encadreur</option>
-          <option value="ROLE_DIRECTION">👩‍💼 Direction Laboratoire</option>
-          <option value="ROLE_PARTENAIRE">🏢 Partenaire Industriel / TRL</option>
-          <option value="ROLE_ADMIN">⚙️ Administrateur Système</option>
-        </select>
-        <div class="text-xs font-bold text-white">{{ currentUser.prenom }} {{ currentUser.nom }}</div>
-      </div>
-    </header>
-
-    <main class="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto space-y-6">
-      <div class="bg-gradient-to-r from-[#002B49]/40 via-slate-900 to-[#002B49]/30 p-6 rounded-2xl border border-slate-800 shadow-xl">
-        <h1 class="text-2xl font-bold text-white">Bienvenue sur STN ResearchHub, {{ currentUser.prenom }} {{ currentUser.nom }}</h1>
-        <p class="text-slate-400 text-sm mt-1">Espace : <strong class="text-[#00A3E0]">{{ currentUser.roleLabel }}</strong></p>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        <div class="glass-card p-5 rounded-2xl">
-          <div class="text-xs font-semibold text-slate-400 uppercase">Thèses Actives</div>
-          <div class="text-3xl font-extrabold text-white mt-2">12</div>
+      <div class="space-y-4 pt-2">
+        <div>
+          <div class="flex justify-between text-xs mb-1 font-semibold">
+            <span class="text-slate-700">Réseaux 5G/6G & Cloud Native</span>
+            <span class="text-[#00A3E0]">5 thèses (42%)</span>
+          </div>
+          <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+            <div class="bg-[#00A3E0] h-full rounded-full transition-all duration-500" style="width: 42%"></div>
+          </div>
         </div>
-        <div class="glass-card p-5 rounded-2xl">
-          <div class="text-xs font-semibold text-slate-400 uppercase">Livrables Déposés</div>
-          <div class="text-3xl font-extrabold text-white mt-2">28</div>
+
+        <div>
+          <div class="flex justify-between text-xs mb-1 font-semibold">
+            <span class="text-slate-700">Intelligence Artificielle & RAG</span>
+            <span class="text-[#84BD00]">4 thèses (33%)</span>
+          </div>
+          <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+            <div class="bg-[#84BD00] h-full rounded-full transition-all duration-500" style="width: 33%"></div>
+          </div>
         </div>
-        <div class="glass-card p-5 rounded-2xl">
-          <div class="text-xs font-semibold text-slate-400 uppercase">Maturité Moyenne</div>
-          <div class="text-3xl font-extrabold text-[#84BD00] mt-2">TRL 5.4</div>
+
+        <div>
+          <div class="flex justify-between text-xs mb-1 font-semibold">
+            <span class="text-slate-700">Cybersécurité & Keycloak Zero-Trust</span>
+            <span class="text-[#002B49]">3 thèses (25%)</span>
+          </div>
+          <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+            <div class="bg-[#002B49] h-full rounded-full transition-all duration-500" style="width: 25%"></div>
+          </div>
         </div>
       </div>
-    </main>
+    </div>
+
+    <!-- Graphique 2 : Matrice de Maturité Technologique (TRL 1 à 9) -->
+    <div class="glass-panel p-6 rounded-2xl bg-white border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h2 class="text-sm font-bold text-[#002B49] uppercase tracking-wider">État de Valorisation Industrielle (TRL)</h2>
+        <span class="text-xs text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded">Norme ISO 16290</span>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3 pt-2">
+        <div class="p-4 rounded-xl bg-blue-50/60 border border-blue-100 text-center space-y-1">
+          <div class="text-2xl font-extrabold text-[#00A3E0]">4</div>
+          <div class="text-xs font-bold text-slate-700">TRL 1-3</div>
+          <div class="text-[10px] text-slate-500">Recherche Lab</div>
+        </div>
+
+        <div class="p-4 rounded-xl bg-amber-50/60 border border-amber-100 text-center space-y-1">
+          <div class="text-2xl font-extrabold text-amber-600">6</div>
+          <div class="text-xs font-bold text-slate-700">TRL 4-6</div>
+          <div class="text-[10px] text-slate-500">Démonstrateurs</div>
+        </div>
+
+        <div class="p-4 rounded-xl bg-emerald-50/60 border border-emerald-100 text-center space-y-1">
+          <div class="text-2xl font-extrabold text-[#84BD00]">2</div>
+          <div class="text-xs font-bold text-slate-700">TRL 7-9</div>
+          <div class="text-[10px] text-slate-500">Valorisation</div>
+        </div>
+      </div>
+
+      <div class="p-3 bg-slate-50 rounded-xl text-xs text-slate-600 border border-slate-200">
+        💡 <strong>Recommandation Directeur de la Recherche :</strong> 6 projets ont atteint le niveau TRL 4-6 et sont éligibles à un audit de transfert avec le partenaire industriel.
+      </div>
+    </div>
+
   </div>
 </div>

@@ -1,0 +1,125 @@
+<div class="space-y-6">
+  <!-- En-tête -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+    <div>
+      <h1 class="text-2xl font-black text-[#002B49] tracking-tight">Annuaire des Chercheurs & Rôles Keycloak</h1>
+      <p class="text-slate-500 text-sm mt-0.5">Gestion des doctorants, directeurs de thèse et du Directeur de la Recherche.</p>
+    </div>
+    <button (click)="openModal()" class="px-4 py-2.5 bg-[#002B49] hover:bg-[#003860] text-white font-semibold text-sm rounded-xl shadow-md transition flex items-center gap-2">
+      <span>➕ Ajouter un Chercheur</span>
+    </button>
+  </div>
+
+  <!-- Tableau Haute Lisibilité (Fond Blanc & Texte Sombre) -->
+  <div class="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
+    <table class="w-full text-left text-sm">
+      <!-- En-tête du tableau -->
+      <thead class="bg-slate-100 text-xs uppercase font-bold text-slate-700 border-b border-slate-200">
+        <tr>
+          <th class="px-6 py-4">Membre / Chercheur</th>
+          <th class="px-6 py-4">Email Institutionnel</th>
+          <th class="px-6 py-4">Rôle & Responsabilité</th>
+          <th class="px-6 py-4">Spécialité</th>
+          <th class="px-6 py-4 text-right">Action</th>
+        </tr>
+      </thead>
+      <!-- Lignes du tableau -->
+      <tbody class="divide-y divide-slate-100 text-slate-800">
+        <tr *ngFor="let u of users" class="hover:bg-slate-50/80 transition">
+          <!-- Nom & Avatar -->
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-xl shadow-inner border border-slate-200">
+                {{ u.avatar || '👤' }}
+              </div>
+              <div>
+                <div class="font-bold text-slate-900 text-sm leading-tight">{{ u.prenom }} {{ u.nom }}</div>
+                <div class="text-xs text-[#00A3E0] font-mono mt-0.5 font-medium">@{{ u.username }}</div>
+              </div>
+            </div>
+          </td>
+
+          <!-- Email (Bien foncé et lisible) -->
+          <td class="px-6 py-4 font-mono text-xs text-slate-700 font-semibold">
+            {{ u.email }}
+          </td>
+
+          <!-- Badges Colorés Lisibles avec fond clair -->
+          <td class="px-6 py-4">
+            <span *ngIf="u.role === 'ROLE_DOCTORANT'" class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+              👨‍🎓 Doctorant Chercheur
+            </span>
+            <span *ngIf="u.role === 'ROLE_ENCADREUR'" class="px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-300">
+              👨‍🏫 Directeur de Thèse
+            </span>
+            <span *ngIf="u.role === 'ROLE_DIRECTEUR_RECHERCHE'" class="px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-800 border border-purple-300">
+              👩‍💼 Directeur de la Recherche
+            </span>
+            <span *ngIf="u.role === 'ROLE_PARTENAIRE'" class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300">
+              🏢 Partenaire Industriel / TRL
+            </span>
+            <span *ngIf="u.role === 'ROLE_ADMIN'" class="px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-300">
+              ⚙️ Administrateur Système
+            </span>
+          </td>
+
+          <!-- Spécialité -->
+          <td class="px-6 py-4 text-xs font-medium text-slate-600">
+            {{ u.specialite || 'Laboratoire STN' }}
+          </td>
+
+          <!-- Bouton d'action contrasté -->
+          <td class="px-6 py-4 text-right">
+            <button (click)="simulateRole(u.role)" class="px-3.5 py-1.5 bg-[#00A3E0] hover:bg-[#008ac2] text-white font-bold text-xs rounded-lg shadow-sm transition">
+              Simuler ce rôle
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal Nouvel Utilisateur -->
+<div *ngIf="showModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-white w-full max-w-md rounded-2xl border border-slate-200 shadow-2xl p-6 space-y-4">
+    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+      <h3 class="text-lg font-bold text-[#002B49]">Ajouter un Chercheur</h3>
+      <button (click)="closeModal()" class="text-slate-400 hover:text-slate-700 text-lg">✕</button>
+    </div>
+
+    <form (ngSubmit)="saveUser()" class="space-y-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Prénom *</label>
+          <input type="text" [(ngModel)]="newUser.prenom" name="prenom" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-[#00A3E0]" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nom *</label>
+          <input type="text" [(ngModel)]="newUser.nom" name="nom" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-[#00A3E0]" />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Email ESMT *</label>
+        <input type="email" [(ngModel)]="newUser.email" name="email" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:border-[#00A3E0]" placeholder="prenom.nom@esmt.sn" />
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Rôle Attribué</label>
+        <select [(ngModel)]="newUser.role" name="role" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 font-medium focus:outline-none focus:border-[#00A3E0]">
+          <option value="ROLE_DOCTORANT">Doctorant Chercheur</option>
+          <option value="ROLE_ENCADREUR">Directeur de Thèse / Encadreur</option>
+          <option value="ROLE_DIRECTEUR_RECHERCHE">Directeur de la Recherche</option>
+          <option value="ROLE_PARTENAIRE">Partenaire Industriel / TRL</option>
+          <option value="ROLE_ADMIN">Administrateur Système</option>
+        </select>
+      </div>
+
+      <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
+        <button type="button" (click)="closeModal()" class="px-4 py-2 bg-slate-100 text-slate-700 font-medium rounded-lg text-sm hover:bg-slate-200">Annuler</button>
+        <button type="submit" class="px-5 py-2 bg-[#002B49] hover:bg-[#003860] text-white font-bold rounded-lg text-sm">Créer</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,121 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-white tracking-tight">Évaluation de la Maturité Technologique (TRL)</h1>
+      <p class="text-slate-400 text-sm">Norme ISO 16290 / H2020 pour la valorisation industrielle et le transfert technologique.</p>
+    </div>
+    <button *ngIf="canEvaluate()" (click)="openModal()" class="px-4 py-2.5 bg-gradient-to-r from-[#002B49] to-[#84BD00] hover:opacity-95 text-white font-medium text-sm rounded-xl shadow-lg shadow-[#84BD00]/20 flex items-center gap-2 transition">
+      <span>🎯 Nouvelle Évaluation TRL</span>
+    </button>
+  </div>
+
+  <!-- Matrice des 3 Grandes Phases TRL -->
+  <div class="glass-panel p-6 rounded-2xl border border-[#84BD00]/20 space-y-4">
+    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+      <span class="text-sm font-bold uppercase tracking-wider text-slate-300">Échelle Normative TRL 1 à 9</span>
+      <span class="text-xs text-[#00A3E0] font-mono">Norme Internationale ESMT</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+      <div class="p-4 rounded-xl bg-blue-950/30 border border-blue-500/30 space-y-2">
+        <div class="flex justify-between font-bold text-blue-400"><span>Phase 1 : Recherche</span><span>TRL 1-3</span></div>
+        <p class="text-slate-300 leading-relaxed">Principes fondamentaux, concept formulé et validation expérimentale (PoC Lab).</p>
+      </div>
+
+      <div class="p-4 rounded-xl bg-amber-950/30 border border-amber-500/30 space-y-2">
+        <div class="flex justify-between font-bold text-amber-400"><span>Phase 2 : Développement</span><span>TRL 4-6</span></div>
+        <p class="text-slate-300 leading-relaxed">Validation en laboratoire, banc d'essai et démonstrateur prototype représentatif.</p>
+      </div>
+
+      <div class="p-4 rounded-xl bg-emerald-950/30 border border-emerald-500/30 space-y-2">
+        <div class="flex justify-between font-bold text-emerald-400"><span>Phase 3 : Industrie</span><span>TRL 7-9</span></div>
+        <p class="text-slate-300 leading-relaxed">Démonstration opérationnelle, système qualifié et déploiement commercial.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Liste des Audits & Évaluations -->
+  <div class="glass-panel p-6 rounded-2xl space-y-4">
+    <h2 class="text-lg font-bold text-white">Historique des Audits & Notations TRL</h2>
+
+    <div class="space-y-4">
+      <div *ngFor="let ev of evaluations" class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-[#84BD00]/30 transition space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div class="flex items-center gap-2.5">
+            <span class="px-2.5 py-1 rounded-full text-xs font-bold border" [ngClass]="getTrlBadge(ev.niveauTrl)">
+              TRL {{ ev.niveauTrl }}
+            </span>
+            <h3 class="font-bold text-white text-sm">{{ ev.theseTitre }}</h3>
+          </div>
+          <span class="text-xs text-slate-400 font-mono">{{ ev.dateEvaluation }}</span>
+        </div>
+
+        <div>
+          <div class="flex justify-between text-[11px] text-slate-400 mb-1">
+            <span>Maturité industrielle atteinte</span>
+            <span class="font-mono text-[#84BD00] font-bold">{{ getPercentage(ev.niveauTrl) }}% (TRL {{ ev.niveauTrl }}/9)</span>
+          </div>
+          <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-blue-500 via-amber-500 to-[#84BD00] rounded-full" [style.width.%]="getPercentage(ev.niveauTrl)"></div>
+          </div>
+        </div>
+
+        <p class="text-xs text-slate-300 leading-relaxed bg-slate-950/40 p-3 rounded-lg border border-slate-800/80">
+          "{{ ev.commentaires }}"
+        </p>
+
+        <div class="flex items-center justify-between text-[11px] text-slate-400">
+          <span>Évaluateur : <strong class="text-slate-200">{{ ev.evaluateur }}</strong></span>
+          <span class="text-[#84BD00] font-semibold">Statut : Validé</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Nouvelle Évaluation -->
+<div *ngIf="showModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="glass-panel w-full max-w-xl rounded-2xl border border-[#84BD00]/30 overflow-hidden shadow-2xl p-6 space-y-4">
+    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+      <h3 class="text-lg font-bold text-white">Évaluation de Maturité TRL</h3>
+      <button (click)="closeModal()" class="text-slate-400 hover:text-white">✕</button>
+    </div>
+
+    <form (ngSubmit)="saveEvaluation()" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Thèse / Projet Cible</label>
+        <select [(ngModel)]="newEval.theseTitre" name="these" class="glass-input w-full px-3.5 py-2 rounded-lg text-sm bg-slate-900">
+          <option value="Architectures Microservices 5G (Mamadou Sow)">TH-STN-101 : Architectures Microservices 5G (Mamadou Sow)</option>
+          <option value="Systèmes RAG et Modèles Fondations (Fatou Kiné Fall)">TH-STN-102 : Systèmes RAG & LLM (Fatou Kiné Fall)</option>
+          <option value="Sécurité Zero-Trust Keycloak (Abdoulaye Ba)">TH-STN-103 : Sécurité Zero-Trust Keycloak (Abdoulaye Ba)</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Niveau TRL Attribué (1 à 9)</label>
+        <select [(ngModel)]="newEval.niveauTrl" name="trl" class="glass-input w-full px-3.5 py-2 rounded-lg text-sm bg-slate-900 font-bold text-[#84BD00]">
+          <option [ngValue]="1">TRL 1 : Principes de base observés</option>
+          <option [ngValue]="2">TRL 2 : Concept technologique formulé</option>
+          <option [ngValue]="3">TRL 3 : Preuve de concept (PoC)</option>
+          <option [ngValue]="4">TRL 4 : Validation en laboratoire</option>
+          <option [ngValue]="5">TRL 5 : Validation en environnement représentatif</option>
+          <option [ngValue]="6">TRL 6 : Démonstrateur de prototype</option>
+          <option [ngValue]="7">TRL 7 : Démonstration en environnement opérationnel</option>
+          <option [ngValue]="8">TRL 8 : Système complet et qualifié</option>
+          <option [ngValue]="9">TRL 9 : Système réel prouvé en production</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Rapport & Recommandations</label>
+        <textarea [(ngModel)]="newEval.commentaires" name="commentaires" required rows="3" class="glass-input w-full px-3.5 py-2 rounded-lg text-sm" placeholder="Justifiez le niveau TRL attribué, les métriques observées et les étapes de valorisation..."></textarea>
+      </div>
+
+      <div class="flex justify-end gap-3 pt-4 border-t border-slate-800">
+        <button type="button" (click)="closeModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-lg text-sm">Annuler</button>
+        <button type="submit" class="px-5 py-2 bg-[#84BD00] hover:bg-[#6fa000] text-white font-semibold rounded-lg text-sm">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,7 +1,7 @@
 export type UserRole = 
   | 'ROLE_DOCTORANT' 
   | 'ROLE_ENCADREUR' 
-  | 'ROLE_DIRECTION' 
+  | 'ROLE_DIRECTEUR_RECHERCHE' 
   | 'ROLE_PARTENAIRE' 
   | 'ROLE_ADMIN';
 
