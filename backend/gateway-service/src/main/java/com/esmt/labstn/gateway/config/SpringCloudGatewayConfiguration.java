@@ -28,7 +28,8 @@ public class SpringCloudGatewayConfiguration {
                                 "/api/v1/contributions-these/**",
                                 "/api/v1/encadrements-these/**",
                                 "/api/v1/participations-projet/**",
-                                "/api/v1/projets-recherche/**")
+                                "/api/v1/projets-recherche/**",
+                                "/api/v1/financements/**")
                         .filters(f -> f.circuitBreaker(c -> c.setName("thesisServiceCircuitBreaker")
                                 .setFallbackUri("forward:/fallback/thesis-service")))
                         .uri("lb://THESIS-SERVICE"))
@@ -44,10 +45,7 @@ public class SpringCloudGatewayConfiguration {
                         .uri("lb://EVALUATION-SERVICE"))
 
                 .route("ai-route", p -> p.path(
-                                "/api/ai/summary/**",
-                                "/api/ai/chat/**",
-                                "/api/ai/search/**",
-                                "/api/ai/index/**",
+                                "/api/ai/**",
                                 "/api/v1/ai/**")
                         .filters(f -> f.circuitBreaker(c -> c.setName("aiServiceCircuitBreaker")
                                 .setFallbackUri("forward:/fallback/ai-service")))
