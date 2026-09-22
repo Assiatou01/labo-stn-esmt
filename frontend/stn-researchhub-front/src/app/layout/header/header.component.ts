@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../core/services/auth.service';
 import { User, UserRole } from '../../core/models/user.model';
@@ -21,5 +21,9 @@ export class HeaderComponent implements OnInit {
   onRoleChange(event: Event): void {
     const select = event.target as HTMLSelectElement;
     this.authService.switchRole(select.value as UserRole);
+  }
+
+  logout(): void {
+    this.authService.logout();
   }
 }
