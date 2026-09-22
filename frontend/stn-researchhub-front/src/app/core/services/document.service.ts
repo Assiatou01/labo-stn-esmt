@@ -1,91 +1,371 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+
+import {
+  HttpClient,
+  HttpParams
+} from '@angular/common/http';
+
+import { Observable } from 'rxjs';
+
+import { environment } from '../../../environments/environment';
+
 import { Livrable } from '../models/livrable.model';
 
+
+/* ============================================================
+ * RÉPONSES IA
+ * ============================================================ */
+
+export interface SummaryResponse {
+  livrableId: number;
+  titreDocument: string;
+  summaryText: string;
+  keyPoints: string[];
+  methodologyDetected?: string;
+  estimatedTRL?: number;
+  style?: string;
+  generatedAt?: string;
+}
+
+
+export interface IndexResponse {
+  livrableId: number;
+  theseId: number;
+  titreDocument: string;
+  chunksCount: number;
+  statut: string;
+  message: string;
+  indexedAt?: string;
+}
+
+
+export interface MessageResponse {
+  message: string;
+  success: boolean;
+}
+
+
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class DocumentService {
-    private apiUrl = 'http://localhost:8765/api/v1/livrables';
 
-    private mockDocs: Livrable[] = [
+  /**
+   * Angular
+   *    ↓
+   * Gateway :8765
+   *    ↓
+   * DOCUMENT-SERVICE
+   */
+  private readonly apiUrl =
+    `${environment.apiUrl}/api/v1/livrables`;
+
+
+  constructor(
+    private http: HttpClient
+  ) {}
+
+
+  /* ==========================================================
+   * LISTE DES LIVRABLES
+   *
+   * GET /api/v1/livrables
+   * ========================================================== */
+
+  getAll(
+    theseId?: number,
+    doctorantId?: number,
+    encadreurId?: number,
+    statutValidation?: string
+  ): Observable<Livrable[]> {
+
+    let params =
+      new HttpParams();
+
+
+    if (
+      theseId !== undefined &&
+      theseId !== null
+    ) {
+
+      params =
+        params.set(
+          'theseId',
+          theseId.toString()
+        );
+    }
+
+
+    if (
+      doctorantId !== undefined &&
+      doctorantId !== null
+    ) {
+
+      params =
+        params.set(
+          'doctorantId',
+          doctorantId.toString()
+        );
+    }
+
+
+    if (
+      encadreurId !== undefined &&
+      encadreurId !== null
+    ) {
+
+      params =
+        params.set(
+          'encadreurId',
+          encadreurId.toString()
+        );
+    }
+
+
+    if (
+      statutValidation
+    ) {
+
+      params =
+        params.set(
+          'statutValidation',
+          statutValidation
+        );
+    }
+
+
+    return this.http.get<Livrable[]>(
+      this.apiUrl,
+      {
+        params
+      }
+    );
+  }
+
+
+  /* ==========================================================
+   * LIVRABLE PAR ID
+   *
+   * GET /api/v1/livrables/{id}
+   * ========================================================== */
+
+  getById(
+    id: number
+  ): Observable<Livrable> {
+
+    return this.http.get<Livrable>(
+      `${this.apiUrl}/${id}`
+    );
+  }
+
+
+  /* ==========================================================
+   * DÉPOSER UN LIVRABLE
+   *
+   * POST /api/v1/livrables
+   *
+   * Multipart :
+   *
+   * data = JSON
+   * file = fichier
+   * ========================================================== */
+
+  upload(
+    data: {
+      titre: string;
+      type?: string;
+      description?: string;
+      theseId: number;
+      doctorantId: number;
+      encadreurId?: number;
+    },
+    file: File
+  ): Observable<Livrable> {
+
+    const formData =
+      new FormData();
+
+
+    /**
+     * Partie JSON.
+     *
+     * Le backend attend :
+     *
+     * @RequestPart("data")
+     */
+    const jsonData =
+      new Blob(
+        [
+          JSON.stringify(data)
+        ],
         {
-            id: '1',
-            theseId: '1',
-            thesisCode: 'TH-STN-101',
-            auteur: 'Mamadou Sow',
-            titre: 'Article IEEE : Microservices Orchestration with Spring Cloud & Eureka in 5G Edge',
-            type: 'ARTICLE',
-            nomFichier: 'ieee_microservices_5g.pdf',
-            taille: '3.2 Mo',
-            statut: 'VALIDE',
-            dateDepot: '12/09/2026',
-            ragIndexed: true
-        },
-        {
-            id: '2',
-            theseId: '2',
-            thesisCode: 'TH-STN-102',
-            auteur: 'Fatou Kiné Fall',
-            titre: 'Rapport d\'Avancement Semestriel : Évaluation TRL & Prototypage RAG',
-            type: 'RAPPORT',
-            nomFichier: 'rapport_semestriel_s2.pdf',
-            taille: '1.4 Mo',
-            statut: 'EN_REVUE',
-            dateDepot: '15/09/2026',
-            ragIndexed: true
-        },
-        {
-            id: '3',
-            theseId: '3',
-            thesisCode: 'TH-STN-103',
-            auteur: 'Abdoulaye Ba',
-            titre: 'Spécification de l\'Architecture de Sécurité OAuth2 & Keycloak',
-            type: 'ARTICLE',
-            nomFichier: 'security_keycloak_specs.pdf',
-            taille: '4.8 Mo',
-            statut: 'VALIDE',
-            dateDepot: '18/09/2026',
-            ragIndexed: true
+          type: 'application/json'
         }
-    ];
+      );
 
-    constructor(private http: HttpClient) {}
 
-    getAll(): Observable<Livrable[]>
-    {
-        return this.http.get<Livrable[]> (this.apiUrl).pipe(catchError(() => of(this.mockDocs))
+    formData.append(
+      'data',
+      jsonData
     );
-    }
-        
-    upload(formData: FormData, fallbackDoc: Livrable): Observable<Livrable> {
-        return this.http.post<Livrable>(this.apiUrl, formData).pipe( catchError(() => {
-            this.mockDocs.unshift(fallbackDoc);
-            return of(fallbackDoc);
-        })
-    );
-    }
 
-    valider(id: string | number): Observable<any> {
-        return this.http.put(`${this.apiUrl}/${id}/valider`, {}).pipe(catchError(() => {
-            const doc = this.mockDocs.find(d => d.id == id);
-            if(doc) doc.statut = 'VALIDE';
-            return of ({ success: true
 
-            });
-        })
+    /**
+     * Partie fichier.
+     *
+     * Le backend attend :
+     *
+     * @RequestPart("file")
+     */
+    formData.append(
+      'file',
+      file,
+      file.name
     );
-    }
 
-    rejeter (id: string | number): Observable<any>{
-        return this.http.put(`${this.apiUrl}/${id}/rejeter`, {}).pipe(catchError(() => {
-            const doc = this.mockDocs.find(d => d.id == id);
-            if(doc) doc.statut = 'REJETE';
-            return of({ success: true});
-    })
+
+    /**
+     * IMPORTANT :
+     *
+     * Ne PAS définir manuellement
+     * Content-Type: multipart/form-data.
+     *
+     * Le navigateur ajoute automatiquement
+     * le boundary.
+     */
+    return this.http.post<Livrable>(
+      this.apiUrl,
+      formData
     );
-}
-    
+  }
+
+
+  /* ==========================================================
+   * TÉLÉCHARGER
+   *
+   * GET /api/v1/livrables/{id}/download
+   * ========================================================== */
+
+  download(
+    id: number
+  ): Observable<Blob> {
+
+    return this.http.get(
+      `${this.apiUrl}/${id}/download`,
+      {
+        responseType: 'blob'
+      }
+    );
+  }
+
+
+  /* ==========================================================
+   * VALIDER
+   *
+   * PUT /api/v1/livrables/{id}/validation
+   * ========================================================== */
+
+  valider(
+    id: number,
+    commentaire: string = ''
+  ): Observable<Livrable> {
+
+    return this.http.put<Livrable>(
+      `${this.apiUrl}/${id}/validation`,
+      {
+        statutValidation: 'VALIDE',
+        commentaire
+      }
+    );
+  }
+
+
+  /* ==========================================================
+   * REJETER
+   *
+   * PUT /api/v1/livrables/{id}/validation
+   * ========================================================== */
+
+  rejeter(
+    id: number,
+    commentaire: string = ''
+  ): Observable<Livrable> {
+
+    return this.http.put<Livrable>(
+      `${this.apiUrl}/${id}/validation`,
+      {
+        statutValidation: 'REJETE',
+        commentaire
+      }
+    );
+  }
+
+
+  /* ==========================================================
+   * SUPPRIMER
+   *
+   * DELETE /api/v1/livrables/{id}
+   * ========================================================== */
+
+  delete(
+    id: number
+  ): Observable<any> {
+
+    return this.http.delete(
+      `${this.apiUrl}/${id}`
+    );
+  }
+
+
+  /* ==========================================================
+   * RÉSUMÉ IA
+   *
+   * Le DOCUMENT-SERVICE appelle ensuite AI-SERVICE.
+   *
+   * GET /api/v1/livrables/{id}/summary-ai
+   *
+   * Le backend DOCUMENT-SERVICE accepte :
+   *
+   * ?style=ACADEMIQUE
+   * ========================================================== */
+
+  getSummaryAi(
+    id: number,
+    style: string = 'ACADEMIQUE'
+  ): Observable<SummaryResponse> {
+
+    const params =
+      new HttpParams()
+        .set(
+          'style',
+          style
+        );
+
+
+    return this.http.get<SummaryResponse>(
+      `${this.apiUrl}/${id}/summary-ai`,
+      {
+        params
+      }
+    );
+  }
+
+
+  /* ==========================================================
+   * INDEXATION IA
+   *
+   * POST /api/v1/livrables/{id}/index-ai
+   *
+   * DOCUMENT-SERVICE appelle AI-SERVICE.
+   * ========================================================== */
+
+  triggerAiIndexing(
+    id: number
+  ): Observable<MessageResponse> {
+
+    return this.http.post<MessageResponse>(
+      `${this.apiUrl}/${id}/index-ai`,
+      {}
+    );
+  }
 }

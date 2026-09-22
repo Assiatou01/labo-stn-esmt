@@ -1,60 +1,374 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import {
+  HttpClient,
+  HttpParams
+} from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+import { environment } from '../../../environments/environment';
+
+/* ============================================================
+ * CHAT RAG
+ * ============================================================ */
+
+export interface RagChatRequest {
+  question: string;
+  theseIdContext?: number;
+  topContextDocs?: number;
+}
+
+export interface SourceCitation {
+  livrableId: number;
+  theseId: number;
+  titreDocument: string;
+  nomAuteur?: string;
+  extraitSource?: string;
+  pertinence?: number;
+}
+
+export interface RagChatResponse {
+  question: string;
+  answer: string;
+  modelUsed?: string;
+  responseTimeMs?: string;
+  sources?: SourceCitation[];
+  generatedAt?: string;
+}
+
+
+/* ============================================================
+ * RECHERCHE SÉMANTIQUE
+ * ============================================================ */
+
+export interface SemanticSearchRequest {
+  query: string;
+  topK?: number;
+  theseIdFilter?: number;
+  minTRL?: number;
+}
+
+export interface SearchResultItem {
+  livrableId: number;
+  theseId: number;
+  titreDocument: string;
+  nomAuteur?: string;
+  typeLivrable?: string;
+  niveauTRL?: number;
+  chunkIndex?: number;
+  excerpt?: string;
+  similarityScore?: number;
+}
+
+export interface SemanticSearchResponse {
+  query: string;
+  totalResults: number;
+  executionTimeMs?: number;
+  results: SearchResultItem[];
+}
+
+
+/* ============================================================
+ * RÉSUMÉ IA
+ * ============================================================ */
+
+export interface SummaryRequest {
+  livrableId: number;
+  style?: string;
+  maxWords?: number;
+}
+
+export interface SummaryResponse {
+  livrableId: number;
+  titreDocument: string;
+  summaryText: string;
+  keyPoints: string[];
+  methodologyDetected?: string;
+  estimatedTRL?: number;
+  style?: string;
+  generatedAt?: string;
+}
+
+
+/* ============================================================
+ * INDEXATION
+ * ============================================================ */
+
+export interface IndexRequest {
+  livrableId: number;
+  theseId: number;
+  titreDocument: string;
+  nomAuteur?: string;
+  typeLivrable?: string;
+  niveauTRL?: number;
+  minioObjectName?: string;
+  rawTextContent?: string;
+}
+
+export interface IndexResponse {
+  livrableId: number;
+  theseId: number;
+  titreDocument: string;
+  chunksCount: number;
+  statut: string;
+  message: string;
+  indexedAt?: string;
+}
+
+
+export interface MessageResponse {
+  message: string;
+  success: boolean;
+}
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class AiService {
-  private apiUrl = 'http://localhost:8765/api/ai';
 
-  constructor(private http: HttpClient) {}
+  /**
+   * Angular
+   *    ↓
+   * Gateway :8765
+   *    ↓
+   * AI-SERVICE
+   */
+  private readonly apiUrl =
+    `${environment.apiUrl}/api/ai`;
 
-  askChatbot(message: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/chat`, { message }).pipe(
-      catchError(() => {
-        let reply = "J'ai analysé votre requête à travers les documents scientifiques indexés du Laboratoire STN.";
-        const lower = message.toLowerCase();
-        if (lower.includes('5g') || lower.includes('microservice')) {
-          reply = "La thèse de Mamadou Sow porte sur l'optimisation des microservices en environnement 5G Edge. Son niveau actuel est TRL 5 avec une latence moyenne validée inférieure à 15ms.";
-        } else if (lower.includes('trl') || lower.includes('maturité')) {
-          reply = "L'échelle TRL (1 à 9) est gérée par evaluation-service. La moyenne des projets STN est de TRL 5.4.";
-        }
-        return of({
-          reply,
-          sources: ['Document-Service: Thèse STN-101 (Section 3.2)', 'Norme ISO 16290']
-        });
-      })
+
+  constructor(
+    private http: HttpClient
+  ) {}
+
+
+  /* ==========================================================
+   * CHAT RAG
+   * POST /api/ai/chat/rag
+   * ========================================================== */
+
+  askChatbot(
+    question: string,
+    theseIdContext?: number,
+    topContextDocs: number = 4
+  ): Observable<RagChatResponse> {
+
+    const request: RagChatRequest = {
+      question: question.trim(),
+      topContextDocs
+    };
+
+    if (theseIdContext !== undefined) {
+      request.theseIdContext = theseIdContext;
+    }
+
+    return this.http.post<RagChatResponse>(
+      `${this.apiUrl}/chat/rag`,
+      request
     );
   }
 
-  semanticSearch(query: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/search`, { query }).pipe(
-      catchError(() => of({
-        results: [
-          {
-            title: 'IEEE Microservices 5G Edge Orchestration (Page 4)',
-            score: 96.4,
-            excerpt: '...l\'intégration d\'Eureka et Spring Cloud Gateway permet de router les flux télémétriques avec une latence moyenne inférieure à 12ms...',
-            thesis: 'TH-STN-101 • Mamadou Sow'
-          },
-          {
-            title: 'Rapport Semestriel TRL - Architecture RAG (Section 2.1)',
-            score: 88.9,
-            excerpt: '...l\'évaluation de la maturité technologique (TRL 6) valide la capacité du modèle à répondre avec précision aux chercheurs...',
-            thesis: 'TH-STN-102 • Fatou Kiné Fall'
-          }
-        ]
-      }))
+
+  /* ==========================================================
+   * RECHERCHE SÉMANTIQUE
+   * POST /api/ai/search/semantic
+   * ========================================================== */
+
+  semanticSearch(
+    query: string,
+    topK: number = 5,
+    theseIdFilter?: number,
+    minTRL?: number
+  ): Observable<SemanticSearchResponse> {
+
+    const request: SemanticSearchRequest = {
+      query: query.trim(),
+      topK
+    };
+
+    if (theseIdFilter !== undefined) {
+      request.theseIdFilter = theseIdFilter;
+    }
+
+    if (minTRL !== undefined) {
+      request.minTRL = minTRL;
+    }
+
+    return this.http.post<SemanticSearchResponse>(
+      `${this.apiUrl}/search/semantic`,
+      request
     );
   }
 
-  summarize(text: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/summarize`, { text }).pipe(
-      catchError(() => of({
-        summary: "Ce document présente une architecture distribuée résiliente pour la gestion doctorale et l'évaluation TRL en temps réel. Contributions : routage réactif, observabilité Zipkin et indexation vectorielle RAG."
-      }))
+
+  /* ==========================================================
+   * RECHERCHE SÉMANTIQUE GET
+   * GET /api/ai/search
+   * ========================================================== */
+
+  semanticSearchGet(
+    query: string,
+    topK: number = 5,
+    theseId?: number
+  ): Observable<SemanticSearchResponse> {
+
+    let params = new HttpParams()
+      .set(
+        'query',
+        query.trim()
+      )
+      .set(
+        'topK',
+        topK.toString()
+      );
+
+    if (theseId !== undefined) {
+      params = params.set(
+        'theseId',
+        theseId.toString()
+      );
+    }
+
+    return this.http.get<SemanticSearchResponse>(
+      `${this.apiUrl}/search`,
+      { params }
+    );
+  }
+
+
+  /* ==========================================================
+   * RÉSUMÉ IA
+   *
+   * POST /api/ai/summary/livrable
+   *
+   * IMPORTANT :
+   * Le backend attend livrableId.
+   * Il n'attend PAS "text".
+   * ========================================================== */
+
+  summarize(
+    livrableId: number,
+    style: string = 'ACADEMIQUE',
+    maxWords: number = 250
+  ): Observable<SummaryResponse> {
+
+    const request: SummaryRequest = {
+      livrableId,
+      style,
+      maxWords
+    };
+
+    return this.http.post<SummaryResponse>(
+      `${this.apiUrl}/summary/livrable`,
+      request
+    );
+  }
+
+
+  /* ==========================================================
+   * INDEXATION D'UN LIVRABLE
+   *
+   * POST /api/ai/index/livrable
+   * ========================================================== */
+
+  indexLivrable(
+    request: IndexRequest
+  ): Observable<IndexResponse> {
+
+    return this.http.post<IndexResponse>(
+      `${this.apiUrl}/index/livrable`,
+      request
+    );
+  }
+
+
+  /* ==========================================================
+   * STATUT INDEXATION
+   *
+   * GET /api/ai/index/status/{livrableId}
+   * ========================================================== */
+
+  checkIndexStatus(
+    livrableId: number
+  ): Observable<MessageResponse> {
+
+    return this.http.get<MessageResponse>(
+      `${this.apiUrl}/index/status/${livrableId}`
+    );
+  }
+
+
+  /* ==========================================================
+   * SUPPRIMER INDEX
+   *
+   * DELETE /api/ai/index/{livrableId}
+   * ========================================================== */
+
+  deleteIndex(
+    livrableId: number
+  ): Observable<MessageResponse> {
+
+    return this.http.delete<MessageResponse>(
+      `${this.apiUrl}/index/${livrableId}`
+    );
+  }
+
+
+  /* ==========================================================
+   * INDEXATION DIRECTE D'UN FICHIER
+   *
+   * POST /api/ai/index/upload
+   * ========================================================== */
+
+  indexFile(
+    file: File,
+    livrableId: number,
+    theseId: number,
+    titreDocument: string,
+    nomAuteur?: string,
+    niveauTRL?: number
+  ): Observable<IndexResponse> {
+
+    const formData =
+      new FormData();
+
+    formData.append(
+      'file',
+      file
+    );
+
+    formData.append(
+      'livrableId',
+      livrableId.toString()
+    );
+
+    formData.append(
+      'theseId',
+      theseId.toString()
+    );
+
+    formData.append(
+      'titreDocument',
+      titreDocument
+    );
+
+    if (nomAuteur) {
+      formData.append(
+        'nomAuteur',
+        nomAuteur
+      );
+    }
+
+    if (niveauTRL !== undefined) {
+      formData.append(
+        'niveauTRL',
+        niveauTRL.toString()
+      );
+    }
+
+    return this.http.post<IndexResponse>(
+      `${this.apiUrl}/index/upload`,
+      formData
     );
   }
 }

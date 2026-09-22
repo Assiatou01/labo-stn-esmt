@@ -1,14 +1,33 @@
 export interface Livrable {
-    id?: string | number;
-    theseId: string | number;
-    thesisCode?: string;
-    auteur?: string;
-    titre: string;
-    type: 'ARTICLE' | 'RAPPORT' | 'BREVET' | 'CODE' | 'THESE';
-    nomFichier?: string;
-    taille?: string;
-    statut: 'DEPOSE' | 'EN_REVUE' | 'VALIDE' | 'REJETE';
-    dateDepot?: string;
-    ragIndexed?: boolean;
-    commentaires?: string;
- }
+  id?: number;
+
+  titre: string;
+
+  type?: string;
+
+  description?: string;
+
+  nomOriginal?: string;
+
+  nomStocke?: string;
+
+  typeMime?: string;
+
+  taille?: number;
+
+  cheminAcces?: string;
+
+  statutValidation: string;
+
+  commentaire?: string;
+
+  theseId: number;
+
+  doctorantId: number;
+
+  encadreurId?: number;
+
+  dateDepot?: string;
+
+  dateValidation?: string;
+}

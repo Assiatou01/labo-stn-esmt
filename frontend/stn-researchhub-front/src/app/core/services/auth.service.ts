@@ -1,97 +1,235 @@
-import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { HttpBackend, HttpClient, HttpHeaders } from '@angular/common/http';
 import { User, UserRole } from '../models/user.model';
+import { KeycloakService } from './keycloak.service';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private readonly SESSION_KEY = 'stn_user_session';
-  private readonly TOKEN_KEY = 'stn_jwt_token';
 
-  // Utilisateurs pré-configurés pour tester chaque rôle du laboratoire
+  /**
+   * Utilisateurs de démonstration avec IDENTIFIANTS NUMÉRIQUES RÉELS
+   * correspondant à la base de données PostgreSQL (lab_stn_auth_db & db_stn_thesis).
+   */
   private readonly DEMO_USERS: Record<UserRole, User> = {
     'ROLE_DOCTORANT': {
-      id: 'doc-001',
-      username: 'mamadou.sow',
-      nom: 'Sow',
-      prenom: 'Mamadou',
-      email: 'mamadou.sow@esmt.sn',
+      id: '1',
+      username: 'doctorant',
+      nom: 'Diallo',
+      prenom: 'Ibrahima',
+      email: 'doctorant@esmt.sn',
       role: 'ROLE_DOCTORANT',
       roleLabel: 'Doctorant Chercheur',
       avatar: '👨‍🎓',
       specialite: '5G Edge Computing & Microservices',
       directeur: 'Pr. Ibrahima Diop',
-      permissions: ['VIEW_OWN_THESIS', 'UPLOAD_DOCUMENTS', 'VIEW_TRL', 'USE_AI_ASSISTANT']
+      permissions: [
+        'VIEW_OWN_THESIS',
+        'UPLOAD_DOCUMENTS',
+        'VIEW_TRL',
+        'USE_AI_ASSISTANT'
+      ]
     },
+
     'ROLE_ENCADREUR': {
-      id: 'enc-001',
-      username: 'pr.diop',
-      nom: 'Diop',
-      prenom: 'Pr. Ibrahima',
-      email: 'ibrahima.diop@esmt.sn',
+      id: '2',
+      username: 'ousmane.sow',
+      nom: 'Sow',
+      prenom: 'Pr. Ousmane',
+      email: 'ousmane.sow@esmt.sn',
       role: 'ROLE_ENCADREUR',
-      roleLabel: 'Directeur de Thèse',
+      roleLabel: 'Directeur de Thèse / Encadreur',
       avatar: '👨‍🏫',
       specialite: 'Réseaux Télécoms & Systèmes Distribués',
-      doctorants: ['Mamadou Sow', 'Fatou Kiné Fall'],
-      permissions: ['VIEW_SUPERVISED_THESES', 'VALIDATE_DOCUMENTS', 'SUBMIT_EVALUATION', 'USE_AI_ASSISTANT']
+      doctorants: [
+        'Ibrahima Diallo'
+      ],
+      permissions: [
+        'VIEW_SUPERVISED_THESES',
+        'VALIDATE_DOCUMENTS',
+        'SUBMIT_EVALUATION',
+        'USE_AI_ASSISTANT'
+      ]
     },
+
     'ROLE_DIRECTEUR_RECHERCHE': {
-      id: 'dir-001',
+      id: '3',
       username: 'directeur.labo',
       nom: 'Ndiaye',
       prenom: 'Dr. Awa',
       email: 'awa.ndiaye@esmt.sn',
       role: 'ROLE_DIRECTEUR_RECHERCHE',
-      roleLabel: 'Directrice Laboratoire STN',
-      avatar: '👩‍💼',
+      roleLabel: 'Directeur de la Recherche (STN)',
+      avatar: '🏛️',
       specialite: 'Direction de la Recherche & Valorisation',
-      permissions: ['VIEW_ALL_METRICS', 'VALIDATE_SOUTENANCE', 'EXPORT_REPORTS', 'MANAGE_CONVENTIONS']
+      permissions: [
+        'VIEW_ALL_METRICS',
+        'VALIDATE_SOUTENANCE',
+        'EXPORT_REPORTS',
+        'MANAGE_CONVENTIONS'
+      ]
     },
+
     'ROLE_PARTENAIRE': {
-      id: 'part-001',
-      username: 'orange.rd',
-      nom: 'Pôle Innovation',
-      prenom: 'Sonatel / Orange',
-      email: 'rd.partenaire@orange.sn',
+      id: '16',
+      username: 'aissatou.bah',
+      nom: 'Bah',
+      prenom: 'Aïssatou',
+      email: 'aissatou.bah@orange.sn',
       role: 'ROLE_PARTENAIRE',
-      roleLabel: 'Partenaire Industriel & TRL',
+      roleLabel: 'Partenaire Industriel & TRL (Sonatel / Orange)',
       avatar: '🏢',
       specialite: 'Télécoms & Transfert Technologique',
-      permissions: ['VIEW_PUBLIC_THESES', 'PERFORM_TRL_AUDIT', 'REQUEST_COLLABORATION']
+      permissions: [
+        'VIEW_PUBLIC_THESES',
+        'PERFORM_TRL_AUDIT',
+        'REQUEST_COLLABORATION'
+      ]
     },
+
     'ROLE_ADMIN': {
-      id: 'adm-001',
-      username: 'admin.stn',
-      nom: 'Diallo',
-      prenom: 'Ousmane',
-      email: 'admin.labstn@esmt.sn',
+      id: '2',
+      username: 'admin',
+      nom: 'Sow',
+      prenom: 'Admin',
+      email: 'admin@esmt.sn',
       role: 'ROLE_ADMIN',
       roleLabel: 'Administrateur Système',
       avatar: '⚙️',
       specialite: 'Administration & Sécurité',
-      permissions: ['ALL_PERMISSIONS', 'MANAGE_USERS', 'MANAGE_DOMAINS', 'VIEW_SYSTEM_HEALTH']
+      permissions: [
+        'ALL_PERMISSIONS',
+        'MANAGE_USERS',
+        'MANAGE_DOMAINS',
+        'VIEW_SYSTEM_HEALTH'
+      ]
     }
   };
 
-  private currentUserSubject = new BehaviorSubject<User>(this.DEMO_USERS['ROLE_DOCTORANT']);
-  public currentUser$: Observable<User> = this.currentUserSubject.asObservable();
+  private currentUserSubject = new BehaviorSubject<User>(
+    this.DEMO_USERS['ROLE_DOCTORANT']
+  );
 
-  constructor() {
+  public currentUser$: Observable<User> = this.currentUserSubject.asObservable();
+  private directHttp: HttpClient;
+
+  constructor(
+    private keycloakService: KeycloakService,
+    httpBackend: HttpBackend
+  ) {
+    this.directHttp = new HttpClient(httpBackend);
     this.loadSavedSession();
+    this.syncWithKeycloak();
+  }
+
+  /**
+   * Synchronisation automatique avec l'utilisateur réellement authentifié dans Keycloak.
+   */
+  public syncWithKeycloak(): void {
+    if (typeof window === 'undefined' || !this.keycloakService.isLoggedIn()) {
+      return;
+    }
+
+    const email = this.keycloakService.getEmail() || '';
+    const username = this.keycloakService.getUsername() || (email ? email.split('@')[0] : 'utilisateur');
+    const firstName = this.keycloakService.getFirstName() || '';
+    const lastName = this.keycloakService.getLastName() || '';
+    const roles = this.keycloakService.getRoles();
+
+    // Déterminer le rôle principal
+    let primaryRole: UserRole = 'ROLE_DOCTORANT';
+    if (roles.includes('ADMIN')) {
+      primaryRole = 'ROLE_ADMIN';
+    } else if (roles.includes('DIRECTEUR_RECHERCHE') || roles.includes('DIRECTION')) {
+      primaryRole = 'ROLE_DIRECTEUR_RECHERCHE';
+    } else if (roles.includes('ENCADREUR')) {
+      primaryRole = 'ROLE_ENCADREUR';
+    } else if (roles.includes('PARTENAIRE')) {
+      primaryRole = 'ROLE_PARTENAIRE';
+    } else if (roles.includes('DOCTORANT')) {
+      primaryRole = 'ROLE_DOCTORANT';
+    }
+
+    // Récupérer le profil complet depuis user-manager-service /api/users/me
+    const token = this.keycloakService.getToken();
+    if (token) {
+      const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+      this.directHttp.get<any>(`${environment.apiUrl}/api/users/me`, { headers }).subscribe({
+        next: (profile) => {
+          if (profile && profile.id) {
+            const roleKey: UserRole = profile.role?.startsWith('ROLE_')
+              ? (profile.role as UserRole)
+              : (`ROLE_${profile.role}` as UserRole);
+
+            const user: User = {
+              id: String(profile.id),
+              username: profile.email ? profile.email.split('@')[0] : username,
+              nom: profile.nom || lastName,
+              prenom: profile.prenom || firstName,
+              email: profile.email || email,
+              role: roleKey,
+              roleLabel: this.getRoleLabel(roleKey),
+              avatar: this.DEMO_USERS[roleKey]?.avatar || '👤',
+              specialite: this.DEMO_USERS[roleKey]?.specialite || 'Laboratoire STN'
+            };
+            this.setCurrentUser(user);
+          }
+        },
+        error: () => {
+          // Fallback sur les claims Keycloak avec ID numérique démo du rôle
+          const fallbackId = this.DEMO_USERS[primaryRole]?.id || '1';
+          const user: User = {
+            id: fallbackId,
+            username: username,
+            nom: lastName || 'Utilisateur',
+            prenom: firstName || 'Connecté',
+            email: email,
+            role: primaryRole,
+            roleLabel: this.getRoleLabel(primaryRole),
+            avatar: this.DEMO_USERS[primaryRole]?.avatar || '👤'
+          };
+          this.setCurrentUser(user);
+        }
+      });
+    }
+  }
+
+  private getRoleLabel(role: UserRole): string {
+    switch (role) {
+      case 'ROLE_DOCTORANT': return 'Doctorant Chercheur';
+      case 'ROLE_ENCADREUR': return 'Directeur de Thèse / Encadreur';
+      case 'ROLE_DIRECTEUR_RECHERCHE': return 'Directeur de la Recherche';
+      case 'ROLE_PARTENAIRE': return 'Partenaire Industriel & TRL';
+      case 'ROLE_ADMIN': return 'Administrateur Système';
+      default: return 'Chercheur';
+    }
   }
 
   private loadSavedSession(): void {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const saved = localStorage.getItem(this.SESSION_KEY);
-      if (saved) {
-        try {
-          this.currentUserSubject.next(JSON.parse(saved));
-        } catch (e) {
-          console.error('Erreur lecture session', e);
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return;
+    }
+
+    const saved = localStorage.getItem(this.SESSION_KEY);
+    if (!saved) {
+      return;
+    }
+
+    try {
+      const user: User = JSON.parse(saved);
+      if (user && user.role) {
+        // Migration automatique des anciens IDs textuels
+        if (!user.id || !Number.isFinite(Number(user.id))) {
+          user.id = this.DEMO_USERS[user.role]?.id || '1';
         }
+        this.currentUserSubject.next(user);
       }
+    } catch (error) {
+      console.error('Erreur lecture session utilisateur :', error);
     }
   }
 
@@ -99,43 +237,46 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
-  public getToken(): string {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      return localStorage.getItem(this.TOKEN_KEY) || 'mock-jwt-token-esmt-stn-2026';
+  public getToken(): string | undefined {
+    return this.keycloakService.getToken();
+  }
+
+  public async updateToken(): Promise<boolean> {
+    return this.keycloakService.updateToken();
+  }
+
+  public setCurrentUser(user: User): void {
+    // S'assurer que l'ID est toujours numérique
+    if (!user.id || !Number.isFinite(Number(user.id))) {
+      user.id = this.DEMO_USERS[user.role]?.id || '1';
     }
-    return 'mock-jwt-token-esmt-stn-2026';
+
+    this.currentUserSubject.next(user);
+
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem(this.SESSION_KEY, JSON.stringify(user));
+    }
   }
 
   public switchRole(roleKey: UserRole): User {
     const user = this.DEMO_USERS[roleKey] || this.DEMO_USERS['ROLE_DOCTORANT'];
-    
-    if (typeof window !== 'undefined' && window.localStorage) {
-      localStorage.setItem(this.SESSION_KEY, JSON.stringify(user));
-      
-      const mockToken = btoa(JSON.stringify({
-        sub: user.id,
-        preferred_username: user.username,
-        email: user.email,
-        roles: [user.role],
-        exp: Math.floor(Date.now() / 1000) + 7200
-      }));
-      localStorage.setItem(this.TOKEN_KEY, mockToken);
-    }
-
-    this.currentUserSubject.next(user);
+    this.setCurrentUser(user);
     return user;
   }
 
   public hasRole(role: UserRole): boolean {
     const current = this.getCurrentUser();
-    return current && (current.role === role || current.role === 'ROLE_ADMIN');
+    return current.role === role || current.role === 'ROLE_ADMIN';
   }
 
-  public logout(): void {
+  public isAuthenticated(): boolean {
+    return this.keycloakService.isLoggedIn();
+  }
+
+  public async logout(): Promise<void> {
     if (typeof window !== 'undefined' && window.localStorage) {
       localStorage.removeItem(this.SESSION_KEY);
-      localStorage.removeItem(this.TOKEN_KEY);
     }
-    this.currentUserSubject.next(this.DEMO_USERS['ROLE_DOCTORANT']);
+    await this.keycloakService.logout();
   }
 }
