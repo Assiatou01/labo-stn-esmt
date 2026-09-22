@@ -29,30 +29,30 @@ public class UserManagerService {
 
 
     /**
-     * Création d'un utilisateur par l'administrateur.
-     * Le compte d'authentification est créé dans Keycloak.
-     * Le profil métier est enregistré dans PostgreSQL.
+     * CrÃ©ation d'un utilisateur par l'administrateur.
+     * Le compte d'authentification est crÃ©Ã© dans Keycloak.
+     * Le profil mÃ©tier est enregistrÃ© dans PostgreSQL.
      */
     @Transactional
     public UserResponse createUser(
             UserCreateRequest request) {
 
         /*
-         * 1. Vérification de l'email
+         * 1. VÃ©rification de l'email
          */
 
         if (utilisateurRepository
                 .existsByEmail(request.getEmail())) {
 
             throw new IllegalArgumentException(
-                    "Un utilisateur existe déjà " +
+                    "Un utilisateur existe dÃ©jÃ  " +
                             "avec cet email."
             );
         }
 
 
         /*
-         * 2. Recherche du rôle métier
+         * 2. Recherche du rÃ´le mÃ©tier
          */
 
         String roleLibelle =
@@ -65,17 +65,17 @@ public class UserManagerService {
                         .findByLibelle(roleLibelle)
                         .orElseThrow(() ->
                                 new IllegalArgumentException(
-                                        "Rôle introuvable : "
+                                        "RÃ´le introuvable : "
                                                 + roleLibelle
                                 )
                         );
 
 
         /*
-         * 3. Création du compte dans Keycloak
+         * 3. CrÃ©ation du compte dans Keycloak
          * Keycloak :
-         * - crée le compte ;
-         * - attribue le rôle ;
+         * - crÃ©e le compte ;
+         * - attribue le rÃ´le ;
          * - impose UPDATE_PASSWORD ;
          * - envoie le mail d'activation.
          */
@@ -90,7 +90,7 @@ public class UserManagerService {
 
 
         /*
-         * 4. Création du profil métier
+         * 4. CrÃ©ation du profil mÃ©tier
          */
 
         Utilisateur utilisateur =
@@ -115,7 +115,7 @@ public class UserManagerService {
 
 
     /**
-     * Crée la bonne entité selon le rôle.
+     * CrÃ©e la bonne entitÃ© selon le rÃ´le.
      */
     private Utilisateur createUtilisateurSelonRole(
             UserCreateRequest request,
@@ -252,7 +252,7 @@ public class UserManagerService {
 
 
         throw new IllegalArgumentException(
-                "Rôle non pris en charge : "
+                "RÃ´le non pris en charge : "
                         + roleLibelle
         );
     }
@@ -260,7 +260,7 @@ public class UserManagerService {
 
     /**
      * Remplit les informations communes
-     * à tous les utilisateurs.
+     * Ã  tous les utilisateurs.
      */
     private void remplirInformationsCommunes(
             Utilisateur utilisateur,
@@ -290,14 +290,14 @@ public class UserManagerService {
 
 
     /**
-     * Normalisation et validation du rôle.
+     * Normalisation et validation du rÃ´le.
      */
     private String normaliserRole(String role) {
 
         if (role == null || role.isBlank()) {
 
             throw new IllegalArgumentException(
-                    "Le rôle est obligatoire."
+                    "Le rÃ´le est obligatoire."
             );
         }
 
@@ -319,9 +319,9 @@ public class UserManagerService {
             default:
 
                 throw new IllegalArgumentException(
-                        "Rôle non autorisé : "
+                        "RÃ´le non autorisÃ© : "
                                 + role
-                                + ". Les rôles autorisés sont : "
+                                + ". Les rÃ´les autorisÃ©s sont : "
                                 + "DOCTORANT, ADMIN, ENCADREUR, "
                                 + "DIRECTEUR_RECHERCHE, PARTENAIRE."
                 );
@@ -330,7 +330,7 @@ public class UserManagerService {
 
 
     /**
-     * Récupération de tous les utilisateurs.
+     * RÃ©cupÃ©ration de tous les utilisateurs.
      */
     public List<UserResponse> getAllUsers() {
 
@@ -343,7 +343,7 @@ public class UserManagerService {
 
 
     /**
-     * Récupération d'un utilisateur
+     * RÃ©cupÃ©ration d'un utilisateur
      * par son identifiant.
      */
     public UserResponse getUser(Long id) {
@@ -362,8 +362,8 @@ public class UserManagerService {
 
 
     /**
-     * Récupération du profil de l'utilisateur connecté.
-     * L'email est récupéré à partir du JWT Keycloak.
+     * RÃ©cupÃ©ration du profil de l'utilisateur connectÃ©.
+     * L'email est rÃ©cupÃ©rÃ© Ã  partir du JWT Keycloak.
      */
     public UserResponse getCurrentUser(
             String email) {
@@ -420,7 +420,7 @@ public class UserManagerService {
 
 
         /*
-         * 2. Informations spécifiques au Doctorant
+         * 2. Informations spÃ©cifiques au Doctorant
          */
 
         if (utilisateur instanceof Doctorant doctorant) {
@@ -434,7 +434,7 @@ public class UserManagerService {
 
 
         /*
-         * 3. Informations spécifiques à l'Encadreur
+         * 3. Informations spÃ©cifiques Ã  l'Encadreur
          */
 
         if (utilisateur instanceof Encadreur encadreur) {
@@ -454,7 +454,7 @@ public class UserManagerService {
 
 
         /*
-         * 4. Informations spécifiques au Partenaire
+         * 4. Informations spÃ©cifiques au Partenaire
          */
 
         if (utilisateur instanceof Partenaire partenaire) {
@@ -485,6 +485,17 @@ public class UserManagerService {
         return toResponse(updated);
     }
 
+
+
+    /**
+     * Suppression d'un utilisateur par l'administrateur.
+     */
+    @Transactional
+    public void deleteUser(Long id) {
+        Utilisateur utilisateur = utilisateurRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable avec l'ID : " + id));
+        utilisateurRepository.delete(utilisateur);
+    }
 
     /**
      * Conversion Entity -> DTO.
