@@ -57,7 +57,7 @@ public class TheseController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTION', 'ENCADREUR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTEUR_RECHERCHE', 'DIRECTION', 'ENCADREUR')")
     public ResponseEntity<TheseResponse> createThese(@Valid @RequestBody TheseCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(theseService.createThese(request));
     }
@@ -74,10 +74,11 @@ public class TheseController {
 
     @GetMapping
     public ResponseEntity<List<TheseResponse>> getAllTheses(
-            @RequestParam(required = false) Long doctorantId) {
+            @RequestParam(required = false) Long doctorantId,
+            @RequestParam(required = false) Long encadreurId) {
 
         String port = getActivePort();
-        log.info("📢 [LOAD-BALANCING] Requête GET /api/v1/theses traitée par l'instance sur le port : {}", port);
+        log.info("[LOAD-BALANCING] Requête GET /api/v1/theses traitée par l'instance sur le port : {}", port);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Instance-Port", port);
@@ -86,11 +87,14 @@ public class TheseController {
         if (doctorantId != null) {
             return ResponseEntity.ok().headers(headers).body(theseService.getThesesByDoctorant(doctorantId));
         }
+        if (encadreurId != null) {
+            return ResponseEntity.ok().headers(headers).body(theseService.getThesesByEncadreur(encadreurId));
+        }
         return ResponseEntity.ok().headers(headers).body(theseService.getAllTheses());
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTION', 'ENCADREUR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTEUR_RECHERCHE', 'DIRECTION', 'ENCADREUR')")
     public ResponseEntity<TheseResponse> updateThese(@PathVariable Long id, @RequestBody TheseUpdateRequest request) {
         return ResponseEntity.ok(theseService.updateThese(id, request));
     }

@@ -10,13 +10,13 @@ import java.util.*;
 public class FinancementController {
 
     @GetMapping("/offres")
-    @PreAuthorize("hasAnyRole('PARTENAIRE', 'DOCTORANT', 'ENCADREUR', 'DIRECTION', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('PARTENAIRE', 'DOCTORANT', 'ENCADREUR', 'DIRECTEUR_RECHERCHE', 'DIRECTION', 'ADMIN')")
     public ResponseEntity<List<Map<String, Object>>> getOffres() {
         return ResponseEntity.ok(Collections.emptyList());
     }
 
     @PostMapping("/offres")
-    @PreAuthorize("hasAnyRole('PARTENAIRE', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('PARTENAIRE', 'ADMIN', 'DIRECTEUR_RECHERCHE', 'DIRECTION')")
     public ResponseEntity<Map<String, Object>> creerOffre(@RequestBody Map<String, Object> offre) {
         offre.put("id", System.currentTimeMillis());
         return ResponseEntity.ok(offre);
