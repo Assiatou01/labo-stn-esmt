@@ -23,8 +23,8 @@ public class UserManagerController {
 
 
     /**
-     * Création d'un utilisateur.
-     * Accessible uniquement à l'administrateur.
+     * CrÃ©ation d'un utilisateur.
+     * Accessible uniquement Ã  l'administrateur.
      */
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -42,7 +42,7 @@ public class UserManagerController {
 
     /**
      * Liste des utilisateurs.
-     * Accessible uniquement à l'administrateur.
+     * Accessible uniquement Ã  l'administrateur.
      */
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -55,8 +55,8 @@ public class UserManagerController {
 
 
     /**
-     * Récupération d'un utilisateur.
-     * Accessible uniquement à l'administrateur.
+     * RÃ©cupÃ©ration d'un utilisateur.
+     * Accessible uniquement Ã  l'administrateur.
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -70,8 +70,8 @@ public class UserManagerController {
 
 
     /**
-     * Récupération du profil de l'utilisateur connecté.
-     * L'identité est obtenue à partir du JWT Keycloak.
+     * RÃ©cupÃ©ration du profil de l'utilisateur connectÃ©.
+     * L'identitÃ© est obtenue Ã  partir du JWT Keycloak.
      */
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
@@ -90,7 +90,7 @@ public class UserManagerController {
 
     /**
      * Modification d'un utilisateur.
-     * Accessible uniquement à l'administrateur.
+     * Accessible uniquement Ã  l'administrateur.
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -104,5 +104,16 @@ public class UserManagerController {
                         request
                 )
         );
+    }
+
+    /**
+     * Suppression d'un utilisateur.
+     * Accessible uniquement à l'administrateur.
+     */
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        userManagerService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 }
