@@ -60,6 +60,14 @@ public class TheseServiceImpl implements TheseService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<TheseResponse> getThesesByEncadreur(Long encadreurId) {
+        return theseRepository.findByEncadreurId(encadreurId).stream()
+                .map(this::mapToTheseResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional
     public TheseResponse updateThese(Long id, TheseUpdateRequest request) {
         These these = theseRepository.findById(id)

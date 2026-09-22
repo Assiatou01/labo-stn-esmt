@@ -9,9 +9,8 @@ public interface TheseService {
     TheseResponse getTheseById(Long id);
     List<TheseResponse> getAllTheses();
     List<TheseResponse> getThesesByDoctorant(Long doctorantId);
+    List<TheseResponse> getThesesByEncadreur(Long encadreurId);
     TheseResponse updateThese(Long id, TheseUpdateRequest request);
     void deleteThese(Long id);
-
-
     TheseResponse suivreAvancement(Long id);
 }
