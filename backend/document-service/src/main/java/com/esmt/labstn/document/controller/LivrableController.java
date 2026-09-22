@@ -47,7 +47,7 @@ public class LivrableController {
     }
 
     @GetMapping("/{id}/download")
-    @PreAuthorize("hasAnyRole('DOCTORANT', 'ENCADREUR', 'ADMIN', 'DIRECTION', 'PARTENAIRE')")
+    @PreAuthorize("hasAnyRole('DOCTORANT', 'ENCADREUR', 'ADMIN', 'DIRECTEUR_RECHERCHE', 'DIRECTION', 'PARTENAIRE')")
     public ResponseEntity<Resource> downloadFile(@PathVariable Long id) {
         LivrableResponse livrable = livrableService.getLivrableById(id);
         Resource resource = livrableService.downloadFile(id);
@@ -110,9 +110,10 @@ public class LivrableController {
                 livrable.getType() != null ? livrable.getType() : "LIVRABLE"
         );
         return ResponseEntity.ok(MessageResponse.builder()
-                .message("Indexation IA initiée pour le livrable ID: " + id)
+                .message("Indexation IA initiÃ©e pour le livrable ID: " + id)
                 .status(HttpStatus.OK.value())
                 .timestamp(LocalDateTime.now())
                 .build());
     }
 }
+
