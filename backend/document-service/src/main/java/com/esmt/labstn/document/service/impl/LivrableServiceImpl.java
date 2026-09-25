@@ -10,6 +10,8 @@ import com.esmt.labstn.document.repository.LivrableRepository;
 import com.esmt.labstn.document.service.LivrableService;
 import com.esmt.labstn.document.service.NotificationService;
 import com.esmt.labstn.document.service.StorageService;
+import com.esmt.labstn.document.service.DocumentEventProducer;
+import com.esmt.labstn.document.client.AiServiceClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,8 @@ public class LivrableServiceImpl implements LivrableService {
     private final LivrableRepository livrableRepository;
     private final StorageService storageService;
     private final NotificationService notificationService;
+    private final AiServiceClient aiServiceClient;
+    private final DocumentEventProducer documentEventProducer;
 
     @Override
     @Transactional
@@ -71,6 +75,27 @@ public class LivrableServiceImpl implements LivrableService {
 
         // Notification du doctorant (Validation ou demande de correction)
         notificationService.notifierDoctorantValidationOuCorrection(updatedLivrable);
+
+        // Déclenchement automatique de l'indexation IA (Section 5.4.1 du mémoire STN)
+        if (updatedLivrable.getStatutValidation() == StatutLivrable.VALIDE) {
+            // 1. Appel asynchrone HTTP
+            aiServiceClient.indexLivrableAsync(
+                    updatedLivrable.getId(),
+                    updatedLivrable.getTheseId(),
+                    updatedLivrable.getTitre(),
+                    updatedLivrable.getNomStocke(),
+                    updatedLivrable.getType() != null ? updatedLivrable.getType() : "LIVRABLE"
+            );
+
+            // 2. Publication d'événement asynchrone sur RabbitMQ (Architecture orientée événements)
+            documentEventProducer.publishDocumentForIndexing(
+                    updatedLivrable.getId(),
+                    updatedLivrable.getTheseId(),
+                    updatedLivrable.getTitre(),
+                    updatedLivrable.getNomStocke(),
+                    updatedLivrable.getType() != null ? updatedLivrable.getType() : "LIVRABLE"
+            );
+        }
 
         return mapToResponse(updatedLivrable);
     }

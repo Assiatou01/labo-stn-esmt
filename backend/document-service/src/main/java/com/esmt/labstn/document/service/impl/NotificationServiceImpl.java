@@ -12,14 +12,18 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void notifierEncadreurLivrableADepose(Livrable livrable) {
         // Étape 10 du diagramme de séquence : Notifier livrable à valider
-        log.info("[NOTIFICATION] Étape 10 Sequence Diagram: Notification envoyée à l'encadreur (ID: {}) pour le livrable '{}' (ID: {}) déposé par le doctorant (ID: {}).",
+        log.info(
+                "[NOTIFICATION] Étape 10 Sequence Diagram: Notification envoyée à l'encadreur (ID: {}) pour le livrable '{}' (ID: {}) déposé par le doctorant (ID: {}).",
                 livrable.getEncadreurId(), livrable.getTitre(), livrable.getId(), livrable.getDoctorantId());
     }
 
     @Override
     public void notifierDoctorantValidationOuCorrection(Livrable livrable) {
-        // Étape du diagramme de séquence : Notification de correction ou Confirmation de validation
-        log.info("[NOTIFICATION] Notification envoyée au doctorant (ID: {}) : Le statut du livrable '{}' (ID: {}) a été mis à jour à '{}'. Commentaire : '{}'",
-                livrable.getDoctorantId(), livrable.getTitre(), livrable.getId(), livrable.getStatutValidation(), livrable.getCommentaire());
+        // Étape du diagramme de séquence : Notification de correction ou Confirmation
+        // de validation
+        log.info(
+                "[NOTIFICATION] Notification envoyée au doctorant (ID: {}) : Le statut du livrable '{}' (ID: {}) a été mis à jour à '{}'. Commentaire : '{}'",
+                livrable.getDoctorantId(), livrable.getTitre(), livrable.getId(), livrable.getStatutValidation(),
+                livrable.getCommentaire());
     }
 }

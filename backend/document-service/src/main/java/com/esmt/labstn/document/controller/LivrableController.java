@@ -41,13 +41,13 @@ public class LivrableController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('DOCTORANT', 'ENCADREUR', 'ADMIN', 'DIRECTEUR_RECHERCHE', 'PARTENAIRE')")
+    @PreAuthorize("hasAnyRole('DOCTORANT', 'ENCADREUR', 'ADMIN', 'DIRECTION', 'PARTENAIRE')")
     public ResponseEntity<LivrableResponse> getLivrableById(@PathVariable Long id) {
         return ResponseEntity.ok(livrableService.getLivrableById(id));
     }
 
     @GetMapping("/{id}/download")
-    @PreAuthorize("hasAnyRole('DOCTORANT', 'ENCADREUR', 'ADMIN', 'DIRECTEUR_RECHERCHE', 'DIRECTION', 'PARTENAIRE')")
+    @PreAuthorize("hasAnyRole('DOCTORANT', 'ENCADREUR', 'ADMIN', 'DIRECTION', 'PARTENAIRE')")
     public ResponseEntity<Resource> downloadFile(@PathVariable Long id) {
         LivrableResponse livrable = livrableService.getLivrableById(id);
         Resource resource = livrableService.downloadFile(id);
@@ -61,7 +61,7 @@ public class LivrableController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('DOCTORANT', 'ENCADREUR', 'ADMIN', 'DIRECTEUR_RECHERCHE', 'PARTENAIRE')")
+    @PreAuthorize("hasAnyRole('DOCTORANT', 'ENCADREUR', 'ADMIN', 'DIRECTION', 'PARTENAIRE')")
     public ResponseEntity<List<LivrableResponse>> getAllLivrables(
             @RequestParam(required = false) Long theseId,
             @RequestParam(required = false) Long doctorantId,
@@ -71,7 +71,7 @@ public class LivrableController {
     }
 
     @PutMapping("/{id}/validation")
-    @PreAuthorize("hasAnyRole('ENCADREUR', 'ADMIN', 'DIRECTEUR_RECHERCHE')")
+    @PreAuthorize("hasAnyRole('ENCADREUR', 'ADMIN', 'DIRECTION')")
     public ResponseEntity<LivrableResponse> validerLivrable(
             @PathVariable Long id,
             @Valid @RequestBody LivrableValidationRequest request) {
@@ -91,7 +91,7 @@ public class LivrableController {
     }
 
     @GetMapping("/{id}/summary-ai")
-    @PreAuthorize("hasAnyRole('DOCTORANT', 'ENCADREUR', 'ADMIN', 'DIRECTEUR_RECHERCHE', 'PARTENAIRE')")
+    @PreAuthorize("hasAnyRole('DOCTORANT', 'ENCADREUR', 'ADMIN', 'DIRECTION', 'PARTENAIRE')")
     public ResponseEntity<Map<String, Object>> getLivrableSummaryAi(
             @PathVariable Long id,
             @RequestParam(value = "style", defaultValue = "ACADEMIQUE") String style) {
@@ -99,7 +99,7 @@ public class LivrableController {
     }
 
     @PostMapping("/{id}/index-ai")
-    @PreAuthorize("hasAnyRole('ENCADREUR', 'ADMIN', 'DIRECTEUR_RECHERCHE')")
+    @PreAuthorize("hasAnyRole('ENCADREUR', 'ADMIN', 'DIRECTION')")
     public ResponseEntity<MessageResponse> triggerAiIndexing(@PathVariable Long id) {
         LivrableResponse livrable = livrableService.getLivrableById(id);
         aiServiceClient.indexLivrableAsync(
@@ -110,10 +110,9 @@ public class LivrableController {
                 livrable.getType() != null ? livrable.getType() : "LIVRABLE"
         );
         return ResponseEntity.ok(MessageResponse.builder()
-                .message("Indexation IA initiÃ©e pour le livrable ID: " + id)
+                .message("Indexation IA initiée pour le livrable ID: " + id)
                 .status(HttpStatus.OK.value())
                 .timestamp(LocalDateTime.now())
                 .build());
     }
 }
-

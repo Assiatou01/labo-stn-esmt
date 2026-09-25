@@ -15,4 +15,19 @@ public class LivrableValidationRequest {
 
     private String commentaire;
 
+    public StatutLivrable getStatutValidation() {
+        return statutValidation;
+    }
+
+    public void setStatutValidation(StatutLivrable statutValidation) {
+        this.statutValidation = statutValidation;
+    }
+
+    public String getCommentaire() {
+        return commentaire;
+    }
+
+    public void setCommentaire(String commentaire) {
+        this.commentaire = commentaire;
+    }
 }

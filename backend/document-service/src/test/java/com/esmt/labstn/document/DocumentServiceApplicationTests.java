@@ -9,5 +9,4 @@ class DocumentServiceApplicationTests {
     @Test
     void contextLoads() {
     }
-
 }

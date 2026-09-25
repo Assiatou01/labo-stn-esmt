@@ -25,5 +25,21 @@ public class LivrableDepotRequest {
 
     private Long encadreurId;
 
+    public String getTitre() { return titre; }
+    public void setTitre(String titre) { this.titre = titre; }
 
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public Long getTheseId() { return theseId; }
+    public void setTheseId(Long theseId) { this.theseId = theseId; }
+
+    public Long getDoctorantId() { return doctorantId; }
+    public void setDoctorantId(Long doctorantId) { this.doctorantId = doctorantId; }
+
+    public Long getEncadreurId() { return encadreurId; }
+    public void setEncadreurId(Long encadreurId) { this.encadreurId = encadreurId; }
 }

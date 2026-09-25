@@ -8,6 +8,7 @@ import java.util.Map;
 
 @FeignClient(name = "EVALUATION-SERVICE")
 public interface EvaluationFeignClient {
-    @GetMapping("/api/v1/evaluation/{id}")
+
+    @GetMapping("/api/v1/evaluations/{id}")
     Map<String, Object> getEvaluationDetails(@PathVariable("id") Long id);
 }
