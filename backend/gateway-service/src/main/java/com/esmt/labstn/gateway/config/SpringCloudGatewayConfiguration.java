@@ -16,37 +16,41 @@ public class SpringCloudGatewayConfiguration {
                                 .addRequestParameter("param", "esmt"))
                         .uri("http://httpbin.org:80"))
 
-                .route("user-manager-route", p -> p.path("/api/users/**", "/api/v1/users/**")
+                .route("user-manager-route", p -> p.path(
+                                "/api/users", "/api/users/**",
+                                "/api/v1/users", "/api/v1/users/**")
                         .filters(f -> f.circuitBreaker(c -> c.setName("userServiceCircuitBreaker")
                                 .setFallbackUri("forward:/fallback/user-service")))
                         .uri("lb://USER-MANAGER-SERVICE"))
 
                 .route("thesis-route", p -> p.path(
-                                "/api/v1/theses/**",
-                                "/api/v1/axes-recherche/**",
-                                "/api/v1/domaines-recherche/**",
-                                "/api/v1/contributions-these/**",
-                                "/api/v1/encadrements-these/**",
-                                "/api/v1/participations-projet/**",
-                                "/api/v1/projets-recherche/**",
-                                "/api/v1/financements/**")
+                                "/api/v1/theses", "/api/v1/theses/**",
+                                "/api/v1/axes-recherche", "/api/v1/axes-recherche/**",
+                                "/api/v1/domaines-recherche", "/api/v1/domaines-recherche/**",
+                                "/api/v1/contributions-these", "/api/v1/contributions-these/**",
+                                "/api/v1/encadrements-these", "/api/v1/encadrements-these/**",
+                                "/api/v1/participations-projet", "/api/v1/participations-projet/**",
+                                "/api/v1/projets-recherche", "/api/v1/projets-recherche/**",
+                                "/api/v1/financements", "/api/v1/financements/**")
                         .filters(f -> f.circuitBreaker(c -> c.setName("thesisServiceCircuitBreaker")
                                 .setFallbackUri("forward:/fallback/thesis-service")))
                         .uri("lb://THESIS-SERVICE"))
 
-                .route("document-route", p -> p.path("/api/v1/livrables/**")
+                .route("document-route", p -> p.path(
+                                "/api/v1/livrables", "/api/v1/livrables/**")
                         .filters(f -> f.circuitBreaker(c -> c.setName("documentServiceCircuitBreaker")
                                 .setFallbackUri("forward:/fallback/document-service")))
                         .uri("lb://DOCUMENT-SERVICE"))
 
-                .route("evaluation-route", p -> p.path("/api/v1/evaluations/**")
+                .route("evaluation-route", p -> p.path(
+                                "/api/v1/evaluations", "/api/v1/evaluations/**")
                         .filters(f -> f.circuitBreaker(c -> c.setName("evaluationServiceCircuitBreaker")
                                 .setFallbackUri("forward:/fallback/evaluation-service")))
                         .uri("lb://EVALUATION-SERVICE"))
 
                 .route("ai-route", p -> p.path(
-                                "/api/ai/**",
-                                "/api/v1/ai/**")
+                                "/api/ai", "/api/ai/**",
+                                "/api/v1/ai", "/api/v1/ai/**")
                         .filters(f -> f.circuitBreaker(c -> c.setName("aiServiceCircuitBreaker")
                                 .setFallbackUri("forward:/fallback/ai-service")))
                         .uri("lb://AI-SERVICE"))
