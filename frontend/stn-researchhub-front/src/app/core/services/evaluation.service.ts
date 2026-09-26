@@ -5,16 +5,16 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 import {
-  Evaluation,
-  EvaluationSubmitRequest,
-  EvaluationValidationRequest,
+  Eevaluation,
+  EevaluationSubmitRequest,
+  EevaluationValidationRequest,
   GrilleTRL
 } from '../models/evaluation.model';
 
 @Injectable({
   providedIn: 'root'
 })
-export class EvaluationService {
+export class EevaluationService {
 
   private readonly apiUrl =
     `${environment.apiUrl}/api/v1/evaluations`;
@@ -51,57 +51,57 @@ export class EvaluationService {
   }
 
   /**
-   * Soumettre une évaluation.
+   * Soumettre une éevaluation.
    *
    * POST /api/v1/evaluations/soumettre
    */
   soumettreEvaluation(
-    request: EvaluationSubmitRequest
-  ): Observable<Evaluation> {
+    request: EevaluationSubmitRequest
+  ): Observable<Eevaluation> {
 
-    return this.http.post<Evaluation>(
+    return this.http.post<Eevaluation>(
       `${this.apiUrl}/soumettre`,
       request
     );
   }
 
   /**
-   * Valider une évaluation.
+   * Valider une éevaluation.
    *
    * PUT /api/v1/evaluations/{id}/validation
    */
   validerEvaluation(
     id: number,
-    request: EvaluationValidationRequest
-  ): Observable<Evaluation> {
+    request: EevaluationValidationRequest
+  ): Observable<Eevaluation> {
 
-    return this.http.put<Evaluation>(
+    return this.http.put<Eevaluation>(
       `${this.apiUrl}/${id}/validation`,
       request
     );
   }
 
   /**
-   * Récupérer une évaluation par ID.
+   * Récupérer une éevaluation par ID.
    */
   getById(
     id: number
-  ): Observable<Evaluation> {
+  ): Observable<Eevaluation> {
 
-    return this.http.get<Evaluation>(
+    return this.http.get<Eevaluation>(
       `${this.apiUrl}/${id}`
     );
   }
 
   /**
-   * Récupérer toutes les évaluations.
+   * Récupérer toutes les ééevaluations.
    */
   getAll(
     theseId?: number,
     encadreurId?: number,
     doctorantId?: number,
     statut?: string
-  ): Observable<Evaluation[]> {
+  ): Observable<Eevaluation[]> {
 
     let params = new HttpParams();
 
@@ -142,27 +142,27 @@ export class EvaluationService {
       );
     }
 
-    return this.http.get<Evaluation[]>(
+    return this.http.get<Eevaluation[]>(
       this.apiUrl,
       { params }
     );
   }
 
   /**
-   * Récupérer la dernière évaluation
+   * Récupérer la dernière éevaluation
    * d'une thèse.
    */
-  getDerniereEvaluationThese(
+  getDerniereEevaluationThese(
     theseId: number
-  ): Observable<Evaluation> {
+  ): Observable<Eevaluation> {
 
-    return this.http.get<Evaluation>(
+    return this.http.get<Eevaluation>(
       `${this.apiUrl}/these/${theseId}/actuelle`
     );
   }
 
   /**
-   * Supprimer une évaluation.
+   * Supprimer une éevaluation.
    */
   delete(
     id: number

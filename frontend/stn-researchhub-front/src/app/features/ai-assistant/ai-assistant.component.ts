@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, PLATFORM_ID, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -31,6 +32,7 @@ interface ChatMessage {
     './ai-assistant.component.html'
 })
 export class AiAssistantComponent {
+  private platformId = inject(PLATFORM_ID);
 
   /* ==========================================================
    * ONGLET

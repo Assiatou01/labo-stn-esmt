@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+﻿import { Routes } from '@angular/router';
 
 import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { ThesesComponent } from './features/theses/theses.component';
@@ -9,7 +9,6 @@ import { UsersComponent } from './features/users/users.component';
 import { AiAssistantComponent } from './features/ai-assistant/ai-assistant.component';
 
 export const routes: Routes = [
-
   {
     path: '',
     redirectTo: 'dashboard',
@@ -62,13 +61,13 @@ export const routes: Routes = [
   },
 
   {
-    path: 'ai-assistant',
-    component: AiAssistantComponent
+    path: 'financements',
+    component: FinancementsComponent
   },
 
   {
-    path: 'financements',
-    component: FinancementsComponent
+    path: 'ai-assistant',
+    component: AiAssistantComponent
   },
 
   {
@@ -80,5 +79,4 @@ export const routes: Routes = [
     path: '**',
     redirectTo: 'dashboard'
   }
-
 ];

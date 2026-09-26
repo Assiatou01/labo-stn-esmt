@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import Keycloak from 'keycloak-js';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -11,9 +12,9 @@ export class KeycloakService {
   constructor() {
 
     this.keycloak = new Keycloak({
-      url: 'http://localhost:8080',
-      realm: 'lab-stn-realm',
-      clientId: 'stn-angular'
+      url: environment.keycloak.url,
+      realm: environment.keycloak.realm,
+      clientId: environment.keycloak.clientId
     });
 
   }
@@ -194,7 +195,7 @@ export class KeycloakService {
 
     const realmAccess =
       this.keycloak.tokenParsed?.[
-        'realm_access'
+      'realm_access'
       ] as { roles?: string[] } | undefined;
 
     if (

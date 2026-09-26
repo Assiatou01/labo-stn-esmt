@@ -1,1126 +1,260 @@
 ﻿<div class="space-y-6">
-
-  <!-- ==========================================================
-       HEADER
-       ========================================================== -->
-
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-
     <div>
-      <h1 class="text-2xl font-bold text-white tracking-tight">
-        Ã‰valuation de la MaturitÃ© Technologique (TRL)
-      </h1>
-
-      <p class="text-slate-400 text-sm">
-        Ã‰valuation du niveau de maturitÃ© technologique des thÃ¨ses selon
-        l'Ã©chelle TRL de 1 Ã  9.
-      </p>
+      <h1 class="text-2xl font-bold text-white tracking-tight">Évaluation de la Maturité Technologique (TRL)</h1>
+      <p class="text-slate-400 text-sm">Évaluation du niveau de maturité technologique des thèses selon l'échelle TRL de 1 à 9.</p>
     </div>
-
-    <button
-      *ngIf="canEvaluate()"
-      type="button"
-      (click)="openModal()"
-      class="px-4 py-2.5 bg-gradient-to-r from-[#002B49] to-[#84BD00] hover:opacity-95 text-white font-medium text-sm rounded-xl shadow-lg shadow-[#84BD00]/20 flex items-center gap-2 transition"
-    >
-      <span>
-        ðŸŽ¯ Nouvelle Ã‰valuation TRL
-      </span>
+    <button *ngIf="canEvaluate()" type="button" (click)="openModal()" class="px-4 py-2.5 bg-gradient-to-r from-[#002B49] to-[#84BD00] hover:opacity-95 text-white font-medium text-sm rounded-xl shadow-lg shadow-[#84BD00]/20 flex items-center gap-2 transition">
+      <span>🎯 Nouvelle Évaluation TRL</span>
     </button>
-
   </div>
 
-
-  <!-- ==========================================================
-       MESSAGES
-       ========================================================== -->
-
-  <div
-    *ngIf="successMessage"
-    class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400"
-  >
+  <div *ngIf="successMessage" class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
     {{ successMessage }}
   </div>
 
-  <div
-    *ngIf="errorMessage"
-    class="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400"
-  >
+  <div *ngIf="errorMessage" class="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400">
     {{ errorMessage }}
   </div>
 
-
-  <!-- ==========================================================
-       MATRICE TRL
-       ========================================================== -->
-
   <div class="glass-panel p-6 rounded-2xl border border-[#84BD00]/20 space-y-4">
-
     <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-
-      <span class="text-sm font-bold uppercase tracking-wider text-slate-300">
-        Ã‰chelle TRL 1 Ã  9
-      </span>
-
-      <span class="text-xs text-[#00A3E0] font-mono">
-        MaturitÃ© technologique
-      </span>
-
+      <span class="text-sm font-bold uppercase tracking-wider text-slate-300">Échelle TRL 1 à 9</span>
+      <span class="text-xs text-[#00A3E0] font-mono">Maturité technologique</span>
     </div>
-
-
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-
-      <!-- PHASE 1 -->
-
-      <div
-        class="p-4 rounded-xl bg-blue-950/30 border border-blue-500/30 space-y-2"
-      >
-
+      <div class="p-4 rounded-xl bg-blue-950/30 border border-blue-500/30 space-y-2">
         <div class="flex justify-between font-bold text-blue-400">
-
-          <span>
-            Phase 1 : Recherche
-          </span>
-
-          <span>
-            TRL 1-3
-          </span>
-
+          <span>Phase 1 : Recherche</span>
+          <span>TRL 1-3</span>
         </div>
-
-        <p class="text-slate-300 leading-relaxed">
-          Principes fondamentaux, concept formulÃ© et validation expÃ©rimentale.
-        </p>
-
+        <p class="text-slate-300 leading-relaxed">Principes fondamentaux, concept formulé et validation expérimentale.</p>
       </div>
-
-
-      <!-- PHASE 2 -->
-
-      <div
-        class="p-4 rounded-xl bg-amber-950/30 border border-amber-500/30 space-y-2"
-      >
-
+      <div class="p-4 rounded-xl bg-amber-950/30 border border-amber-500/30 space-y-2">
         <div class="flex justify-between font-bold text-amber-400">
-
-          <span>
-            Phase 2 : DÃ©veloppement
-          </span>
-
-          <span>
-            TRL 4-6
-          </span>
-
+          <span>Phase 2 : Développement</span>
+          <span>TRL 4-6</span>
         </div>
-
-        <p class="text-slate-300 leading-relaxed">
-          Validation en laboratoire, banc d'essai et dÃ©monstrateur prototype.
-        </p>
-
+        <p class="text-slate-300 leading-relaxed">Validation en laboratoire, banc d'essai et démonstrateur prototype.</p>
       </div>
-
-
-      <!-- PHASE 3 -->
-
-      <div
-        class="p-4 rounded-xl bg-emerald-950/30 border border-emerald-500/30 space-y-2"
-      >
-
+      <div class="p-4 rounded-xl bg-emerald-950/30 border border-emerald-500/30 space-y-2">
         <div class="flex justify-between font-bold text-emerald-400">
-
-          <span>
-            Phase 3 : Industrie
-          </span>
-
-          <span>
-            TRL 7-9
-          </span>
-
+          <span>Phase 3 : Industrie</span>
+          <span>TRL 7-9</span>
         </div>
-
-        <p class="text-slate-300 leading-relaxed">
-          DÃ©monstration opÃ©rationnelle et dÃ©ploiement industriel.
-        </p>
-
+        <p class="text-slate-300 leading-relaxed">Démonstration opérationnelle et déploiement industriel.</p>
       </div>
-
     </div>
-
   </div>
-
-
-  <!-- ==========================================================
-       FILTRES
-       ========================================================== -->
 
   <div class="glass-panel p-4 rounded-2xl flex flex-col md:flex-row gap-4">
-
-    <input
-      type="text"
-      [(ngModel)]="searchQuery"
-      (ngModelChange)="applyFilter()"
-      placeholder="Rechercher une thÃ¨se..."
-      class="glass-input flex-1 px-3.5 py-2 rounded-lg text-sm"
-    />
-
-
-    <select
-      [(ngModel)]="statutFilter"
-      (ngModelChange)="applyFilter()"
-      class="glass-input px-3.5 py-2 rounded-lg text-sm bg-slate-900"
-    >
-
-      <option value="">
-        Tous les statuts
-      </option>
-
-      <option value="SOUMISE">
-        En attente
-      </option>
-
-      <option value="VALIDE">
-        ValidÃ©e
-      </option>
-
-      <option value="CORRECTION_DEMANDEE">
-        Ã€ corriger
-      </option>
-
-      <option value="REJETEE">
-        RejetÃ©e
-      </option>
-
+    <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="applyFilter()" placeholder="Rechercher une thèse..." class="glass-input flex-1 px-3.5 py-2 rounded-lg text-sm" />
+    <select [(ngModel)]="statutFilter" (ngModelChange)="applyFilter()" class="glass-input px-3.5 py-2 rounded-lg text-sm bg-slate-900">
+      <option value="">Tous les statuts</option>
+      <option value="SOUMISE">En attente</option>
+      <option value="VALIDE">Validée</option>
+      <option value="CORRECTION_DEMANDEE">À corriger</option>
+      <option value="REJETEE">Rejetée</option>
     </select>
-
   </div>
 
-
-  <!-- ==========================================================
-       LOADING
-       ========================================================== -->
-
-  <div
-    *ngIf="loading"
-    class="text-center text-slate-400 py-10"
-  >
-
-    <div class="text-2xl mb-2">
-      â³
-    </div>
-
-    Chargement des Ã©valuations...
-
+  <div *ngIf="loading" class="text-center text-slate-400 py-10">
+    <div class="text-2xl mb-2">⏳</div>
+    Chargement des évaluations...
   </div>
 
-
-  <!-- ==========================================================
-       LISTE DES Ã‰VALUATIONS
-       ========================================================== -->
-
-  <div
-    *ngIf="!loading"
-    class="glass-panel p-6 rounded-2xl space-y-4"
-  >
-
+  <div *ngIf="!loading" class="glass-panel p-6 rounded-2xl space-y-4">
     <div class="flex items-center justify-between">
-
-      <h2 class="text-lg font-bold text-white">
-        Historique des Ã©valuations TRL
-      </h2>
-
-      <span class="text-xs text-slate-500">
-        {{ filteredEvaluations.length }}
-        Ã©valuation(s)
-      </span>
-
+      <h2 class="text-lg font-bold text-white">Historique des évaluations TRL</h2>
+      <span class="text-xs text-slate-500">{{ filteredEvaluations.length }} évaluation(s)</span>
     </div>
 
-
-    <!-- AUCUNE Ã‰VALUATION -->
-
-    <div
-      *ngIf="filteredEvaluations.length === 0"
-      class="text-center py-10 text-slate-400"
-    >
-
-      <div class="text-3xl mb-3">
-        ðŸ“Š
-      </div>
-
-      <p>
-        Aucune Ã©valuation trouvÃ©e.
-      </p>
-
+    <div *ngIf="filteredEvaluations.length === 0" class="text-center py-10 text-slate-400">
+      <div class="text-3xl mb-3">📊</div>
+      <p>Aucune évaluation trouvée.</p>
     </div>
-
-
-    <!-- Ã‰VALUATIONS -->
 
     <div class="space-y-4">
-
-      <div
-        *ngFor="let ev of filteredEvaluations"
-        class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-[#84BD00]/30 transition space-y-3"
-      >
-
-        <!-- ==================================================
-             HEADER
-             ================================================== -->
-
-        <div
-          class="flex flex-col sm:flex-row sm:items-center justify-between gap-2"
-        >
-
+      <div *ngFor="let ev of filteredEvaluations" class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-[#84BD00]/30 transition space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div class="flex items-center gap-2.5">
-
-            <span
-              class="px-2.5 py-1 rounded-full text-xs font-bold border"
-              [ngClass]="getTrlBadge(ev.niveau)"
-            >
-
+            <span class="px-2.5 py-1 rounded-full text-xs font-bold border" [ngClass]="getTrlBadge(ev.niveau)">
               TRL {{ ev.niveau || '-' }}
-
             </span>
-
-
             <h3 class="font-bold text-white text-sm">
-
-              {{
-                getThese(ev.theseId)?.titre
-                || 'ThÃ¨se #' + ev.theseId
-              }}
-
+              {{ getThese(ev.theseId)?.titre || 'Thèse #' + ev.theseId }}
             </h3>
-
           </div>
-
-
           <span class="text-xs text-slate-400 font-mono">
-
-            {{
-              ev.dateEvaluation
-                ? (ev.dateEvaluation | date:'dd/MM/yyyy HH:mm')
-                : '-'
-            }}
-
+            {{ ev.dateEevaluation ? (ev.dateEevaluation | date:'dd/MM/yyyy HH:mm') : '-' }}
           </span>
-
         </div>
-
-
-        <!-- ==================================================
-             PROGRESSION TRL
-             ================================================== -->
 
         <div>
-
-          <div
-            class="flex justify-between text-[11px] text-slate-400 mb-1"
-          >
-
-            <span>
-              MaturitÃ© technologique
+          <div class="flex justify-between text-[11px] text-slate-400 mb-1">
+            <span>Maturité technologique</span>
+            <span class="font-mono text-[#84BD00] font-bold">
+              {{ getPercentage(ev.niveau) }}% (TRL {{ ev.niveau || '-' }}/9)
             </span>
-
-            <span
-              class="font-mono text-[#84BD00] font-bold"
-            >
-
-              {{ getPercentage(ev.niveau) }}%
-
-              (TRL {{ ev.niveau || '-' }}/9)
-
-            </span>
-
           </div>
-
-
-          <div
-            class="w-full bg-slate-800 h-2 rounded-full overflow-hidden"
-          >
-
-            <div
-              class="h-full bg-gradient-to-r from-blue-500 via-amber-500 to-[#84BD00] rounded-full transition-all"
-              [style.width.%]="getPercentage(ev.niveau)"
-            ></div>
-
+          <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-blue-500 via-amber-500 to-[#84BD00] rounded-full transition-all" [style.width.%]="getPercentage(ev.niveau)"></div>
           </div>
-
         </div>
 
-
-        <!-- ==================================================
-             INFORMATIONS
-             ================================================== -->
-
-        <div
-          class="flex flex-wrap items-center gap-4 text-xs text-slate-300"
-        >
-
-          <span>
-
-            Score :
-
-            <strong class="text-white">
-
-              {{
-                ev.score !== undefined
-                  ? (ev.score | number:'1.0-2')
-                  : '-'
-              }}
-
-            </strong>
-
-          </span>
-
-
-          <span>
-
-            Encadreur :
-
-            <strong class="text-white">
-
-              #{{ ev.encadreurId }}
-
-            </strong>
-
-          </span>
-
-
-          <span *ngIf="ev.doctorantId">
-
-            Doctorant :
-
-            <strong class="text-white">
-
-              #{{ ev.doctorantId }}
-
-            </strong>
-
-          </span>
-
+        <div class="flex flex-wrap items-center gap-4 text-xs text-slate-300">
+          <span>Score : <strong class="text-white">{{ ev.score !== undefined ? (ev.score | number:'1.0-2') : '-' }}</strong></span>
+          <span>Encadreur : <strong class="text-white">#{{ ev.encadreurId }}</strong></span>
+          <span *ngIf="ev.doctorantId">Doctorant : <strong class="text-white">#{{ ev.doctorantId }}</strong></span>
         </div>
 
-
-        <!-- ==================================================
-             COMMENTAIRE
-             ================================================== -->
-
-        <div
-          *ngIf="ev.commentaire"
-          class="text-xs text-slate-300 leading-relaxed bg-slate-950/40 p-3 rounded-lg border border-slate-800/80"
-        >
-
-          <span class="font-semibold text-slate-400">
-            Commentaire :
-          </span>
-
-          <span class="ml-1">
-            "{{ ev.commentaire }}"
-          </span>
-
+        <div *ngIf="ev.commentaire" class="text-xs text-slate-300 leading-relaxed bg-slate-950/40 p-3 rounded-lg border border-slate-800/80">
+          <span class="font-semibold text-slate-400">Commentaire :</span>
+          <span class="ml-1">"{{ ev.commentaire }}"</span>
         </div>
 
-
-        <!-- ==================================================
-             DÃ‰TAILS CRITÃˆRES
-             ================================================== -->
-
-        <div
-          *ngIf="ev.detailsCriteres"
-          class="text-xs text-slate-400"
-        >
-
-          <span class="font-semibold text-slate-300">
-            CritÃ¨res :
-          </span>
-
-          {{ ev.detailsCriteres }}
-
+        <div *ngIf="ev.detailsCriteres" class="text-xs text-slate-400">
+          <span class="font-semibold text-slate-300">Critères :</span> {{ ev.detailsCriteres }}
         </div>
 
-
-        <!-- ==================================================
-             FOOTER
-             ================================================== -->
-
-        <div
-          class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[11px] pt-2 border-t border-slate-800"
-        >
-
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[11px] pt-2 border-t border-slate-800">
           <span class="text-slate-400">
-
             Statut :
-
-            <strong
-              [ngClass]="{
-                'text-emerald-400': ev.statut === 'VALIDE',
-                'text-amber-400': ev.statut === 'EN_ATTENTE',
-                'text-red-400': ev.statut === 'REJETE',
-                'text-orange-400': ev.statut === 'A_CORRIGER'
-              }"
-            >
-
+            <strong [ngClass]="{
+              'text-emerald-400': ev.statut === 'VALIDE',
+              'text-amber-400': ev.statut === 'EN_ATTENTE',
+              'text-red-400': ev.statut === 'REJETE',
+              'text-orange-400': ev.statut === 'A_CORRIGER'
+            }">
               {{ getStatutLabel(ev.statut) }}
-
             </strong>
-
           </span>
-
-
           <div class="flex flex-wrap gap-2">
-
-            <!-- NIVEAU ACTUEL -->
-
-            <button
-              type="button"
-              (click)="voirEvaluationActuelle(ev.theseId)"
-              class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition"
-            >
-
-              Voir niveau actuel
-
-            </button>
-
-
-            <!-- VALIDATION -->
-
-            <button
-              *ngIf="canValidate()"
-              type="button"
-              (click)="openValidation(ev)"
-              class="px-3 py-1.5 rounded-lg bg-[#84BD00] hover:bg-[#6fa000] text-white transition"
-            >
-
-              DÃ©cider
-
-            </button>
-
-
-            <!-- SUPPRESSION -->
-
-            <button
-              *ngIf="isAdmin()"
-              type="button"
-              (click)="deleteEvaluation(ev.id)"
-              class="px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition"
-            >
-
-              Supprimer
-
-            </button>
-
+            <button type="button" (click)="voirEevaluationActuelle(ev.theseId)" class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Voir niveau actuel</button>
+            <button *ngIf="canValidate()" type="button" (click)="openValidation(ev)" class="px-3 py-1.5 rounded-lg bg-[#84BD00] hover:bg-[#6fa000] text-white transition">Décider</button>
+            <button *ngIf="isAdmin()" type="button" (click)="deleteEevaluation(ev.id)" class="px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition">Supprimer</button>
           </div>
-
         </div>
-
       </div>
-
     </div>
-
   </div>
-
 </div>
 
-
-<!-- ==========================================================
-     MODAL : NOUVELLE Ã‰VALUATION
-     ========================================================== -->
-
-<div
-  *ngIf="showModal"
-  class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
->
-
-  <div
-    class="glass-panel w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl border border-[#84BD00]/30 shadow-2xl p-6 space-y-5"
-  >
-
-    <!-- HEADER MODAL -->
-
-    <div
-      class="flex items-center justify-between border-b border-slate-800 pb-3"
-    >
-
+<div *ngIf="showModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="glass-panel w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl border border-[#84BD00]/30 shadow-2xl p-6 space-y-5">
+    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
       <div>
-
-        <h3 class="text-lg font-bold text-white">
-          Ã‰valuation de MaturitÃ© TRL
-        </h3>
-
-        <p class="text-xs text-slate-400 mt-1">
-          Ã‰valuez les critÃ¨res de maturitÃ© technologique de la thÃ¨se.
-        </p>
-
+        <h3 class="text-lg font-bold text-white">Évaluation de Maturité TRL</h3>
+        <p class="text-xs text-slate-400 mt-1">Évaluez les critères de maturité technologique de la thèse.</p>
       </div>
-
-
-      <button
-        type="button"
-        (click)="closeModal()"
-        class="text-slate-400 hover:text-white text-lg"
-      >
-
-        âœ•
-
-      </button>
-
+      <button type="button" (click)="closeModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
     </div>
-
-
-    <!-- ======================================================
-         SÃ‰LECTION THÃˆSE
-         ====================================================== -->
 
     <div>
-
-      <label
-        class="block text-xs font-semibold text-slate-300 uppercase mb-1"
-      >
-
-        ThÃ¨se cible *
-
-      </label>
-
-
-      <select
-        [(ngModel)]="selectedTheseId"
-        (ngModelChange)="onTheseChange()"
-        [disabled]="loadingTheses || submitting"
-        class="glass-input w-full px-3.5 py-2 rounded-lg text-sm bg-slate-900"
-      >
-
-        <option [ngValue]="null">
-
-          -- SÃ©lectionner une thÃ¨se --
-
-        </option>
-
-
-        <option
-          *ngFor="let these of theses"
-          [ngValue]="these.id"
-        >
-
-          #{{ these.id }}
-          -
-          {{ these.titre }}
-
-        </option>
-
+      <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Thèse cible *</label>
+      <select [(ngModel)]="selectedTheseId" (ngModelChange)="onTheseChange()" [disabled]="loadingTheses || submitting" class="glass-input w-full px-3.5 py-2 rounded-lg text-sm bg-slate-900">
+        <option [ngValue]="null">-- Sélectionner une thèse --</option>
+        <option *ngFor="let these of theses" [ngValue]="these.id">#{{ these.id }} - {{ these.titre }}</option>
       </select>
-
-
-      <p
-        *ngIf="loadingTheses"
-        class="text-xs text-slate-500 mt-2"
-      >
-
-        Chargement des thÃ¨ses...
-
-      </p>
-
+      <p *ngIf="loadingTheses" class="text-xs text-slate-500 mt-2">Chargement des thèses...</p>
     </div>
 
-
-    <!-- ======================================================
-         CHARGEMENT GRILLE
-         ====================================================== -->
-
-    <div
-      *ngIf="loadingGrille"
-      class="text-center py-8 text-slate-400"
-    >
-
-      <div class="text-2xl mb-2">
-        â³
-      </div>
-
+    <div *ngIf="loadingGrille" class="text-center py-8 text-slate-400">
+      <div class="text-2xl mb-2">⏳</div>
       Chargement de la grille TRL...
-
     </div>
 
-
-    <!-- ======================================================
-         GRILLE TRL
-         ====================================================== -->
-
-    <div
-      *ngIf="grille && !loadingGrille"
-      class="space-y-4"
-    >
-
-      <!-- INFO GRILLE -->
-
-      <div
-        class="p-4 rounded-xl bg-slate-900/60 border border-slate-800"
-      >
-
+    <div *ngIf="grille && !loadingGrille" class="space-y-4">
+      <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
         <div class="flex flex-col sm:flex-row sm:justify-between gap-2">
-
           <div>
-
-            <strong class="text-white">
-
-              {{ grille.titre }}
-
-            </strong>
-
-            <p class="text-xs text-slate-400 mt-1">
-
-              {{ criteres.length }}
-              critÃ¨re(s) Ã  Ã©valuer
-
-            </p>
-
+            <strong class="text-white">{{ grille.titre }}</strong>
+            <p class="text-xs text-slate-400 mt-1">{{ criteres.length }} critère(s) à valuer</p>
           </div>
-
-
-          <span class="text-xs text-[#84BD00]">
-
-            Version {{ grille.version }}
-
-          </span>
-
+          <span class="text-xs text-[#84BD00]">Version {{ grille.version }}</span>
         </div>
-
       </div>
 
-
-      <!-- ====================================================
-           CRITÃˆRES
-           ==================================================== -->
-
-      <div
-        *ngFor="
-          let critere of criteres;
-          let i = index
-        "
-        class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3"
-      >
-
-        <!-- TITRE CRITÃˆRE -->
-
-        <div
-          class="flex flex-col sm:flex-row sm:items-center justify-between gap-2"
-        >
-
+      <div *ngFor="let critere of criteres; let i = index" class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-
-            <strong class="text-[#84BD00]">
-
-              {{ critere.code }}
-
-            </strong>
-
-            <span class="text-white ml-2">
-
-              {{ critere.libelle }}
-
-            </span>
-
+            <strong class="text-[#84BD00]">{{ critere.code }}</strong>
+            <span class="text-white ml-2">{{ critere.libelle }}</span>
           </div>
-
-
-          <span
-            class="px-2 py-1 rounded-md bg-slate-800 text-xs text-slate-400"
-          >
-
-            TRL {{ critere.niveauAssocie }}
-
-          </span>
-
+          <span class="px-2 py-1 rounded-md bg-slate-800 text-xs text-slate-400">TRL {{ critere.niveauAssocie }}</span>
         </div>
-
-
-        <!-- POIDS -->
-
-        <div class="text-xs text-slate-400">
-
-          Poids :
-
-          <strong class="text-slate-300">
-            {{ critere.poids }}
-          </strong>
-
-        </div>
-
-
-        <!-- VALIDATION CRITÃˆRE -->
-
+        <div class="text-xs text-slate-400">Poids : <strong class="text-slate-300">{{ critere.poids }}</strong></div>
         <div>
-
-          <label
-            class="block text-xs text-slate-300 mb-1"
-          >
-
-            CritÃ¨re validÃ© ?
-
-          </label>
-
-
-          <select
-            [ngModel]="critere.valide"
-            (ngModelChange)="updateCritereValide(i, $event)"
-            [disabled]="submitting"
-            class="glass-input w-full px-3.5 py-2 rounded-lg text-sm bg-slate-900"
-          >
-
-            <option [ngValue]="false">
-              Non
-            </option>
-
-            <option [ngValue]="true">
-              Oui
-            </option>
-
+          <label class="block text-xs text-slate-300 mb-1">Critère validé ?</label>
+          <select [ngModel]="critere.valide" (ngModelChange)="updateCritereValide(i, $event)" [disabled]="submitting" class="glass-input w-full px-3.5 py-2 rounded-lg text-sm bg-slate-900">
+            <option [ngValue]="false">Non</option>
+            <option [ngValue]="true">Oui</option>
           </select>
-
         </div>
-
-
-        <!-- COMMENTAIRE CRITÃˆRE -->
-
         <div>
-
-          <label
-            class="block text-xs text-slate-300 mb-1"
-          >
-
-            Commentaire
-
-          </label>
-
-
-          <textarea
-            rows="2"
-            [ngModel]="critere.commentaire"
-            (ngModelChange)="updateCritereCommentaire(i, $event)"
-            [disabled]="submitting"
-            class="glass-input w-full px-3.5 py-2 rounded-lg text-sm"
-            placeholder="Commentaire sur le critÃ¨re..."
-          ></textarea>
-
+          <label class="block text-xs text-slate-300 mb-1">Commentaire</label>
+          <textarea rows="2" [ngModel]="critere.commentaire" (ngModelChange)="updateCritereCommentaire(i, $event)" [disabled]="submitting" class="glass-input w-full px-3.5 py-2 rounded-lg text-sm" placeholder="Commentaire sur le critère..."></textarea>
         </div>
-
       </div>
-
-
-      <!-- ====================================================
-           COMMENTAIRE GLOBAL
-           ==================================================== -->
 
       <div>
-
-        <label
-          class="block text-xs text-slate-300 mb-1"
-        >
-
-          Rapport & Recommandations
-
-        </label>
-
-
-        <textarea
-          [(ngModel)]="evaluationCommentaire"
-          [disabled]="submitting"
-          rows="4"
-          class="glass-input w-full px-3.5 py-2 rounded-lg text-sm"
-          placeholder="Justifiez l'Ã©valuation et formulez vos recommandations..."
-        ></textarea>
-
+        <label class="block text-xs text-slate-300 mb-1">Rapport & Recommandations</label>
+        <textarea [(ngModel)]="evaluationCommentaire" [disabled]="submitting" rows="4" class="glass-input w-full px-3.5 py-2 rounded-lg text-sm" placeholder="Justifiez l'évaluation et formulez vos recommandations..."></textarea>
       </div>
-
     </div>
 
-
-    <!-- ======================================================
-         AUCUNE GRILLE
-         ====================================================== -->
-
-    <div
-      *ngIf="
-        selectedTheseId &&
-        !loadingGrille &&
-        !grille
-      "
-      class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm"
-    >
-
-      Impossible de charger la grille TRL pour cette thÃ¨se.
-
+    <div *ngIf="selectedTheseId && !loadingGrille && !grille" class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm">
+      Impossible de charger la grille TRL pour cette thèse.
     </div>
 
-
-    <!-- ======================================================
-         FOOTER
-         ====================================================== -->
-
-    <div
-      class="flex justify-end gap-3 pt-4 border-t border-slate-800"
-    >
-
-      <button
-        type="button"
-        (click)="closeModal()"
-        [disabled]="submitting"
-        class="px-4 py-2 bg-slate-800 text-slate-300 rounded-lg text-sm hover:bg-slate-700 disabled:opacity-50"
-      >
-
-        Annuler
-
+    <div class="flex justify-end gap-3 pt-4 border-t border-slate-800">
+      <button type="button" (click)="closeModal()" [disabled]="submitting" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-lg text-sm hover:bg-slate-700 disabled:opacity-50">Annuler</button>
+      <button type="button" (click)="saveEevaluation()" [disabled]="submitting || !selectedTheseId || criteres.length === 0" class="px-5 py-2 bg-[#84BD00] hover:bg-[#6fa000] disabled:opacity-50 text-white font-semibold rounded-lg text-sm">
+        <span *ngIf="!submitting">Enregistrer</span>
+        <span *ngIf="submitting">Enregistrement...</span>
       </button>
-
-
-      <button
-        type="button"
-        (click)="saveEvaluation()"
-        [disabled]="
-          submitting ||
-          !selectedTheseId ||
-          criteres.length === 0
-        "
-        class="px-5 py-2 bg-[#84BD00] hover:bg-[#6fa000] disabled:opacity-50 text-white font-semibold rounded-lg text-sm"
-      >
-
-        <span *ngIf="!submitting">
-          Enregistrer
-        </span>
-
-        <span *ngIf="submitting">
-          Enregistrement...
-        </span>
-
-      </button>
-
     </div>
-
   </div>
-
 </div>
 
-
-<!-- ==========================================================
-     MODAL : VALIDATION DIRECTEUR
-     ========================================================== -->
-
-<div
-  *ngIf="showValidationModal"
-  class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
->
-
-  <div
-    class="glass-panel w-full max-w-xl rounded-2xl border border-[#84BD00]/30 shadow-2xl p-6 space-y-5"
-  >
-
-    <!-- HEADER -->
-
-    <div
-      class="flex items-center justify-between border-b border-slate-800 pb-3"
-    >
-
+<div *ngIf="showValidationModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="glass-panel w-full max-w-xl rounded-2xl border border-[#84BD00]/30 shadow-2xl p-6 space-y-5">
+    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
       <div>
-
-        <h3 class="text-lg font-bold text-white">
-          DÃ©cision sur l'Ã©valuation
-        </h3>
-
-        <p class="text-xs text-slate-400 mt-1">
-          Validation par le Directeur de Recherche ou l'Administrateur.
-        </p>
-
+        <h3 class="text-lg font-bold text-white">Décision sur l'évaluation</h3>
+        <p class="text-xs text-slate-400 mt-1">Validation par le Directeur de Recherche ou l'Administrateur.</p>
       </div>
-
-
-      <button
-        type="button"
-        (click)="closeValidation()"
-        class="text-slate-400 hover:text-white"
-      >
-
-        âœ•
-
-      </button>
-
+      <button type="button" (click)="closeValidation()" class="text-slate-400 hover:text-white">✕</button>
     </div>
 
-
-    <!-- ======================================================
-         Ã‰VALUATION SÃ‰LECTIONNÃ‰E
-         ====================================================== -->
-
-    <div
-      *ngIf="selectedEvaluation"
-      class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-2"
-    >
-
-      <p class="text-sm text-white">
-
-        <strong>
-          ThÃ¨se :
-        </strong>
-
-        {{
-          getThese(selectedEvaluation.theseId)?.titre
-          || 'ThÃ¨se #' + selectedEvaluation.theseId
-        }}
-
-      </p>
-
-
-      <p class="text-sm text-slate-300">
-
-        Niveau Ã©valuÃ© :
-
-        <strong class="text-[#84BD00]">
-
-          TRL {{ selectedEvaluation.niveau || '-' }}
-
-        </strong>
-
-      </p>
-
-
-      <p class="text-sm text-slate-300">
-
-        Score :
-
-        <strong class="text-white">
-
-          {{
-            selectedEvaluation.score !== undefined
-              ? (selectedEvaluation.score | number:'1.0-2')
-              : '-'
-          }}
-
-        </strong>
-
-      </p>
-
-
-      <p
-        *ngIf="selectedEvaluation.commentaire"
-        class="text-xs text-slate-400 mt-2"
-      >
-
-        {{ selectedEvaluation.commentaire }}
-
-      </p>
-
+    <div *ngIf="selectedEevaluation" class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-2">
+      <p class="text-sm text-white"><strong>Thèse :</strong> {{ getThese(selectedEevaluation.theseId)?.titre || 'Thèse #' + selectedEevaluation.theseId }}</p>
+      <p class="text-sm text-slate-300">Niveau évalué : <strong class="text-[#84BD00]">TRL {{ selectedEevaluation.niveau || '-' }}</strong></p>
+      <p class="text-sm text-slate-300">Score : <strong class="text-white">{{ selectedEevaluation.score !== undefined ? (selectedEevaluation.score | number:'1.0-2') : '-' }}</strong></p>
+      <p *ngIf="selectedEevaluation.commentaire" class="text-xs text-slate-400 mt-2">{{ selectedEevaluation.commentaire }}</p>
     </div>
-
-
-    <!-- ======================================================
-         DÃ‰CISION
-         ====================================================== -->
 
     <div>
-
-      <label
-        class="block text-xs font-semibold text-slate-300 uppercase mb-1"
-      >
-
-        DÃ©cision *
-
-      </label>
-
-
-      <select
-        [(ngModel)]="validationStatut"
-        [disabled]="validating"
-        class="glass-input w-full px-3.5 py-2 rounded-lg text-sm bg-slate-900"
-      >
-
-        <option value="">
-          -- SÃ©lectionner --
-        </option>
-
-        <option value="VALIDE">
-          Approuver
-        </option>
-
-        <option value="CORRECTION_DEMANDEE">
-          Demander correction
-        </option>
-
-        <option value="REJETEE">
-          Refuser
-        </option>
-
+      <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Décision *</label>
+      <select [(ngModel)]="validationStatut" [disabled]="validating" class="glass-input w-full px-3.5 py-2 rounded-lg text-sm bg-slate-900">
+        <option value="">-- Sélectionner --</option>
+        <option value="VALIDE">Approuver</option>
+        <option value="CORRECTION_DEMANDEE">Demander correction</option>
+        <option value="REJETEE">Refuser</option>
       </select>
-
     </div>
-
-
-    <!-- ======================================================
-         COMMENTAIRE
-         ====================================================== -->
 
     <div>
-
-      <label
-        class="block text-xs font-semibold text-slate-300 uppercase mb-1"
-      >
-
-        Commentaire
-
-      </label>
-
-
-      <textarea
-        [(ngModel)]="validationCommentaire"
-        [disabled]="validating"
-        rows="4"
-        class="glass-input w-full px-3.5 py-2 rounded-lg text-sm"
-        placeholder="Commentaire du directeur..."
-      ></textarea>
-
+      <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Commentaire</label>
+      <textarea [(ngModel)]="validationCommentaire" [disabled]="validating" rows="4" class="glass-input w-full px-3.5 py-2 rounded-lg text-sm" placeholder="Commentaire du directeur..."></textarea>
     </div>
 
-
-    <!-- ======================================================
-         FOOTER
-         ====================================================== -->
-
-    <div
-      class="flex justify-end gap-3 pt-4 border-t border-slate-800"
-    >
-
-      <button
-        type="button"
-        (click)="closeValidation()"
-        [disabled]="validating"
-        class="px-4 py-2 bg-slate-800 text-slate-300 rounded-lg text-sm hover:bg-slate-700 disabled:opacity-50"
-      >
-
-        Annuler
-
+    <div class="flex justify-end gap-3 pt-4 border-t border-slate-800">
+      <button type="button" (click)="closeValidation()" [disabled]="validating" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-lg text-sm hover:bg-slate-700 disabled:opacity-50">Annuler</button>
+      <button type="button" (click)="submitValidation()" [disabled]="validating || !validationStatut" class="px-5 py-2 bg-[#84BD00] hover:bg-[#6fa000] disabled:opacity-50 text-white font-semibold rounded-lg text-sm">
+        <span *ngIf="!validating">Enregistrer la décision</span>
+        <span *ngIf="validating">Enregistrement...</span>
       </button>
-
-
-      <button
-        type="button"
-        (click)="submitValidation()"
-        [disabled]="
-          validating ||
-          !validationStatut
-        "
-        class="px-5 py-2 bg-[#84BD00] hover:bg-[#6fa000] disabled:opacity-50 text-white font-semibold rounded-lg text-sm"
-      >
-
-        <span *ngIf="!validating">
-          Enregistrer la dÃ©cision
-        </span>
-
-        <span *ngIf="validating">
-          Enregistrement...
-        </span>
-
-      </button>
-
     </div>
-
   </div>
-
 </div>

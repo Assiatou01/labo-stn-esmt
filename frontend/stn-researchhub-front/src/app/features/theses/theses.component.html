@@ -1,333 +1,107 @@
-﻿<div class="space-y-6">
+﻿<div class="min-h-screen bg-slate-50 p-4 md:p-6">
 
-  <!-- ====================================================== -->
-  <!-- HEADER -->
-  <!-- ====================================================== -->
+  <!-- ========================================================= -->
+  <!-- EN-TÊTE -->
+  <!-- ========================================================= -->
+  <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 
-  <section
-    class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden"
-  >
+    <div>
+      <h1 class="text-2xl font-bold text-slate-800">
+        Gestion des thèses
+      </h1>
 
-    <div
-      class="p-6 md:p-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"
-    >
-
-      <div>
-
-        <div
-          class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#00A3E0]/10 text-[#0077A8] text-xs font-bold"
-        >
-          <span
-            class="w-2 h-2 rounded-full bg-[#00A3E0]"
-          ></span>
-
-          Laboratoire STN â€¢ ESMT
-        </div>
-
-        <h1
-          class="text-3xl font-extrabold text-[#002B49] mt-3"
-        >
-          Gestion des thÃ¨ses
-        </h1>
-
-        <p
-          class="text-sm text-slate-500 mt-2 max-w-2xl"
-        >
-          Consultez, dÃ©posez et suivez les travaux de recherche
-          enregistrÃ©s dans le laboratoire.
-        </p>
-
-        <div
-          *ngIf="currentUser"
-          class="mt-3 text-xs text-slate-400"
-        >
-          ConnectÃ© en tant que
-          <span class="font-semibold text-[#002B49]">
-            {{ currentUser.prenom }} {{ currentUser.nom }}
-          </span>
-        </div>
-
-      </div>
-
-      <div class="flex flex-wrap gap-3">
-
-        <!-- DÃ©poser -->
-        <button
-          *ngIf="canCreate()"
-          type="button"
-          (click)="openCreateModal()"
-          class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#002B49] text-white text-sm font-bold hover:bg-[#003D66] transition shadow-sm"
-        >
-          <span class="text-lg">+</span>
-          DÃ©poser une thÃ¨se
-        </button>
-
-        <!-- Actualiser -->
-        <button
-          type="button"
-          (click)="loadTheses()"
-          [disabled]="loading"
-          class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-slate-200 bg-white text-[#002B49] text-sm font-bold hover:bg-slate-50 transition disabled:opacity-50"
-        >
-          <span>â†»</span>
-          Actualiser
-        </button>
-
-      </div>
-
+      <p class="mt-1 text-sm text-slate-500">
+        Gestion et suivi des thèses de doctorat
+      </p>
     </div>
 
-  </section>
+    <!-- NOUVELLE THÈSE -->
+    <button
+      *ngIf="canCreate()"
+      type="button"
+      (click)="openCreateModal()"
+      class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700"
+    >
+      <i class="bi bi-plus-circle mr-2"></i>
+      Nouvelle thèse
+    </button>
+
+  </div>
 
 
-  <!-- ====================================================== -->
+  <!-- ========================================================= -->
   <!-- MESSAGES -->
-  <!-- ====================================================== -->
+  <!-- ========================================================= -->
 
   <div
     *ngIf="successMessage"
-    class="bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-2xl p-4 text-sm font-medium"
+    class="mb-4 flex items-center justify-between rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700"
   >
-    âœ“ {{ successMessage }}
+    <div class="flex items-center">
+      <i class="bi bi-check-circle mr-2"></i>
+      <span>{{ successMessage }}</span>
+    </div>
+
+    <button
+      type="button"
+      class="text-emerald-700 hover:text-emerald-900"
+      (click)="successMessage = ''"
+    >
+      <i class="bi bi-x-lg"></i>
+    </button>
   </div>
+
 
   <div
     *ngIf="errorMessage"
-    class="bg-red-50 border border-red-200 rounded-2xl p-4"
+    class="mb-4 flex items-center justify-between rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
   >
-
-    <div class="flex items-start gap-3">
-
-      <span class="text-red-500 text-lg">
-        âš 
-      </span>
-
-      <div class="flex-1">
-
-        <div class="font-bold text-red-700">
-          Une erreur est survenue
-        </div>
-
-        <div class="text-sm text-red-600 mt-1">
-          {{ errorMessage }}
-        </div>
-
-      </div>
-
-      <button
-        type="button"
-        (click)="loadTheses()"
-        class="px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-bold hover:bg-red-700"
-      >
-        RÃ©essayer
-      </button>
-
+    <div class="flex items-center">
+      <i class="bi bi-exclamation-triangle mr-2"></i>
+      <span>{{ errorMessage }}</span>
     </div>
 
+    <button
+      type="button"
+      class="text-red-700 hover:text-red-900"
+      (click)="errorMessage = ''"
+    >
+      <i class="bi bi-x-lg"></i>
+    </button>
   </div>
 
 
-  <!-- ====================================================== -->
-  <!-- STATISTIQUES -->
-  <!-- ====================================================== -->
-
-  <section
-    *ngIf="!loading"
-    class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"
-  >
-
-    <!-- Total -->
-
-    <div
-      class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm"
-    >
-
-      <div class="flex items-center justify-between">
-
-        <div>
-
-          <p
-            class="text-xs font-bold uppercase tracking-wider text-slate-400"
-          >
-            Total
-          </p>
-
-          <p
-            class="text-3xl font-extrabold text-[#002B49] mt-2"
-          >
-            {{ theses.length }}
-          </p>
-
-          <p class="text-xs text-slate-400 mt-1">
-            ThÃ¨ses enregistrÃ©es
-          </p>
-
-        </div>
-
-        <div
-          class="w-11 h-11 rounded-xl bg-[#002B49]/10 flex items-center justify-center text-xl"
-        >
-          ðŸ“š
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <!-- En cours -->
-
-    <div
-      class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm"
-    >
-
-      <div class="flex items-center justify-between">
-
-        <div>
-
-          <p
-            class="text-xs font-bold uppercase tracking-wider text-slate-400"
-          >
-            En cours
-          </p>
-
-          <p
-            class="text-3xl font-extrabold text-[#00A3E0] mt-2"
-          >
-            {{ getCountByStatus('EN_COURS') }}
-          </p>
-
-          <p class="text-xs text-slate-400 mt-1">
-            Travaux actifs
-          </p>
-
-        </div>
-
-        <div
-          class="w-11 h-11 rounded-xl bg-[#00A3E0]/10 flex items-center justify-center text-xl"
-        >
-          ðŸ”¬
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <!-- TerminÃ©es -->
-
-    <div
-      class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm"
-    >
-
-      <div class="flex items-center justify-between">
-
-        <div>
-
-          <p
-            class="text-xs font-bold uppercase tracking-wider text-slate-400"
-          >
-            TerminÃ©es
-          </p>
-
-          <p
-            class="text-3xl font-extrabold text-[#84BD00] mt-2"
-          >
-            {{ getCountByStatus('TERMINEE') }}
-          </p>
-
-          <p class="text-xs text-slate-400 mt-1">
-            Travaux finalisÃ©s
-          </p>
-
-        </div>
-
-        <div
-          class="w-11 h-11 rounded-xl bg-[#84BD00]/10 flex items-center justify-center text-xl"
-        >
-          âœ“
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <!-- Suspendues -->
-
-    <div
-      class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm"
-    >
-
-      <div class="flex items-center justify-between">
-
-        <div>
-
-          <p
-            class="text-xs font-bold uppercase tracking-wider text-slate-400"
-          >
-            Suspendues
-          </p>
-
-          <p
-            class="text-3xl font-extrabold text-amber-500 mt-2"
-          >
-            {{ getCountByStatus('SUSPENDUE') }}
-          </p>
-
-          <p class="text-xs text-slate-400 mt-1">
-            Travaux suspendus
-          </p>
-
-        </div>
-
-        <div
-          class="w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center text-xl"
-        >
-          â¸
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- ====================================================== -->
+  <!-- ========================================================= -->
   <!-- FILTRES -->
-  <!-- ====================================================== -->
+  <!-- ========================================================= -->
 
-  <section
-    class="bg-white border border-slate-200 rounded-2xl shadow-sm p-5"
-  >
+  <div class="mb-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
 
-    <div
-      class="flex flex-col lg:flex-row lg:items-end gap-4"
-    >
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
 
-      <div class="flex-1">
+      <!-- RECHERCHE -->
+      <div class="md:col-span-2">
 
         <label
-          class="block text-xs font-bold text-slate-600 mb-2"
+          for="searchQuery"
+          class="mb-1 block text-sm font-medium text-slate-700"
         >
-          Rechercher une thÃ¨se
+          Rechercher
         </label>
 
         <div class="relative">
 
-          <span
-            class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-          >
-            ðŸ”Ž
-          </span>
+          <i
+            class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+          ></i>
 
           <input
+            id="searchQuery"
             type="text"
             [(ngModel)]="searchQuery"
             (ngModelChange)="applyFilter()"
-            placeholder="Titre ou problÃ©matique..."
-            class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#00A3E0]/20 focus:border-[#00A3E0]"
+            placeholder="Rechercher par titre ou problématique..."
+            class="w-full rounded-lg border border-slate-300 py-2.5 pl-10 pr-3 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
 
         </div>
@@ -335,18 +109,21 @@
       </div>
 
 
-      <div class="lg:w-64">
+      <!-- STATUT -->
+      <div>
 
         <label
-          class="block text-xs font-bold text-slate-600 mb-2"
+          for="statusFilter"
+          class="mb-1 block text-sm font-medium text-slate-700"
         >
           Statut
         </label>
 
         <select
+          id="statusFilter"
           [(ngModel)]="statusFilter"
           (ngModelChange)="applyFilter()"
-          class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#00A3E0]/20 focus:border-[#00A3E0]"
+          class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
         >
 
           <option value="">
@@ -358,7 +135,7 @@
           </option>
 
           <option value="SOUTENUE">
-            TerminÃ©e
+            Soutenue
           </option>
 
           <option value="SUSPENDUE">
@@ -366,181 +143,195 @@
           </option>
 
           <option value="ABANDONNEE">
-            AnnulÃ©e
+            Abandonnée
           </option>
 
         </select>
 
       </div>
 
+    </div>
+
+
+    <!-- RESET -->
+    <div class="mt-3 flex justify-end">
 
       <button
         type="button"
         (click)="resetFilters()"
-        class="px-5 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 text-sm font-bold hover:bg-slate-100 transition"
+        class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
       >
-        RÃ©initialiser
+        <i class="bi bi-arrow-counterclockwise mr-2"></i>
+        Réinitialiser
       </button>
 
     </div>
 
-  </section>
+  </div>
 
 
-  <!-- ====================================================== -->
+  <!-- ========================================================= -->
+  <!-- STATISTIQUES -->
+  <!-- ========================================================= -->
+
+  <div class="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+
+    <!-- TOTAL -->
+    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+
+      <p class="text-sm text-slate-500">
+        Total
+      </p>
+
+      <p class="mt-1 text-2xl font-bold text-slate-800">
+        {{ theses.length }}
+      </p>
+
+    </div>
+
+
+    <!-- EN COURS -->
+    <div class="rounded-xl border border-blue-200 bg-blue-50 p-4 shadow-sm">
+
+      <p class="text-sm text-blue-600">
+        En cours
+      </p>
+
+      <p class="mt-1 text-2xl font-bold text-blue-700">
+        {{ getCountByStatus('EN_COURS') }}
+      </p>
+
+    </div>
+
+
+    <!-- SOUTENUES -->
+    <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-4 shadow-sm">
+
+      <p class="text-sm text-emerald-600">
+        Soutenues
+      </p>
+
+      <p class="mt-1 text-2xl font-bold text-emerald-700">
+        {{ getCountByStatus('SOUTENUE') }}
+      </p>
+
+    </div>
+
+
+    <!-- ABANDONNÉES -->
+    <div class="rounded-xl border border-red-200 bg-red-50 p-4 shadow-sm">
+
+      <p class="text-sm text-red-600">
+        Abandonnées
+      </p>
+
+      <p class="mt-1 text-2xl font-bold text-red-700">
+        {{ getCountByStatus('ABANDONNEE') }}
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <!-- ========================================================= -->
   <!-- CHARGEMENT -->
-  <!-- ====================================================== -->
+  <!-- ========================================================= -->
 
-  <section
+  <div
     *ngIf="loading"
-    class="bg-white border border-slate-200 rounded-2xl p-12 text-center"
+    class="rounded-xl border border-slate-200 bg-white p-10 text-center shadow-sm"
   >
 
     <div
-      class="inline-flex flex-col items-center"
-    >
+      class="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-blue-600"
+    ></div>
 
-      <div
-        class="w-9 h-9 border-4 border-slate-200 border-t-[#00A3E0] rounded-full animate-spin"
-      ></div>
+    <p class="mt-4 text-sm text-slate-500">
+      Chargement des thèses...
+    </p>
 
-      <p
-        class="text-sm text-slate-500 mt-4"
-      >
-        Communication avec THESIS-SERVICE...
-      </p>
-
-    </div>
-
-  </section>
+  </div>
 
 
-  <!-- ====================================================== -->
+  <!-- ========================================================= -->
   <!-- LISTE -->
-  <!-- ====================================================== -->
+  <!-- ========================================================= -->
 
-  <section
+  <div
     *ngIf="!loading"
-    class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden"
+    class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
   >
 
-    <div
-      class="px-6 py-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
-    >
+    <!-- HEADER -->
+    <div class="border-b border-slate-200 px-4 py-4 md:px-6">
 
-      <div>
+      <div class="flex items-center justify-between">
 
-        <h2
-          class="text-lg font-extrabold text-[#002B49]"
-        >
-          Mes thÃ¨ses
-        </h2>
+        <div>
 
-        <p
-          class="text-xs text-slate-400 mt-1"
-        >
-          {{ filteredTheses.length }} rÃ©sultat(s)
-        </p>
+          <h2 class="font-semibold text-slate-800">
+            Liste des thèses
+          </h2>
 
-      </div>
+          <p class="mt-1 text-xs text-slate-500">
+            {{ filteredTheses.length }} résultat(s)
+          </p>
 
-      <div
-        class="text-xs text-slate-400"
-      >
-        Source :
-        <span class="font-bold text-[#00A3E0]">
-          THESIS-SERVICE
-        </span>
+        </div>
+
+        <i class="bi bi-journal-text text-xl text-slate-400"></i>
+
       </div>
 
     </div>
 
 
-    <!-- Aucun rÃ©sultat -->
-
-    <div
-      *ngIf="filteredTheses.length === 0"
-      class="p-12 text-center"
-    >
-
-      <div
-        class="w-16 h-16 mx-auto rounded-2xl bg-slate-50 flex items-center justify-center text-3xl"
-      >
-        ðŸ“š
-      </div>
-
-      <h3
-        class="text-lg font-bold text-[#002B49] mt-4"
-      >
-        Aucune thÃ¨se trouvÃ©e
-      </h3>
-
-      <p
-        class="text-sm text-slate-500 mt-2"
-      >
-        Aucune thÃ¨se ne correspond aux critÃ¨res sÃ©lectionnÃ©s.
-      </p>
-
-      <button
-        *ngIf="canCreate()"
-        type="button"
-        (click)="openCreateModal()"
-        class="mt-5 px-5 py-2.5 rounded-xl bg-[#002B49] text-white text-sm font-bold hover:bg-[#003D66]"
-      >
-        DÃ©poser une thÃ¨se
-      </button>
-
-    </div>
-
-
-    <!-- ==================================================== -->
+    <!-- ======================================================= -->
     <!-- DESKTOP -->
-    <!-- ==================================================== -->
+    <!-- ======================================================= -->
 
-    <div
-      *ngIf="filteredTheses.length > 0"
-      class="hidden lg:block overflow-x-auto"
-    >
+    <div class="hidden overflow-x-auto md:block">
 
-      <table class="w-full">
+      <table class="w-full text-left text-sm">
 
-        <thead class="bg-slate-50">
+        <thead class="bg-slate-50 text-xs uppercase text-slate-500">
 
           <tr>
 
-            <th
-              class="px-6 py-4 text-left text-[11px] font-extrabold uppercase tracking-wider text-slate-500"
-            >
-              ThÃ¨se
+            <th class="px-4 py-3">
+              ID
             </th>
 
-            <th
-              class="px-6 py-4 text-left text-[11px] font-extrabold uppercase tracking-wider text-slate-500"
-            >
+            <th class="px-4 py-3">
+              Titre
+            </th>
+
+            <th class="px-4 py-3">
               Doctorant
             </th>
 
-            <th
-              class="px-6 py-4 text-left text-[11px] font-extrabold uppercase tracking-wider text-slate-500"
-            >
+            <th class="px-4 py-3">
               Encadreur
             </th>
 
-            <th
-              class="px-6 py-4 text-left text-[11px] font-extrabold uppercase tracking-wider text-slate-500"
-            >
-              PÃ©riode
+            <th class="px-4 py-3">
+              Domaine
             </th>
 
-            <th
-              class="px-6 py-4 text-left text-[11px] font-extrabold uppercase tracking-wider text-slate-500"
-            >
+            <th class="px-4 py-3">
+              Date début
+            </th>
+
+            <th class="px-4 py-3">
+              Soutenance
+            </th>
+
+            <th class="px-4 py-3">
               Statut
             </th>
 
-            <th
-              class="px-6 py-4 text-right text-[11px] font-extrabold uppercase tracking-wider text-slate-500"
-            >
+            <th class="px-4 py-3 text-center">
               Actions
             </th>
 
@@ -551,110 +342,121 @@
 
         <tbody class="divide-y divide-slate-100">
 
+          <!-- AUCUN RÉSULTAT -->
+          <tr *ngIf="filteredTheses.length === 0">
+
+            <td
+              colspan="9"
+              class="px-4 py-12 text-center text-slate-500"
+            >
+
+              <i class="bi bi-journal-x text-4xl"></i>
+
+              <p class="mt-3">
+                Aucune thèse trouvée.
+              </p>
+
+            </td>
+
+          </tr>
+
+
+          <!-- THÈSES -->
           <tr
             *ngFor="let these of filteredTheses"
-            class="hover:bg-slate-50/70 transition"
+            class="transition hover:bg-slate-50"
           >
 
-            <!-- ThÃ¨se -->
+            <!-- ID -->
+            <td class="px-4 py-4 font-medium text-slate-700">
+              #{{ these.id }}
+            </td>
 
-            <td class="px-6 py-5">
 
-              <div class="flex items-start gap-3">
+            <!-- TITRE -->
+            <td class="max-w-xs px-4 py-4">
 
-                <div
-                  class="w-10 h-10 rounded-xl bg-[#002B49]/10 flex items-center justify-center text-lg shrink-0"
-                >
-                  ðŸ“–
-                </div>
+              <p class="font-semibold text-slate-800">
+                {{ these.titre }}
+              </p>
 
-                <div class="min-w-0">
-
-                  <div
-                    class="font-bold text-[#002B49]"
-                  >
-                    {{ these.titre }}
-                  </div>
-
-                  <div
-                    *ngIf="these.problematique"
-                    class="text-xs text-slate-400 mt-1 max-w-sm line-clamp-2"
-                  >
-                    {{ these.problematique }}
-                  </div>
-
-                  <div
-                    class="text-[10px] text-slate-300 mt-1"
-                  >
-                    ID #{{ these.id }}
-                  </div>
-
-                </div>
-
-              </div>
+              <p
+                *ngIf="these.problematique"
+                class="mt-1 truncate text-xs text-slate-500"
+                [title]="these.problematique"
+              >
+                {{ these.problematique }}
+              </p>
 
             </td>
 
 
-            <!-- Doctorant -->
+            <!-- DOCTORANT -->
+            <td class="px-4 py-4 text-slate-600">
+              #{{ these.doctorantId }}
+            </td>
 
-            <td class="px-6 py-5">
+
+            <!-- ENCADREUR -->
+            <td class="px-4 py-4 text-slate-600">
+              #{{ these.encadreurId }}
+            </td>
+
+
+            <!-- DOMAINE -->
+            <td class="px-4 py-4">
 
               <span
-                class="inline-flex px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 text-xs font-bold"
+                *ngIf="
+                  these.domaineRechercheId !== null &&
+                  these.domaineRechercheId !== undefined
+                "
+                class="inline-flex rounded-full bg-cyan-50 px-2.5 py-1 text-xs font-medium text-cyan-700"
               >
-                #{{ these.doctorantId }}
+                #{{ these.domaineRechercheId }}
+              </span>
+
+              <span
+                *ngIf="
+                  these.domaineRechercheId === null ||
+                  these.domaineRechercheId === undefined
+                "
+                class="text-xs text-slate-400"
+              >
+                Non renseigné
               </span>
 
             </td>
 
 
-            <!-- Encadreur -->
+            <!-- DATE DÉBUT -->
+            <td class="whitespace-nowrap px-4 py-4 text-slate-600">
+              {{ formatDate(these.dateDebut) }}
+            </td>
 
-            <td class="px-6 py-5">
+
+            <!-- SOUTENANCE -->
+            <td class="whitespace-nowrap px-4 py-4 text-slate-600">
+
+              <span *ngIf="these.dateSoutenancePrevue">
+                {{ formatDate(these.dateSoutenancePrevue) }}
+              </span>
 
               <span
-                class="inline-flex px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700 text-xs font-bold"
+                *ngIf="!these.dateSoutenancePrevue"
+                class="text-slate-400"
               >
-                #{{ these.encadreurId }}
+                Non définie
               </span>
 
             </td>
 
 
-            <!-- Dates -->
-
-            <td class="px-6 py-5">
-
-              <div class="text-xs text-slate-600">
-
-                <div>
-                  <span class="text-slate-400">
-                    DÃ©but :
-                  </span>
-
-                  {{ formatDate(these.dateDebut) }}
-                </div>
-
-                <div class="mt-1">
-                  <span class="text-slate-400">
-                    Soutenance :
-                  </span>
-
-                  {{ formatDate(these.dateSoutenancePrevue) }}
-                </div>
-
-              </div>
-
-            </td>
-
-
-            <!-- Statut -->
-
-            <td class="px-6 py-5">
+            <!-- STATUT -->
+            <td class="px-4 py-4">
 
               <span
-                class="inline-flex px-3 py-1.5 rounded-full border text-xs font-bold"
+                class="inline-flex rounded-full border px-2.5 py-1 text-xs font-medium"
                 [ngClass]="getStatusClass(these.statut)"
               >
                 {{ getStatusLabel(these.statut) }}
@@ -663,50 +465,43 @@
             </td>
 
 
-            <!-- Actions -->
+            <!-- ACTIONS -->
+            <td class="px-4 py-4">
 
-            <td class="px-6 py-5">
+              <div class="flex items-center justify-center gap-2">
 
-              <div
-                class="flex items-center justify-end gap-2"
-              >
-
+                <!-- DÉTAIL -->
                 <button
                   type="button"
+                  title="Voir les détails"
                   (click)="viewThesis(these)"
-                  title="Voir"
-                  class="w-9 h-9 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-[#002B49]"
+                  class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-blue-200 text-blue-600 hover:bg-blue-50"
                 >
-                  ðŸ‘
+                  <i class="bi bi-eye"></i>
                 </button>
 
-                <button
-                  type="button"
-                  (click)="followProgress(these)"
-                  title="Suivre l'avancement"
-                  class="w-9 h-9 rounded-lg border border-slate-200 bg-white text-[#00A3E0] hover:bg-[#00A3E0]/10"
-                >
-                  ðŸ“ˆ
-                </button>
 
+                <!-- MODIFIER -->
                 <button
-                  *ngIf="canEdit()"
+                  *ngIf="canEdit(these)"
                   type="button"
-                  (click)="openEditModal(these)"
                   title="Modifier"
-                  class="w-9 h-9 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                  (click)="openEditModal(these)"
+                  class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-amber-200 text-amber-600 hover:bg-amber-50"
                 >
-                  âœ
+                  <i class="bi bi-pencil"></i>
                 </button>
 
+
+                <!-- SUPPRIMER -->
                 <button
                   *ngIf="isAdmin()"
                   type="button"
-                  (click)="deleteThesis(these)"
                   title="Supprimer"
-                  class="w-9 h-9 rounded-lg border border-red-200 bg-white text-red-500 hover:bg-red-50"
+                  (click)="deleteThesis(these)"
+                  class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-red-200 text-red-600 hover:bg-red-50"
                 >
-                  ðŸ—‘
+                  <i class="bi bi-trash"></i>
                 </button>
 
               </div>
@@ -722,53 +517,50 @@
     </div>
 
 
-    <!-- ==================================================== -->
+    <!-- ======================================================= -->
     <!-- MOBILE -->
-    <!-- ==================================================== -->
+    <!-- ======================================================= -->
 
-    <div
-      *ngIf="filteredTheses.length > 0"
-      class="lg:hidden divide-y divide-slate-100"
-    >
+    <div class="space-y-4 p-4 md:hidden">
 
-      <article
-        *ngFor="let these of filteredTheses"
-        class="p-5"
+      <!-- AUCUN RÉSULTAT -->
+      <div
+        *ngIf="filteredTheses.length === 0"
+        class="py-10 text-center text-slate-500"
       >
 
-        <div
-          class="flex items-start justify-between gap-3"
-        >
+        <i class="bi bi-journal-x text-4xl"></i>
 
-          <div class="flex items-start gap-3">
+        <p class="mt-3 text-sm">
+          Aucune thèse trouvée.
+        </p>
 
-            <div
-              class="w-10 h-10 rounded-xl bg-[#002B49]/10 flex items-center justify-center shrink-0"
-            >
-              ðŸ“–
-            </div>
+      </div>
 
-            <div>
 
-              <h3
-                class="font-bold text-[#002B49]"
-              >
-                {{ these.titre }}
-              </h3>
+      <!-- CARTES -->
+      <div
+        *ngFor="let these of filteredTheses"
+        class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+      >
 
-              <p
-                *ngIf="these.problematique"
-                class="text-xs text-slate-500 mt-1"
-              >
-                {{ these.problematique }}
-              </p>
+        <!-- TITRE + STATUT -->
+        <div class="flex items-start justify-between gap-3">
 
-            </div>
+          <div>
+
+            <p class="text-xs text-slate-400">
+              Thèse #{{ these.id }}
+            </p>
+
+            <h3 class="mt-1 font-semibold text-slate-800">
+              {{ these.titre }}
+            </h3>
 
           </div>
 
           <span
-            class="px-2.5 py-1 rounded-full border text-[10px] font-bold whitespace-nowrap"
+            class="shrink-0 rounded-full border px-2.5 py-1 text-xs font-medium"
             [ngClass]="getStatusClass(these.statut)"
           >
             {{ getStatusLabel(these.statut) }}
@@ -777,385 +569,504 @@
         </div>
 
 
+        <!-- PROBLÉMATIQUE -->
         <div
-          class="grid grid-cols-2 gap-3 mt-5"
+          *ngIf="these.problematique"
+          class="mt-4"
         >
 
-          <div
-            class="bg-slate-50 rounded-xl p-3"
-          >
+          <p class="text-xs font-medium text-slate-500">
+            Problématique
+          </p>
 
-            <div class="text-[10px] uppercase font-bold text-slate-400">
+          <p class="mt-1 text-sm text-slate-700">
+            {{ these.problematique }}
+          </p>
+
+        </div>
+
+
+        <!-- INFORMATIONS -->
+        <div class="mt-4 grid grid-cols-2 gap-4">
+
+          <div>
+
+            <p class="text-xs text-slate-400">
               Doctorant
-            </div>
+            </p>
 
-            <div class="text-sm font-bold text-[#002B49] mt-1">
+            <p class="mt-1 text-sm font-medium text-slate-700">
               #{{ these.doctorantId }}
-            </div>
+            </p>
 
           </div>
 
 
-          <div
-            class="bg-slate-50 rounded-xl p-3"
-          >
+          <div>
 
-            <div class="text-[10px] uppercase font-bold text-slate-400">
+            <p class="text-xs text-slate-400">
               Encadreur
-            </div>
+            </p>
 
-            <div class="text-sm font-bold text-[#002B49] mt-1">
+            <p class="mt-1 text-sm font-medium text-slate-700">
               #{{ these.encadreurId }}
-            </div>
+            </p>
 
           </div>
 
 
-          <div
-            class="bg-slate-50 rounded-xl p-3"
-          >
+          <div>
 
-            <div class="text-[10px] uppercase font-bold text-slate-400">
-              Date dÃ©but
-            </div>
+            <p class="text-xs text-slate-400">
+              Domaine de recherche
+            </p>
 
-            <div class="text-sm font-bold text-[#002B49] mt-1">
+            <p
+              *ngIf="
+                these.domaineRechercheId !== null &&
+                these.domaineRechercheId !== undefined
+              "
+              class="mt-1 text-sm font-medium text-slate-700"
+            >
+              #{{ these.domaineRechercheId }}
+            </p>
+
+            <p
+              *ngIf="
+                these.domaineRechercheId === null ||
+                these.domaineRechercheId === undefined
+              "
+              class="mt-1 text-sm text-slate-400"
+            >
+              Non renseigné
+            </p>
+
+          </div>
+
+
+          <div>
+
+            <p class="text-xs text-slate-400">
+              Date de début
+            </p>
+
+            <p class="mt-1 text-sm text-slate-700">
               {{ formatDate(these.dateDebut) }}
-            </div>
+            </p>
 
           </div>
 
 
-          <div
-            class="bg-slate-50 rounded-xl p-3"
-          >
+          <div class="col-span-2">
 
-            <div class="text-[10px] uppercase font-bold text-slate-400">
-              Soutenance
-            </div>
+            <p class="text-xs text-slate-400">
+              Soutenance prévue
+            </p>
 
-            <div class="text-sm font-bold text-[#002B49] mt-1">
+            <p
+              *ngIf="these.dateSoutenancePrevue"
+              class="mt-1 text-sm text-slate-700"
+            >
               {{ formatDate(these.dateSoutenancePrevue) }}
-            </div>
+            </p>
+
+            <p
+              *ngIf="!these.dateSoutenancePrevue"
+              class="mt-1 text-sm text-slate-400"
+            >
+              Non définie
+            </p>
 
           </div>
 
         </div>
 
 
-        <div
-          class="flex flex-wrap gap-2 mt-4"
-        >
+        <!-- ACTIONS -->
+        <div class="mt-4 flex justify-end gap-2 border-t border-slate-100 pt-4">
 
           <button
             type="button"
             (click)="viewThesis(these)"
-            class="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-xs font-bold text-[#002B49]"
+            class="rounded-lg border border-blue-200 px-3 py-2 text-sm text-blue-600 hover:bg-blue-50"
           >
-            Voir
+            <i class="bi bi-eye mr-1"></i>
+            Détails
           </button>
 
-          <button
-            type="button"
-            (click)="followProgress(these)"
-            class="flex-1 px-3 py-2 rounded-lg bg-[#00A3E0]/10 text-[#0077A8] text-xs font-bold"
-          >
-            Avancement
-          </button>
 
           <button
-            *ngIf="canEdit()"
+            *ngIf="canEdit(these)"
             type="button"
             (click)="openEditModal(these)"
-            class="px-3 py-2 rounded-lg border border-slate-200 text-xs"
+            class="rounded-lg border border-amber-200 px-3 py-2 text-sm text-amber-600 hover:bg-amber-50"
           >
-            âœ
+            <i class="bi bi-pencil mr-1"></i>
+            Modifier
           </button>
+
 
           <button
             *ngIf="isAdmin()"
             type="button"
             (click)="deleteThesis(these)"
-            class="px-3 py-2 rounded-lg border border-red-200 text-red-500 text-xs"
+            class="rounded-lg border border-red-200 px-3 py-2 text-sm text-red-600 hover:bg-red-50"
           >
-            ðŸ—‘
+            <i class="bi bi-trash mr-1"></i>
+            Supprimer
           </button>
 
         </div>
 
-      </article>
+      </div>
 
     </div>
 
-  </section>
+  </div>
 
 
-  <!-- ====================================================== -->
-  <!-- MODAL CRÃ‰ATION / MODIFICATION -->
-  <!-- ====================================================== -->
+  <!-- ========================================================= -->
+  <!-- MODAL CRÉATION / MODIFICATION -->
+  <!-- ========================================================= -->
 
   <div
     *ngIf="showFormModal"
-    class="fixed inset-0 z-50 bg-slate-900/50 flex items-center justify-center p-4"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
   >
 
     <div
-      class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden"
+      class="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white shadow-2xl"
     >
 
-      <!-- Header modal -->
-
-      <div
-        class="px-6 py-5 border-b border-slate-100 flex items-center justify-between"
-      >
+      <!-- HEADER -->
+      <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4">
 
         <div>
 
-          <h2
-            class="text-xl font-extrabold text-[#002B49]"
-          >
-            {{ isEditMode ? 'Modifier la thÃ¨se' : 'DÃ©poser une thÃ¨se' }}
+          <h2 class="text-lg font-bold text-slate-800">
+
+            <i
+              class="bi mr-2"
+              [ngClass]="
+                isEditMode
+                  ? 'bi-pencil-square'
+                  : 'bi-plus-circle'
+              "
+            ></i>
+
+            {{
+              isEditMode
+                ? 'Modifier la thèse'
+                : 'Nouvelle thèse'
+            }}
+
           </h2>
 
-          <p class="text-xs text-slate-400 mt-1">
-            {{ isEditMode
-              ? 'Mettez Ã  jour les informations de la thÃ¨se.'
-              : 'Enregistrez un nouveau travail de recherche.' }}
+          <p class="mt-1 text-xs text-slate-500">
+            Renseignez les informations de la thèse.
           </p>
 
         </div>
 
+
         <button
           type="button"
           (click)="closeFormModal()"
-          class="w-9 h-9 rounded-lg bg-slate-100 text-slate-500 hover:bg-slate-200"
+          [disabled]="saving"
+          class="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100"
         >
-          âœ•
+          <i class="bi bi-x-lg"></i>
         </button>
 
       </div>
 
 
-      <!-- Formulaire -->
-
+      <!-- FORMULAIRE -->
       <form
         (ngSubmit)="saveThesis()"
-        class="p-6 space-y-5"
+        #thesisFormRef="ngForm"
       >
 
-        <!-- Titre -->
+        <div class="space-y-5 p-6">
 
-        <div>
-
-          <label
-            class="block text-xs font-bold text-slate-600 mb-2"
-          >
-            Titre de la thÃ¨se *
-          </label>
-
-          <input
-            type="text"
-            name="titre"
-            [(ngModel)]="thesisForm.titre"
-            required
-            placeholder="Ex. Architectures microservices pour les rÃ©seaux 5G"
-            class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#00A3E0]/20 focus:border-[#00A3E0]"
-          />
-
-        </div>
-
-
-        <!-- ProblÃ©matique -->
-
-        <div>
-
-          <label
-            class="block text-xs font-bold text-slate-600 mb-2"
-          >
-            ProblÃ©matique
-          </label>
-
-          <textarea
-            name="problematique"
-            [(ngModel)]="thesisForm.problematique"
-            rows="4"
-            placeholder="DÃ©crivez la problÃ©matique scientifique..."
-            class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#00A3E0]/20 focus:border-[#00A3E0]"
-          ></textarea>
-
-        </div>
-
-
-        <!-- Dates -->
-
-        <div
-          class="grid grid-cols-1 md:grid-cols-2 gap-4"
-        >
-
+          <!-- TITRE -->
           <div>
 
             <label
-              class="block text-xs font-bold text-slate-600 mb-2"
+              for="titre"
+              class="mb-1.5 block text-sm font-medium text-slate-700"
             >
-              Date de dÃ©but *
+              Titre de la thèse
+              <span class="text-red-500">*</span>
             </label>
 
             <input
-              type="date"
-              name="dateDebut"
-              [(ngModel)]="thesisForm.dateDebut"
+              id="titre"
+              name="titre"
+              type="text"
+              [(ngModel)]="thesisForm.titre"
               required
-              class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#00A3E0]/20 focus:border-[#00A3E0]"
+              maxlength="255"
+              placeholder="Saisissez le titre de la thèse"
+              class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
             />
 
           </div>
 
 
+          <!-- PROBLÉMATIQUE -->
           <div>
 
             <label
-              class="block text-xs font-bold text-slate-600 mb-2"
+              for="problematique"
+              class="mb-1.5 block text-sm font-medium text-slate-700"
             >
-              Soutenance prÃ©vue
+              Problématique
             </label>
 
-            <input
-              type="date"
-              name="dateSoutenancePrevue"
-              [(ngModel)]="thesisForm.dateSoutenancePrevue"
-              class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#00A3E0]/20 focus:border-[#00A3E0]"
-            />
+            <textarea
+              id="problematique"
+              name="problematique"
+              rows="4"
+              [(ngModel)]="thesisForm.problematique"
+              placeholder="Saisissez la problématique de la thèse"
+              class="w-full resize-none rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            ></textarea>
 
           </div>
 
-        </div>
+
+          <!-- DOCTORANT / ENCADREUR -->
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+
+            <!-- DOCTORANT -->
+            <div>
+
+              <label
+                for="doctorantId"
+                class="mb-1.5 block text-sm font-medium text-slate-700"
+              >
+                ID du doctorant
+                <span class="text-red-500">*</span>
+              </label>
+
+              <input
+                id="doctorantId"
+                name="doctorantId"
+                type="number"
+                min="1"
+                [(ngModel)]="thesisForm.doctorantId"
+                required
+                placeholder="Ex. 12"
+                class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              />
+
+            </div>
 
 
-        <!-- IDs -->
+            <!-- ENCADREUR -->
+            <div>
 
-        <div
-          class="grid grid-cols-1 md:grid-cols-2 gap-4"
-        >
+              <label
+                for="encadreurId"
+                class="mb-1.5 block text-sm font-medium text-slate-700"
+              >
+                ID de l'encadreur
+                <span class="text-red-500">*</span>
+              </label>
 
+              <input
+                id="encadreurId"
+                name="encadreurId"
+                type="number"
+                min="1"
+                [(ngModel)]="thesisForm.encadreurId"
+                required
+                placeholder="Ex. 5"
+                class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              />
+
+            </div>
+
+          </div>
+
+
+          <!-- DOMAINE -->
           <div>
 
             <label
-              class="block text-xs font-bold text-slate-600 mb-2"
+              for="domaineRechercheId"
+              class="mb-1.5 block text-sm font-medium text-slate-700"
             >
-              ID du doctorant *
+              ID du domaine de recherche
             </label>
 
             <input
+              id="domaineRechercheId"
+              name="domaineRechercheId"
               type="number"
-              name="doctorantId"
-              [(ngModel)]="thesisForm.doctorantId"
               min="1"
-              required
-              placeholder="Ex. 5"
-              class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#00A3E0]/20 focus:border-[#00A3E0]"
+              [(ngModel)]="thesisForm.domaineRechercheId"
+              placeholder="Ex. 3"
+              class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
             />
+
+            <p class="mt-1 text-xs text-slate-500">
+              Identifiant du domaine de recherche associé à la thèse.
+            </p>
 
           </div>
 
 
-          <div>
+          <!-- DATES -->
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+
+            <!-- DATE DÉBUT -->
+            <div>
+
+              <label
+                for="dateDebut"
+                class="mb-1.5 block text-sm font-medium text-slate-700"
+              >
+                Date de début
+                <span class="text-red-500">*</span>
+              </label>
+
+              <input
+                id="dateDebut"
+                name="dateDebut"
+                type="date"
+                [(ngModel)]="thesisForm.dateDebut"
+                required
+                class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              />
+
+            </div>
+
+
+            <!-- SOUTENANCE -->
+            <div>
+
+              <label
+                for="dateSoutenancePrevue"
+                class="mb-1.5 block text-sm font-medium text-slate-700"
+              >
+                Date de soutenance prévue
+              </label>
+
+              <input
+                id="dateSoutenancePrevue"
+                name="dateSoutenancePrevue"
+                type="date"
+                [(ngModel)]="thesisForm.dateSoutenancePrevue"
+                class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              />
+
+            </div>
+
+          </div>
+
+
+          <!-- STATUT -->
+          <div *ngIf="isEditMode">
 
             <label
-              class="block text-xs font-bold text-slate-600 mb-2"
+              for="statut"
+              class="mb-1.5 block text-sm font-medium text-slate-700"
             >
-              ID de l'encadreur *
+              Statut
             </label>
 
-            <input
-              type="number"
-              name="encadreurId"
-              [(ngModel)]="thesisForm.encadreurId"
-              min="1"
-              required
-              placeholder="Ex. 2"
-              class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#00A3E0]/20 focus:border-[#00A3E0]"
-            />
+            <select
+              id="statut"
+              name="statut"
+              [(ngModel)]="thesisForm.statut"
+              class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            >
+
+              <option value="EN_COURS">
+                En cours
+              </option>
+
+              <option value="SOUTENUE">
+                Soutenue
+              </option>
+
+              <option value="SUSPENDUE">
+                Suspendue
+              </option>
+
+              <option value="ABANDONNEE">
+                Abandonnée
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <!-- INFO -->
+          <div class="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-700">
+
+            <i class="bi bi-info-circle mr-2"></i>
+
+            <span *ngIf="!isEditMode">
+              La thèse sera créée avec le statut
+              <strong>En cours</strong>.
+            </span>
+
+            <span *ngIf="isEditMode">
+              Les informations de la thèse seront mises à jour.
+            </span>
 
           </div>
 
         </div>
 
 
-        <!-- Statut uniquement en modification -->
-
-        <div *ngIf="isEditMode">
-
-          <label
-            class="block text-xs font-bold text-slate-600 mb-2"
-          >
-            Statut
-          </label>
-
-          <select
-            name="statut"
-            [(ngModel)]="thesisForm.statut"
-            class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-sm"
-          >
-
-            <option value="EN_COURS">
-              En cours
-            </option>
-
-            <option value="SOUTENUE">
-              TerminÃ©e
-            </option>
-
-            <option value="SUSPENDUE">
-              Suspendue
-            </option>
-
-            <option value="ABANDONNEE">
-              AnnulÃ©e
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <!-- Erreur formulaire -->
-
-        <div
-          *ngIf="errorMessage"
-          class="bg-red-50 border border-red-200 text-red-600 rounded-xl p-3 text-sm"
-        >
-          {{ errorMessage }}
-        </div>
-
-
-        <!-- Actions -->
-
-        <div
-          class="flex justify-end gap-3 pt-2"
-        >
+        <!-- FOOTER -->
+        <div class="flex justify-end gap-3 border-t border-slate-200 px-6 py-4">
 
           <button
             type="button"
             (click)="closeFormModal()"
             [disabled]="saving"
-            class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 text-sm font-bold hover:bg-slate-50 disabled:opacity-50"
+            class="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50"
           >
-            Abandonnéer
+            Annuler
           </button>
+
 
           <button
             type="submit"
-            [disabled]="saving"
-            class="px-5 py-2.5 rounded-xl bg-[#002B49] text-white text-sm font-bold hover:bg-[#003D66] disabled:opacity-50"
+            [disabled]="saving || thesisFormRef.invalid"
+            class="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
 
-            <span *ngIf="!saving">
-              {{ isEditMode ? 'Enregistrer les modifications' : 'DÃ©poser la thÃ¨se' }}
-            </span>
+            <span
+              *ngIf="saving"
+              class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+            ></span>
 
-            <span *ngIf="saving">
-              Enregistrement...
-            </span>
+            <i
+              *ngIf="!saving"
+              class="bi mr-2"
+              [ngClass]="
+                isEditMode
+                  ? 'bi-save'
+                  : 'bi-plus-circle'
+              "
+            ></i>
+
+            {{
+              saving
+                ? 'Enregistrement...'
+                : (
+                    isEditMode
+                      ? 'Enregistrer'
+                      : 'Créer la thèse'
+                  )
+            }}
 
           </button>
 
@@ -1168,191 +1079,225 @@
   </div>
 
 
-  <!-- ====================================================== -->
-  <!-- MODAL DÃ‰TAIL / AVANCEMENT -->
-  <!-- ====================================================== -->
+  <!-- ========================================================= -->
+  <!-- MODAL DÉTAILS -->
+  <!-- ========================================================= -->
 
   <div
-    *ngIf="showDetailsModal && selectedThese"
-    class="fixed inset-0 z-50 bg-slate-900/50 flex items-center justify-center p-4"
+    *ngIf="showDetailsModal"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
   >
 
     <div
-      class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden"
+      class="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-2xl"
     >
 
-      <div
-        class="px-6 py-5 border-b border-slate-100 flex items-center justify-between"
-      >
+      <!-- HEADER -->
+      <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4">
 
         <div>
 
-          <div
-            class="text-xs font-bold uppercase tracking-wider text-[#00A3E0]"
-          >
-            ThÃ¨se #{{ selectedThese.id }}
-          </div>
-
-          <h2
-            class="text-xl font-extrabold text-[#002B49] mt-1"
-          >
-            {{ selectedThese.titre }}
+          <h2 class="text-lg font-bold text-slate-800">
+            <i class="bi bi-journal-text mr-2"></i>
+            Détails de la thèse
           </h2>
 
+          <p
+            *ngIf="selectedThese"
+            class="mt-1 text-xs text-slate-500"
+          >
+            Thèse #{{ selectedThese.id }}
+          </p>
+
         </div>
+
 
         <button
           type="button"
           (click)="closeDetailsModal()"
-          class="w-9 h-9 rounded-lg bg-slate-100 text-slate-500 hover:bg-slate-200"
+          class="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100"
         >
-          âœ•
+          <i class="bi bi-x-lg"></i>
         </button>
 
       </div>
 
 
-      <div class="p-6 space-y-5">
+      <!-- CORPS -->
+      <div
+        *ngIf="selectedThese"
+        class="space-y-6 p-6"
+      >
 
-        <!-- Statut -->
+        <!-- TITRE -->
+        <div>
 
-        <div
-          class="flex items-center justify-between bg-slate-50 rounded-2xl p-4"
-        >
+          <p class="text-xs font-medium uppercase text-slate-400">
+            Titre
+          </p>
 
-          <div>
-
-            <div class="text-xs text-slate-400">
-              Statut actuel
-            </div>
-
-            <div
-              class="mt-1 inline-flex px-3 py-1 rounded-full border text-xs font-bold"
-              [ngClass]="getStatusClass(selectedThese.statut)"
-            >
-              {{ getStatusLabel(selectedThese.statut) }}
-            </div>
-
-          </div>
-
-          <div class="text-3xl">
-            ðŸ“Š
-          </div>
+          <h3 class="mt-1 text-xl font-bold text-slate-800">
+            {{ selectedThese.titre }}
+          </h3>
 
         </div>
 
 
-        <!-- Informations -->
+        <!-- PROBLÉMATIQUE -->
+        <div *ngIf="selectedThese.problematique">
 
-        <div
-          class="grid grid-cols-1 md:grid-cols-2 gap-4"
-        >
+          <p class="text-xs font-medium uppercase text-slate-400">
+            Problématique
+          </p>
 
-          <div
-            class="border border-slate-100 rounded-2xl p-4"
-          >
-
-            <div class="text-xs text-slate-400">
-              Doctorant
-            </div>
-
-            <div
-              class="font-bold text-[#002B49] mt-1"
-            >
-              ID #{{ selectedThese.doctorantId }}
-            </div>
-
-          </div>
-
-
-          <div
-            class="border border-slate-100 rounded-2xl p-4"
-          >
-
-            <div class="text-xs text-slate-400">
-              Encadreur
-            </div>
-
-            <div
-              class="font-bold text-[#002B49] mt-1"
-            >
-              ID #{{ selectedThese.encadreurId }}
-            </div>
-
-          </div>
-
-
-          <div
-            class="border border-slate-100 rounded-2xl p-4"
-          >
-
-            <div class="text-xs text-slate-400">
-              Date de dÃ©but
-            </div>
-
-            <div
-              class="font-bold text-[#002B49] mt-1"
-            >
-              {{ formatDate(selectedThese.dateDebut) }}
-            </div>
-
-          </div>
-
-
-          <div
-            class="border border-slate-100 rounded-2xl p-4"
-          >
-
-            <div class="text-xs text-slate-400">
-              Soutenance prÃ©vue
-            </div>
-
-            <div
-              class="font-bold text-[#002B49] mt-1"
-            >
-              {{ formatDate(selectedThese.dateSoutenancePrevue) }}
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <!-- ProblÃ©matique -->
-
-        <div
-          *ngIf="selectedThese.problematique"
-          class="border border-slate-100 rounded-2xl p-4"
-        >
-
-          <div
-            class="text-xs font-bold text-slate-400 uppercase tracking-wider"
-          >
-            ProblÃ©matique
-          </div>
-
-          <p
-            class="text-sm text-slate-600 leading-relaxed mt-2"
-          >
+          <p class="mt-2 text-sm leading-6 text-slate-700">
             {{ selectedThese.problematique }}
           </p>
 
         </div>
 
 
-        <div
-          class="flex justify-end pt-2"
-        >
+        <!-- INFORMATIONS -->
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
 
-          <button
-            type="button"
-            (click)="closeDetailsModal()"
-            class="px-5 py-2.5 rounded-xl bg-[#002B49] text-white text-sm font-bold"
-          >
-            Fermer
-          </button>
+          <!-- DOCTORANT -->
+          <div class="rounded-lg bg-slate-50 p-4">
+
+            <p class="text-xs text-slate-400">
+              Doctorant
+            </p>
+
+            <p class="mt-1 font-semibold text-slate-700">
+              #{{ selectedThese.doctorantId }}
+            </p>
+
+          </div>
+
+
+          <!-- ENCADREUR -->
+          <div class="rounded-lg bg-slate-50 p-4">
+
+            <p class="text-xs text-slate-400">
+              Encadreur
+            </p>
+
+            <p class="mt-1 font-semibold text-slate-700">
+              #{{ selectedThese.encadreurId }}
+            </p>
+
+          </div>
+
+
+          <!-- DOMAINE -->
+          <div class="rounded-lg bg-slate-50 p-4">
+
+            <p class="text-xs text-slate-400">
+              Domaine de recherche
+            </p>
+
+            <p
+              *ngIf="
+                selectedThese.domaineRechercheId !== null &&
+                selectedThese.domaineRechercheId !== undefined
+              "
+              class="mt-1 font-semibold text-slate-700"
+            >
+              #{{ selectedThese.domaineRechercheId }}
+            </p>
+
+            <p
+              *ngIf="
+                selectedThese.domaineRechercheId === null ||
+                selectedThese.domaineRechercheId === undefined
+              "
+              class="mt-1 text-sm text-slate-400"
+            >
+              Non renseigné
+            </p>
+
+          </div>
+
+
+          <!-- STATUT -->
+          <div class="rounded-lg bg-slate-50 p-4">
+
+            <p class="text-xs text-slate-400">
+              Statut
+            </p>
+
+            <span
+              class="mt-2 inline-flex rounded-full border px-2.5 py-1 text-xs font-medium"
+              [ngClass]="getStatusClass(selectedThese.statut)"
+            >
+              {{ getStatusLabel(selectedThese.statut) }}
+            </span>
+
+          </div>
+
+
+          <!-- DATE DÉBUT -->
+          <div class="rounded-lg bg-slate-50 p-4">
+
+            <p class="text-xs text-slate-400">
+              Date de début
+            </p>
+
+            <p class="mt-1 font-medium text-slate-700">
+              {{ formatDate(selectedThese.dateDebut) }}
+            </p>
+
+          </div>
+
+
+          <!-- DATE SOUTENANCE -->
+          <div class="rounded-lg bg-slate-50 p-4">
+
+            <p class="text-xs text-slate-400">
+              Soutenance prévue
+            </p>
+
+            <p
+              *ngIf="selectedThese.dateSoutenancePrevue"
+              class="mt-1 font-medium text-slate-700"
+            >
+              {{ formatDate(selectedThese.dateSoutenancePrevue) }}
+            </p>
+
+            <p
+              *ngIf="!selectedThese.dateSoutenancePrevue"
+              class="mt-1 text-sm text-slate-400"
+            >
+              Non définie
+            </p>
+
+          </div>
 
         </div>
+
+      </div>
+
+
+      <!-- FOOTER -->
+      <div class="flex justify-end gap-3 border-t border-slate-200 px-6 py-4">
+
+        <button
+          type="button"
+          (click)="closeDetailsModal()"
+          class="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50"
+        >
+          Fermer
+        </button>
+
+
+        <button
+          *ngIf="selectedThese && canEdit(selectedThese)"
+          type="button"
+          (click)="openEditModal(selectedThese)"
+          class="rounded-lg bg-amber-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-amber-600"
+        >
+          <i class="bi bi-pencil mr-2"></i>
+          Modifier
+        </button>
 
       </div>
 

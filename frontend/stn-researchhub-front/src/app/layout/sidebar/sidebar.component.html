@@ -1,44 +1,44 @@
-<aside class="w-full md:w-72 bg-white border-r border-slate-200 flex flex-col justify-between shrink-0 p-5 z-20 min-h-screen shadow-sm">
+<!-- Sidebar Officielle ESMT -->
+<aside class="w-full md:w-64 bg-white border-r border-slate-200 flex flex-col justify-between shrink-0 p-4 shadow-sm z-20">
   <div>
-    <!-- Logo ESMT -->
-    <div class="flex items-center gap-3 px-2 py-2 mb-6 bg-slate-50 p-2.5 rounded-2xl border border-slate-200">
-      <div class="w-12 h-12 rounded-xl bg-white p-1 flex items-center justify-center shadow-sm shrink-0 border border-slate-200">
-        <img src="assets/logo-esmt.png" alt="Logo ESMT" class="w-full h-full object-contain" />
+    <!-- Logo & Marque ESMT Agrandie -->
+    <div class="flex items-center gap-3.5 px-2 py-3 mb-5 border-b border-slate-100 bg-slate-50/70 rounded-2xl">
+      <div class="w-16 h-16 rounded-2xl bg-white p-2 flex items-center justify-center shadow-md border border-slate-200 shrink-0 overflow-hidden hover:shadow-lg transition">
+        <img src="assets/logo-esmt.png" alt="Logo ESMT" class="w-full h-full object-contain max-h-12" onerror="this.src='logo-esmt.png'" />
       </div>
       <div class="min-w-0">
-        <h1 class="font-black text-[#002B49] tracking-tight text-sm uppercase leading-tight">
-          <span>STN </span><span class="text-[#00A3E0]">Hub</span>
+        <h1 class="font-extrabold text-[#002B49] text-base leading-tight tracking-tight uppercase">
+          STN <span class="text-[#00A3E0]">ResearchHub</span>
         </h1>
-        <p class="text-[10px] text-[#84BD00] font-bold truncate">ESMT Dakar • Lab STN</p>
+        <p class="text-xs text-[#84BD00] font-bold truncate mt-0.5">ESMT Dakar • Lab STN</p>
+        <span class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block">Portail Recherche</span>
       </div>
     </div>
 
-    <!-- Liens de navigation avec contraste parfait -->
-    <nav class="space-y-1.5 text-sm">
-      <a routerLink="/dashboard" routerLinkActive="bg-[#002B49] text-white shadow-sm" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-600 hover:bg-slate-100 transition">
-        <span>📊</span><span>Tableau de Bord</span>
-      </a>
-      <a routerLink="/theses" routerLinkActive="bg-[#002B49] text-white shadow-sm" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-600 hover:bg-slate-100 transition">
-        <span>🎓</span><span>Thèses & Projets</span>
-      </a>
-      <a routerLink="/documents" routerLinkActive="bg-[#002B49] text-white shadow-sm" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-600 hover:bg-slate-100 transition">
-        <span>📁</span><span>Livrables & Dépôts</span>
-      </a>
-      <a routerLink="/evaluations" routerLinkActive="bg-[#002B49] text-white shadow-sm" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-600 hover:bg-slate-100 transition">
-        <span>🎯</span><span>Évaluations TRL</span>
-      </a>
-      <a routerLink="/ai-assistant" routerLinkActive="bg-[#002B49] text-white shadow-sm" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-600 hover:bg-slate-100 transition">
-        <span>✨</span><span>Assistant IA (RAG)</span>
-      </a>
-      <a routerLink="/users" routerLinkActive="bg-[#002B49] text-white shadow-sm" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-slate-600 hover:bg-slate-100 transition">
-        <span>👥</span><span>Chercheurs & Rôles</span>
-      </a>
+    <!-- Menu de Navigation Dynamique selon Rôle -->
+    <nav class="space-y-1.5">
+      <ng-container *ngFor="let item of menuItems">
+        <a *ngIf="canAccess(item.roles)"
+           [routerLink]="item.route"
+           routerLinkActive="bg-[#002B49] text-white shadow-md"
+           [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
+           class="flex items-center gap-3 px-3.5 py-2.5 text-sm font-semibold rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" [attr.d]="item.icon"></path>
+          </svg>
+          <span>{{ item.label }}</span>
+        </a>
+      </ng-container>
     </nav>
   </div>
 
-  <div class="pt-4 border-t border-slate-100">
-    <a routerLink="/login" class="w-full py-2.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
-      <span>🚪 Déconnexion</span>
-    </a>
+  <!-- Pied de page Sidebar -->
+  <div class="pt-4 border-t border-slate-100 space-y-2 text-center text-xs text-slate-400">
+    <div class="text-[11px] font-medium text-slate-500">
+      Plateforme Doctorat & TRL
+    </div>
+    <div class="text-[10px] text-slate-400">
+      &copy; 2026 ESMT Dakar — Laboratoire STN
+    </div>
   </div>
 </aside>

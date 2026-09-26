@@ -1,989 +1,1978 @@
-﻿<div class="space-y-6">
+<div class="space-y-6">
+
+
 
   <!-- ==========================================================
+
        HEADER
+
        ========================================================== -->
+
+
 
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 
+
+
     <div>
+
       <h1 class="text-2xl font-bold text-white">
+
         Gestion des livrables
+
       </h1>
 
+
+
       <p class="text-sm text-slate-400 mt-1">
-        Consultez, dÃ©posez, validez et gÃ©rez les livrables scientifiques.
+
+        Consultez, déposez, validez et gérez les livrables scientifiques.
+
       </p>
+
     </div>
 
+
+
     <button
+
       *ngIf="canUpload()"
+
       type="button"
+
       (click)="openUploadModal()"
+
       class="px-4 py-2.5 rounded-xl bg-[#84BD00] hover:bg-[#6fa000] text-white font-semibold text-sm transition"
+
     >
-      + DÃ©poser un livrable
+
+      + Déposer un livrable
+
     </button>
 
+
+
   </div>
 
 
+
+
+
   <!-- ==========================================================
+
        MESSAGES
+
        ========================================================== -->
 
-  <div
-    *ngIf="successMessage"
-    class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm"
-  >
-    {{ successMessage }}
-  </div>
+
 
   <div
-    *ngIf="errorMessage"
-    class="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm"
+
+    *ngIf="successMessage"
+
+    class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm"
+
   >
-    {{ errorMessage }}
+
+    {{ successMessage }}
+
   </div>
+
+
+
+  <div
+
+    *ngIf="errorMessage"
+
+    class="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm"
+
+  >
+
+    {{ errorMessage }}
+
+  </div>
+
+
+
 
 
   <!-- ==========================================================
+
        FILTRES
+
        ========================================================== -->
+
+
 
   <div class="glass-panel rounded-2xl p-5">
 
+
+
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
+
+
       <!-- Recherche -->
+
       <div>
+
         <label class="block text-xs font-semibold text-slate-400 mb-2">
+
           Recherche
+
         </label>
 
+
+
         <input
+
           type="text"
+
           [(ngModel)]="searchQuery"
+
           (ngModelChange)="applyFilter()"
+
           placeholder="Rechercher un livrable..."
+
           class="glass-input w-full px-3.5 py-2.5 rounded-lg text-sm"
+
         />
+
       </div>
+
+
+
 
 
       <!-- Statut -->
+
       <div>
+
         <label class="block text-xs font-semibold text-slate-400 mb-2">
+
           Statut
+
         </label>
 
+
+
         <select
+
           [(ngModel)]="statusFilter"
+
           (ngModelChange)="applyFilter()"
+
           class="glass-input w-full px-3.5 py-2.5 rounded-lg text-sm bg-slate-900"
+
         >
+
+
 
           <option value="">
+
             Tous les statuts
+
           </option>
+
+
 
           <option value="EN_ATTENTE_VALIDATION">
+
             En attente
+
           </option>
+
+
 
           <option value="VALIDE">
-            ValidÃ©
+
+            Validé
+
           </option>
+
+
 
           <option value="REJETE">
-            RejetÃ©
+
+            Rejeté
+
           </option>
 
+
+
         </select>
+
       </div>
 
 
-      <!-- ThÃ¨se -->
+
+
+
+      <!-- Thèse -->
+
       <div>
+
         <label class="block text-xs font-semibold text-slate-400 mb-2">
-          ThÃ¨se
+
+          Thèse
+
         </label>
 
+
+
         <select
+
           [(ngModel)]="theseFilter"
+
           (ngModelChange)="applyFilter()"
+
           class="glass-input w-full px-3.5 py-2.5 rounded-lg text-sm bg-slate-900"
+
         >
 
+
+
           <option [ngValue]="null">
-            Toutes les thÃ¨ses
+
+            Toutes les thèses
+
           </option>
+
+
 
           <option
+
             *ngFor="let these of theses"
+
             [ngValue]="these.id"
+
           >
+
             #{{ these.id }} -
+
             {{ these.titre }}
+
           </option>
 
+
+
         </select>
+
       </div>
 
+
+
     </div>
+
+
+
 
 
     <div class="flex justify-end mt-4">
 
+
+
       <button
+
         type="button"
+
         (click)="resetFilters()"
+
         class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm transition"
+
       >
-        RÃ©initialiser
+
+        Réinitialiser
+
       </button>
 
+
+
     </div>
+
+
 
   </div>
 
 
+
+
+
   <!-- ==========================================================
+
        CHARGEMENT
+
        ========================================================== -->
 
+
+
   <div
+
     *ngIf="loading"
+
     class="glass-panel rounded-2xl p-10 text-center"
+
   >
+
+
 
     <div class="text-3xl mb-3">
+
       â³
+
     </div>
 
+
+
     <p class="text-slate-400 text-sm">
+
       Chargement des livrables...
+
     </p>
+
+
 
   </div>
 
 
+
+
+
   <!-- ==========================================================
+
        LISTE DES DOCUMENTS
+
        ========================================================== -->
 
+
+
   <div
+
     *ngIf="!loading"
+
     class="glass-panel rounded-2xl p-5"
+
   >
+
+
 
     <div class="flex items-center justify-between mb-5">
 
+
+
       <div>
 
+
+
         <h2 class="text-lg font-bold text-white">
+
           Livrables scientifiques
+
         </h2>
 
+
+
         <p class="text-xs text-slate-500 mt-1">
+
           {{ filteredDocuments.length }} livrable(s)
+
         </p>
 
+
+
       </div>
+
+
 
     </div>
 
 
-    <!-- Aucun rÃ©sultat -->
+
+
+
+    <!-- Aucun résultat -->
+
+
 
     <div
+
       *ngIf="filteredDocuments.length === 0"
+
       class="py-12 text-center"
+
     >
 
+
+
       <div class="text-4xl mb-3">
-        ðŸ“‚
+
+        📁
+
       </div>
 
+
+
       <p class="text-slate-400">
-        Aucun livrable trouvÃ©.
+
+        Aucun livrable trouvé.
+
       </p>
 
+
+
     </div>
+
+
+
 
 
     <!-- Liste -->
 
+
+
     <div
+
       *ngIf="filteredDocuments.length > 0"
+
       class="space-y-4"
+
     >
 
+
+
       <div
+
         *ngFor="let document of filteredDocuments"
+
         class="rounded-xl border border-slate-800 bg-slate-950/40 p-5 hover:border-[#84BD00]/30 transition"
+
       >
 
+
+
         <!-- ======================================================
+
              HEADER DOCUMENT
+
              ====================================================== -->
+
+
 
         <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
 
+
+
           <div class="flex items-start gap-3">
 
+
+
             <div
+
               class="w-11 h-11 rounded-xl bg-[#84BD00]/10 border border-[#84BD00]/20 flex items-center justify-center text-xl flex-shrink-0"
+
             >
-              ðŸ“„
+
+              📄
+
             </div>
+
+
+
 
 
             <div>
 
+
+
               <h3 class="font-bold text-white">
+
                 {{ document.titre }}
+
               </h3>
 
 
+
+
+
               <p
+
                 *ngIf="document.description"
+
                 class="text-sm text-slate-400 mt-1"
+
               >
+
                 {{ document.description }}
+
               </p>
+
+
+
 
 
               <div class="flex flex-wrap gap-3 mt-2 text-xs text-slate-500">
 
+
+
                 <span *ngIf="document.nomOriginal">
-                  ðŸ“Ž {{ document.nomOriginal }}
+
+                  📎 {{ document.nomOriginal }}
+
                 </span>
+
+
 
                 <span *ngIf="document.type">
+
                   Type : {{ document.type }}
+
                 </span>
 
+
+
                 <span *ngIf="document.taille !== undefined">
+
                   Taille : {{ formatFileSize(document.taille) }}
+
                 </span>
+
+
 
               </div>
 
+
+
             </div>
 
+
+
           </div>
+
+
+
 
 
           <!-- STATUT -->
 
+
+
           <span
+
             class="px-3 py-1 rounded-full text-xs font-semibold border self-start"
+
             [ngClass]="getStatusClass(document.statutValidation)"
+
           >
+
             {{ getStatusLabel(document.statutValidation) }}
+
           </span>
+
+
 
         </div>
 
 
+
+
+
         <!-- ======================================================
+
              INFORMATIONS
+
              ====================================================== -->
+
+
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-5">
 
+
+
           <div class="rounded-lg bg-slate-900/60 p-3">
 
+
+
             <span class="block text-xs text-slate-500 mb-1">
-              ThÃ¨se
+
+              Thèse
+
             </span>
+
+
 
             <span class="text-sm text-slate-200">
 
+
+
               {{
+
                 theses.find(t => t.id === document.theseId)?.titre
-                || 'ThÃ¨se #' + document.theseId
+
+                || 'Thèse #' + document.theseId
+
               }}
 
+
+
             </span>
+
+
 
           </div>
 
 
+
+
+
           <div class="rounded-lg bg-slate-900/60 p-3">
 
+
+
             <span class="block text-xs text-slate-500 mb-1">
+
               Doctorant
+
             </span>
 
+
+
             <span class="text-sm text-slate-200">
+
               #{{ document.doctorantId }}
+
             </span>
+
+
 
           </div>
 
 
+
+
+
           <div class="rounded-lg bg-slate-900/60 p-3">
 
+
+
             <span class="block text-xs text-slate-500 mb-1">
+
               Encadreur
+
             </span>
 
+
+
             <span class="text-sm text-slate-200">
+
+
 
               {{
+
                 document.encadreurId
+
                   ? '#' + document.encadreurId
+
                   : '-'
+
               }}
+
+
 
             </span>
 
+
+
           </div>
+
+
 
         </div>
 
 
+
+
+
         <!-- ======================================================
+
              DATES
+
              ====================================================== -->
+
+
 
         <div class="flex flex-wrap gap-4 mt-4 text-xs text-slate-500">
 
+
+
           <span *ngIf="document.dateDepot">
 
-            DÃ©posÃ© le :
+
+
+            Déposé le :
+
+
 
             {{ document.dateDepot | date:'dd/MM/yyyy HH:mm' }}
 
+
+
           </span>
+
+
+
 
 
           <span *ngIf="document.dateValidation">
 
-            ValidÃ© le :
+
+
+            Validé le :
+
+
 
             {{ document.dateValidation | date:'dd/MM/yyyy HH:mm' }}
 
+
+
           </span>
+
+
 
         </div>
 
 
+
+
+
         <!-- ======================================================
+
              COMMENTAIRE
+
              ====================================================== -->
 
+
+
         <div
+
           *ngIf="document.commentaire"
+
           class="mt-4 p-3 rounded-lg bg-slate-900 border border-slate-800"
+
         >
+
+
 
           <span class="text-xs font-semibold text-slate-400">
+
             Commentaire :
+
           </span>
 
+
+
           <span class="text-sm text-slate-300 ml-1">
+
             {{ document.commentaire }}
+
           </span>
+
+
 
         </div>
 
 
+
+
+
         <!-- ======================================================
+
              ACTIONS
+
              ====================================================== -->
 
+
+
         <div
+
           class="flex flex-wrap gap-2 mt-5 pt-4 border-t border-slate-800"
+
         >
 
-          <!-- TÃ©lÃ©charger -->
+
+
+          <!-- Télécharger -->
+
+
 
           <button
+
             type="button"
+
             (click)="downloadDocument(document)"
+
             class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs transition"
+
           >
-            â¬‡ TÃ©lÃ©charger
+
+            â¬‡ Télécharger
+
           </button>
 
 
-          <!-- RÃ©sumÃ© IA -->
+
+
+
+          <!-- Résumé IA -->
+
+
 
           <button
+
             type="button"
+
             (click)="openSummary(document)"
+
             class="px-3 py-2 rounded-lg bg-[#00A3E0]/10 hover:bg-[#00A3E0]/20 border border-[#00A3E0]/20 text-[#00A3E0] text-xs transition"
+
           >
-            ðŸ¤– RÃ©sumÃ© IA
+
+            🤖 Résumé IA
+
           </button>
+
+
+
 
 
           <!-- Indexation IA -->
 
+
+
           <button
+
             *ngIf="canIndex()"
+
             type="button"
+
             (click)="indexDocument(document)"
+
             [disabled]="processing"
+
             class="px-3 py-2 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 text-purple-400 text-xs disabled:opacity-50 transition"
+
           >
+
             ðŸ§  Indexer IA
+
           </button>
+
+
+
 
 
           <!-- Valider -->
 
+
+
           <button
+
             *ngIf="
+
               canValidate() &&
+
               document.statutValidation === 'EN_ATTENTE'
+
             "
+
             type="button"
+
             (click)="validateDocument(document)"
+
             [disabled]="processing"
+
             class="px-3 py-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 text-xs disabled:opacity-50 transition"
+
           >
-            âœ“ Valider
+
+            ✓ Valider
+
           </button>
+
+
+
 
 
           <!-- Rejeter -->
 
+
+
           <button
+
             *ngIf="
+
               canValidate() &&
+
               document.statutValidation === 'EN_ATTENTE'
+
             "
+
             type="button"
+
             (click)="rejectDocument(document)"
+
             [disabled]="processing"
+
             class="px-3 py-2 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/20 text-orange-400 text-xs disabled:opacity-50 transition"
+
           >
-            âœ• Rejeter
+
+            ✕ Rejeter
+
           </button>
+
+
+
 
 
           <!-- Supprimer -->
 
+
+
           <button
+
             *ngIf="canDelete()"
+
             type="button"
+
             (click)="deleteDocument(document)"
+
             [disabled]="processing"
+
             class="px-3 py-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 text-xs disabled:opacity-50 transition"
+
           >
-            ðŸ—‘ Supprimer
+
+            🗑️ Supprimer
+
           </button>
+
+
 
         </div>
 
+
+
       </div>
+
+
 
     </div>
 
+
+
   </div>
+
+
 
 </div>
 
 
+
+
+
 <!-- ==========================================================
-     MODAL DÃ‰PÃ”T
+
+     MODAL DÉPÔT
+
      ========================================================== -->
 
+
+
 <div
+
   *ngIf="showUploadModal"
+
   class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+
 >
 
+
+
   <div
+
     class="glass-panel w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl p-6"
+
   >
+
+
 
     <!-- HEADER -->
 
+
+
     <div class="flex items-center justify-between mb-6">
+
+
 
       <div>
 
+
+
         <h2 class="text-xl font-bold text-white">
-          DÃ©poser un livrable
+
+          Déposer un livrable
+
         </h2>
 
+
+
         <p class="text-xs text-slate-400 mt-1">
+
           Ajoutez un document scientifique.
+
         </p>
+
+
 
       </div>
 
 
+
+
+
       <button
+
         type="button"
+
         (click)="closeUploadModal()"
+
         [disabled]="uploading"
+
         class="text-slate-400 hover:text-white text-xl"
+
       >
-        âœ•
+
+        ✕
+
       </button>
 
+
+
     </div>
+
+
+
 
 
     <!-- FORMULAIRE -->
 
+
+
     <div class="space-y-4">
+
+
 
       <!-- TITRE -->
 
+
+
       <div>
 
+
+
         <label class="block text-xs font-semibold text-slate-300 mb-2">
+
           Titre *
+
         </label>
 
+
+
         <input
+
           type="text"
+
           [(ngModel)]="uploadForm.titre"
+
           [disabled]="uploading"
+
           placeholder="Ex : Rapport d'avancement"
+
           class="glass-input w-full px-3.5 py-2.5 rounded-lg text-sm"
+
         />
 
+
+
       </div>
+
+
+
 
 
       <!-- TYPE -->
 
+
+
       <div>
 
+
+
         <label class="block text-xs font-semibold text-slate-300 mb-2">
+
           Type de livrable
+
         </label>
 
+
+
         <select
+
           [(ngModel)]="uploadForm.type"
+
           [disabled]="uploading"
+
           class="glass-input w-full px-3.5 py-2.5 rounded-lg text-sm bg-slate-900"
+
         >
 
+
+
           <option value="">
-            -- SÃ©lectionner --
+
+            -- Sélectionner --
+
           </option>
+
+
 
           <option value="RAPPORT">
+
             Rapport
+
           </option>
+
+
 
           <option value="ARTICLE">
+
             Article scientifique
+
           </option>
+
+
 
           <option value="MEMOIRE">
-            MÃ©moire
+
+            Mémoire
+
           </option>
+
+
 
           <option value="THESE">
-            ThÃ¨se
+
+            Thèse
+
           </option>
+
+
 
           <option value="AUTRE">
+
             Autre
+
           </option>
 
+
+
         </select>
+
+
 
       </div>
 
 
-      <!-- THÃˆSE -->
+
+
+
+      <!-- THÈSE -->
+
+
 
       <div>
 
+
+
         <label class="block text-xs font-semibold text-slate-300 mb-2">
-          ThÃ¨se *
+
+          Thèse *
+
         </label>
 
+
+
         <select
+
           [(ngModel)]="uploadForm.theseId"
+
           [disabled]="uploading || loadingTheses"
+
           class="glass-input w-full px-3.5 py-2.5 rounded-lg text-sm bg-slate-900"
+
         >
 
+
+
           <option [ngValue]="null">
-            -- SÃ©lectionner une thÃ¨se --
+
+            -- Sélectionner une thèse --
+
           </option>
+
+
 
           <option
+
             *ngFor="let these of theses"
+
             [ngValue]="these.id"
+
           >
+
             #{{ these.id }} - {{ these.titre }}
+
           </option>
 
+
+
         </select>
+
+
+
 
 
         <p
+
           *ngIf="loadingTheses"
+
           class="text-xs text-slate-500 mt-1"
+
         >
-          Chargement des thÃ¨ses...
+
+          Chargement des thèses...
+
         </p>
 
+
+
       </div>
+
+
+
 
 
       <!-- DOCTORANT -->
 
+
+
       <div>
 
+
+
         <label class="block text-xs font-semibold text-slate-300 mb-2">
+
           ID Doctorant
+
         </label>
 
+
+
         <input
+
           type="number"
+
           [(ngModel)]="uploadForm.doctorantId"
+
           [disabled]="uploading || isDoctorant()"
+
           placeholder="ID du doctorant"
+
           class="glass-input w-full px-3.5 py-2.5 rounded-lg text-sm"
+
         />
 
+
+
         <p
+
           *ngIf="isDoctorant()"
+
           class="text-xs text-slate-500 mt-1"
+
         >
-          Votre identifiant est utilisÃ© automatiquement.
+
+          Votre identifiant est utilisé automatiquement.
+
         </p>
 
+
+
       </div>
+
+
+
 
 
       <!-- ENCADREUR -->
 
+
+
       <div>
 
+
+
         <label class="block text-xs font-semibold text-slate-300 mb-2">
+
           ID Encadreur
+
         </label>
 
+
+
         <input
+
           type="number"
+
           [(ngModel)]="uploadForm.encadreurId"
+
           [disabled]="uploading"
+
           placeholder="ID de l'encadreur"
+
           class="glass-input w-full px-3.5 py-2.5 rounded-lg text-sm"
+
         />
 
+
+
       </div>
+
+
+
 
 
       <!-- DESCRIPTION -->
 
+
+
       <div>
 
+
+
         <label class="block text-xs font-semibold text-slate-300 mb-2">
+
           Description
+
         </label>
 
+
+
         <textarea
+
           [(ngModel)]="uploadForm.description"
+
           [disabled]="uploading"
+
           rows="4"
+
           placeholder="Description du livrable..."
+
           class="glass-input w-full px-3.5 py-2.5 rounded-lg text-sm resize-none"
+
         ></textarea>
 
+
+
       </div>
+
+
+
 
 
       <!-- FICHIER -->
 
+
+
       <div>
 
+
+
         <label class="block text-xs font-semibold text-slate-300 mb-2">
+
           Fichier *
+
         </label>
 
+
+
         <input
+
           type="file"
+
           (change)="onFileSelected($event)"
+
           [disabled]="uploading"
+
           class="block w-full text-sm text-slate-400"
+
         />
 
 
+
+
+
         <div
+
           *ngIf="selectedFile"
+
           class="mt-3 p-3 rounded-lg bg-slate-900 border border-slate-800"
+
         >
 
+
+
           <p class="text-sm text-slate-300">
-            ðŸ“Ž {{ selectedFile.name }}
+
+            📎 {{ selectedFile.name }}
+
           </p>
 
+
+
           <p class="text-xs text-slate-500 mt-1">
+
             {{ formatFileSize(selectedFile.size) }}
+
           </p>
+
+
 
         </div>
 
+
+
       </div>
 
+
+
     </div>
+
+
+
 
 
     <!-- FOOTER -->
 
+
+
     <div
+
       class="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-800"
+
     >
 
+
+
       <button
+
         type="button"
+
         (click)="closeUploadModal()"
+
         [disabled]="uploading"
+
         class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm"
+
       >
+
         Annuler
+
       </button>
 
 
+
+
+
       <button
+
         type="button"
+
         (click)="uploadDocument()"
+
         [disabled]="uploading"
+
         class="px-5 py-2 rounded-lg bg-[#84BD00] hover:bg-[#6fa000] text-white font-semibold text-sm disabled:opacity-50"
+
       >
+
+
 
         <span *ngIf="!uploading">
-          DÃ©poser
+
+          Déposer
+
         </span>
+
+
 
         <span *ngIf="uploading">
-          DÃ©pÃ´t en cours...
+
+          Dépôt en cours...
+
         </span>
 
+
+
       </button>
+
+
 
     </div>
 
+
+
   </div>
+
+
 
 </div>
 
 
+
+
+
 <!-- ==========================================================
-     MODAL RÃ‰SUMÃ‰ IA
+
+     MODAL RÉSUMÉ IA
+
      ========================================================== -->
 
+
+
 <div
+
   *ngIf="showSummaryModal"
+
   class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+
 >
 
+
+
   <div
+
     class="glass-panel w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl p-6"
+
   >
+
+
 
     <!-- HEADER -->
 
+
+
     <div class="flex items-center justify-between mb-6">
+
+
 
       <div>
 
+
+
         <h2 class="text-xl font-bold text-white">
-          ðŸ¤– RÃ©sumÃ© IA
+
+          🤖 Résumé IA
+
         </h2>
 
+
+
         <p
+
           *ngIf="summaryDocument"
+
           class="text-xs text-slate-400 mt-1"
+
         >
+
           {{ summaryDocument.titre }}
+
         </p>
+
+
 
       </div>
 
 
+
+
+
       <button
+
         type="button"
+
         (click)="closeSummary()"
+
         [disabled]="summaryLoading"
+
         class="text-slate-400 hover:text-white text-xl"
+
       >
-        âœ•
+
+        ✕
+
       </button>
 
+
+
     </div>
+
+
+
 
 
     <!-- STYLE -->
 
+
+
     <div class="mb-5">
 
+
+
       <label class="block text-xs font-semibold text-slate-300 mb-2">
-        Style du rÃ©sumÃ©
+
+        Style du résumé
+
       </label>
 
+
+
       <select
+
         [(ngModel)]="summaryStyle"
+
         [disabled]="summaryLoading"
+
         class="glass-input w-full px-3.5 py-2.5 rounded-lg text-sm bg-slate-900"
+
       >
 
+
+
         <option value="ACADEMIQUE">
-          AcadÃ©mique
+
+          Académique
+
         </option>
+
+
 
         <option value="EXECUTIF">
-          ExÃ©cutif
+
+          Exécutif
+
         </option>
 
+
+
         <option value="VULGARISATION">
+
           Vulgarisation
+
         </option>
+
+
 
       </select>
 
+
+
     </div>
+
+
+
 
 
     <!-- CHARGEMENT -->
 
+
+
     <div
+
       *ngIf="summaryLoading"
+
       class="py-10 text-center"
+
     >
 
+
+
       <div class="text-4xl mb-3">
-        ðŸ¤–
+
+        🤖
+
       </div>
 
+
+
       <p class="text-slate-400 text-sm">
+
         L'intelligence artificielle analyse le livrable...
+
       </p>
+
+
 
     </div>
 
 
-    <!-- RÃ‰SUMÃ‰ -->
+
+
+
+    <!-- RÉSUMÉ -->
+
+
 
     <div
+
       *ngIf="!summaryLoading && summaryText"
+
       class="space-y-5"
+
     >
+
+
 
       <div>
 
+
+
         <h3 class="text-sm font-bold text-white mb-2">
-          RÃ©sumÃ©
+
+          Résumé
+
         </h3>
 
+
+
         <div
+
           class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-sm text-slate-300 leading-relaxed whitespace-pre-line"
+
         >
+
           {{ summaryText }}
+
         </div>
+
+
 
       </div>
 
 
-      <!-- POINTS CLÃ‰S -->
+
+
+
+      <!-- POINTS CLÉS -->
+
+
 
       <div *ngIf="summaryKeyPoints.length > 0">
 
+
+
         <h3 class="text-sm font-bold text-white mb-2">
-          Points clÃ©s
+
+          Points clés
+
         </h3>
 
+
+
         <div
+
           class="p-4 rounded-xl bg-slate-900 border border-slate-800"
+
         >
+
+
 
           <ul class="space-y-2">
 
+
+
             <li
+
               *ngFor="let point of summaryKeyPoints"
+
               class="flex gap-2 text-sm text-slate-300"
+
             >
 
+
+
               <span class="text-[#84BD00]">
-                â€¢
+
+                •
+
               </span>
 
+
+
               <span>
+
                 {{ point }}
+
               </span>
+
+
 
             </li>
 
+
+
           </ul>
 
+
+
         </div>
+
+
 
       </div>
 
 
-      <!-- MÃ‰THODOLOGIE -->
+
+
+
+      <!-- MÉTHODOLOGIE -->
+
+
 
       <div *ngIf="summaryMethodology">
 
+
+
         <h3 class="text-sm font-bold text-white mb-2">
-          MÃ©thodologie dÃ©tectÃ©e
+
+          Méthodologie détectée
+
         </h3>
 
+
+
         <div
+
           class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-sm text-slate-300"
+
         >
+
           {{ summaryMethodology }}
+
         </div>
 
+
+
       </div>
+
+
+
 
 
       <!-- TRL -->
 
+
+
       <div *ngIf="summaryTRL !== null">
 
+
+
         <h3 class="text-sm font-bold text-white mb-2">
-          Niveau TRL estimÃ©
+
+          Niveau TRL estimé
+
         </h3>
 
+
+
         <div
+
           class="p-4 rounded-xl bg-slate-900 border border-slate-800"
+
         >
 
+
+
           <span class="text-2xl font-bold text-[#84BD00]">
+
             TRL {{ summaryTRL }}
+
           </span>
+
+
 
         </div>
 
+
+
       </div>
 
+
+
     </div>
+
+
+
 
 
     <!-- FOOTER -->
 
+
+
     <div
+
       class="flex justify-end mt-6 pt-4 border-t border-slate-800"
+
     >
 
+
+
       <button
+
         type="button"
+
         (click)="closeSummary()"
+
         [disabled]="summaryLoading"
+
         class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm"
+
       >
+
         Fermer
+
       </button>
+
+
 
     </div>
 
+
+
   </div>
 
+
+
 </div>
+

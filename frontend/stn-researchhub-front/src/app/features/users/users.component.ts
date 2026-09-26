@@ -1,4 +1,5 @@
-﻿import { Component, OnInit } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../core/services/user.service';
@@ -12,6 +13,7 @@ import { User, UserRole } from '../../core/models/user.model';
   templateUrl: './users.component.html'
 })
 export class UsersComponent implements OnInit {
+  private platformId = inject(PLATFORM_ID);
   users: User[] = [];
   showModal: boolean = false;
   loading: boolean = false;
@@ -35,6 +37,7 @@ export class UsersComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     this.loadUsers();
   }
 

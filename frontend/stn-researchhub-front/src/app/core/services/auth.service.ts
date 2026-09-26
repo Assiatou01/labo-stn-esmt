@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpBackend, HttpClient, HttpHeaders } from '@angular/common/http';
 import { User, UserRole } from '../models/user.model';
@@ -186,7 +186,7 @@ export class AuthService {
             id: fallbackId,
             username: username,
             nom: lastName || 'Utilisateur',
-            prenom: firstName || 'Connecté',
+            prenom: firstName || 'Connectéé',
             email: email,
             role: primaryRole,
             roleLabel: this.getRoleLabel(primaryRole),

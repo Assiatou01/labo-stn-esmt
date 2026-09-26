@@ -1,5 +1,4 @@
 export interface These {
-
   id?: number;
 
   titre: string;
@@ -15,4 +14,6 @@ export interface These {
   doctorantId: number;
 
   encadreurId: number;
+
+  domaineRechercheId?: number;
 }

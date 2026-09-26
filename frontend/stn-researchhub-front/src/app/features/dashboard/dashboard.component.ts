@@ -1,7 +1,5 @@
-import {
-  Component,
-  OnInit
-} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
 
 import {
   CommonModule
@@ -38,6 +36,7 @@ import {
 
 })
 export class DashboardComponent implements OnInit {
+  private platformId = inject(PLATFORM_ID);
 
   currentUser!: User;
 
@@ -60,10 +59,11 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
 
     /*
      * Récupération des informations
-     * de l'utilisateur connecté.
+     * de l'utilisateur connectéé.
      */
     this.username =
       this.keycloakService.getUsername() || '';
@@ -93,7 +93,7 @@ export class DashboardComponent implements OnInit {
      * Logs de vérification.
      */
     console.log(
-      'Utilisateur connecté :',
+      'Utilisateur connectéé :',
       this.username
     );
 

@@ -14,11 +14,11 @@ export interface GrilleTRL {
   criteres: CritereTRL[];
 }
 
-export interface Evaluation {
+export interface Eevaluation {
   id?: number;
   niveau?: number;
   score?: number;
-  dateEvaluation?: string;
+  dateEevaluation?: string;
   dateValidation?: string;
   commentaire?: string;
   statut?: string;
@@ -28,7 +28,7 @@ export interface Evaluation {
   detailsCriteres?: string;
 }
 
-export interface EvaluationSubmitRequest {
+export interface EevaluationSubmitRequest {
   theseId: number;
   encadreurId: number;
   doctorantId?: number;
@@ -36,7 +36,7 @@ export interface EvaluationSubmitRequest {
   criteres: CritereTRL[];
 }
 
-export interface EvaluationValidationRequest {
+export interface EevaluationValidationRequest {
   statut: string;
   commentaire?: string;
 }

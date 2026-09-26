@@ -1,4 +1,5 @@
 ﻿import { Injectable } from '@angular/core';
+
 import {
   HttpClient,
   HttpParams
@@ -23,10 +24,11 @@ export class ThesisService {
 
   /**
    * =========================================================
-   * LISTE DES THÈSES (TOUTES)
+   * LISTE DES THÈSES
    * =========================================================
    */
   getAll(): Observable<These[]> {
+
     return this.http.get<These[]>(
       this.apiUrl
     );
@@ -40,8 +42,12 @@ export class ThesisService {
   getByDoctorant(
     doctorantId: number
   ): Observable<These[]> {
+
     const params = new HttpParams()
-      .set('doctorantId', doctorantId.toString());
+      .set(
+        'doctorantId',
+        doctorantId.toString()
+      );
 
     return this.http.get<These[]>(
       this.apiUrl,
@@ -51,14 +57,18 @@ export class ThesisService {
 
   /**
    * =========================================================
-   * THÈSES ENCADRÉES PAR UN ENCADREUR
+   * THÈSES D'UN ENCADREUR
    * =========================================================
    */
   getByEncadreur(
     encadreurId: number
   ): Observable<These[]> {
+
     const params = new HttpParams()
-      .set('encadreurId', encadreurId.toString());
+      .set(
+        'encadreurId',
+        encadreurId.toString()
+      );
 
     return this.http.get<These[]>(
       this.apiUrl,
@@ -74,6 +84,7 @@ export class ThesisService {
   getById(
     id: number
   ): Observable<These> {
+
     return this.http.get<These>(
       `${this.apiUrl}/${id}`
     );
@@ -87,6 +98,7 @@ export class ThesisService {
   getProgress(
     id: number
   ): Observable<These> {
+
     return this.http.get<These>(
       `${this.apiUrl}/${id}/avancement`
     );
@@ -94,7 +106,7 @@ export class ThesisService {
 
   /**
    * =========================================================
-   * CRÉATION
+   * CRÉATION D'UNE THÈSE
    * =========================================================
    */
   create(
@@ -105,8 +117,10 @@ export class ThesisService {
       dateSoutenancePrevue?: string;
       doctorantId: number;
       encadreurId: number;
+      domaineRechercheId?: number;
     }
   ): Observable<These> {
+
     return this.http.post<These>(
       this.apiUrl,
       thesis
@@ -115,7 +129,7 @@ export class ThesisService {
 
   /**
    * =========================================================
-   * MODIFICATION
+   * MODIFICATION D'UNE THÈSE
    * =========================================================
    */
   update(
@@ -127,8 +141,10 @@ export class ThesisService {
       dateSoutenancePrevue?: string;
       statut?: string;
       encadreurId?: number;
+      domaineRechercheId?: number;
     }
   ): Observable<These> {
+
     return this.http.put<These>(
       `${this.apiUrl}/${id}`,
       thesis
@@ -137,12 +153,13 @@ export class ThesisService {
 
   /**
    * =========================================================
-   * SUPPRESSION
+   * SUPPRESSION D'UNE THÈSE
    * =========================================================
    */
   delete(
     id: number
   ): Observable<any> {
+
     return this.http.delete(
       `${this.apiUrl}/${id}`
     );

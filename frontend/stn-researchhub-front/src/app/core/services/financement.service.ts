@@ -1,118 +1,112 @@
-﻿import { environment } from '../../../environments/environment';
 import { Injectable, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { OffreFinancement, CandidatureFinancement, FinancementTravaux } from '../models/financement.model';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class FinancementService {
-    private readonly API_URL = `${environment.apiUrl}/api/v1/financements`;
+  private readonly API_URL = `${environment.apiUrl}/api/v1/financements`;
 
-    // Données réactives (signal)
-    offres = signal<OffreFinancement[]>([
-        {
-            id: 1,
-            titre: 'Bourse de recherche 5G/6G & Réseaux Intelligents',
-            description: 'Financement complet pour une thèse axée sur l\'optimisation SDN/NFV dans les architectures 5G campus.',
-            montant: 18000000,
-            devise: 'FCFA',
-            partenaireId: 16,
-            partenaireNom: 'Sonatel Orange R&D',
-            axeRecherche: 'Réseaux & Systèmes Télécoms',
-            dateLimite: '2026-11-30',
-            statut: 'OUVERTE',
-            nbCandidatures: 3
+  // Données réactives issues du backend
+  offres = signal<OffreFinancement[]>([]);
+  candidatures = signal<CandidatureFinancement[]>([]);
+  travauxFinances = signal<FinancementTravaux[]>([]);
+  loading = signal<boolean>(false);
+
+  constructor(private http: HttpClient) {}
+
+  // Charger toutes les offres réelles depuis le microservice
+  loadOffres(): Observable<OffreFinancement[]> {
+    this.loading.set(true);
+    return this.http.get<OffreFinancement[]>(`${this.API_URL}/offres`).pipe(
+      tap({
+        next: (data) => {
+          this.offres.set(data || []);
+          this.loading.set(false);
         },
-        {
-            id: 2,
-            titre: 'Subvention Capteurs IoT & Efficacité Énergétique',
-            description: 'Financement de matériel de laboratoire et prototypage pour projet IoT résilient.',
-            montant: 12000000,
-            devise: 'FCFA',
-            partenaireId: 16,
-            partenaireNom: 'Sonatel Orange R&D',
-            axeRecherche: 'IoT & Systèmes Embarqués',
-            dateLimite: '2026-12-15',
-            statut: 'OUVERTE',
-            nbCandidatures: 2
+        error: (err) => {
+          console.error('Erreur chargement des offres de financement :', err);
+          this.loading.set(false);
         }
-    ]);
+      })
+    );
+  }
 
-    candidatures = signal<CandidatureFinancement[]>([
-        {
-            id: 101,
-            offreId: 1,
-            offreTitre: 'Bourse de recherche 5G/6G & Réseaux Intelligents',
-            doctorantId: 1,
-            doctorantNom: 'Ibrahima DIALLO',
-            theseId: 1,
-            theseTitre: 'Systèmes distribués et IA appliquée aux données',
-            sujetRecherche: 'Algorithmes Deep Reinforcement Learning appliqués aux stations de base.',
-            dateSoumission: '2026-09-10',
-            statut: 'SOUMISE',
-            scoreDossier: 88
-        },
-        {
-            id: 102,
-            offreId: 1,
-            offreTitre: 'Bourse de recherche 5G/6G & Réseaux Intelligents',
-            doctorantId: 18,
-            doctorantNom: 'Kadiatou BAH',
-            theseId: 2,
-            theseTitre: 'Sécurité Zero-Trust et Micro-segmentation pour architectures cloud native',
-            sujetRecherche: 'Protocoles cryptographiques légers pour passerelles edge.',
-            dateSoumission: '2026-09-12',
-            statut: 'EN_EVALUATION',
-            scoreDossier: 92
-        }
-    ]);
+  // Charger les candidatures
+  loadCandidatures(doctorantId?: number, offreId?: number): Observable<CandidatureFinancement[]> {
+    let params = new HttpParams();
+    if (doctorantId) params = params.set('doctorantId', doctorantId.toString());
+    if (offreId) params = params.set('offreId', offreId.toString());
 
-    travauxFinances = signal<FinancementTravaux[]>([
-        {
-            id: 1,
-            titre: 'Systèmes distribués et IA appliquée aux données',
-            type: 'THESE',
-            beneficiaire: 'Ibrahima DIALLO (Encadré par Pr. Ousmane Sow)',
-            montantAlloue: 18000000,
-            dateDebut: '2025-01-15',
-            avancementPourcentage: 65,
-            niveauTRL: 4,
-            dernierLivrable: 'Rapport d\'étape Semestre 3 - Validé'
-        }
-    ]);
+    return this.http.get<CandidatureFinancement[]>(`${this.API_URL}/candidatures`, { params }).pipe(
+      tap({
+        next: (data) => this.candidatures.set(data || []),
+        error: (err) => console.error('Erreur chargement des candidatures :', err)
+      })
+    );
+  }
 
-    constructor(private http: HttpClient) {}
+  // Charger le suivi des travaux financés
+  loadTravaux(): Observable<FinancementTravaux[]> {
+    return this.http.get<FinancementTravaux[]>(`${this.API_URL}/travaux`).pipe(
+      tap({
+        next: (data) => this.travauxFinances.set(data || []),
+        error: (err) => console.error('Erreur chargement des travaux financés :', err)
+      })
+    );
+  }
 
-    // Publier une offre de financement
-    publierOffre(nouvelleOffre: Partial<OffreFinancement>) {
-        const offre: OffreFinancement = {
-            id: Date.now(),
-            titre: nouvelleOffre.titre || '',
-            description: nouvelleOffre.description || '',
-            montant: nouvelleOffre.montant || 0,
-            devise: 'FCFA',
-            partenaireId: nouvelleOffre.partenaireId || 16,
-            partenaireNom: nouvelleOffre.partenaireNom || 'Sonatel / Orange',
-            axeRecherche: nouvelleOffre.axeRecherche || 'Général',
-            dateLimite: nouvelleOffre.dateLimite || '2026-12-31',
-            statut: 'OUVERTE',
-            nbCandidatures: 0
-        };
+  // Publier une offre (Partenaire ou Direction)
+  publierOffre(nouvelleOffre: Partial<OffreFinancement>): Observable<OffreFinancement> {
+    const payload = {
+      ...nouvelleOffre,
+      devise: nouvelleOffre.devise || 'FCFA',
+      statut: 'OUVERTE',
+      nbCandidatures: 0
+    };
+    return this.http.post<OffreFinancement>(`${this.API_URL}/offres`, payload).pipe(
+      tap((created) => {
+        this.offres.update((list) => [created, ...list]);
+      })
+    );
+  }
 
-        // Envoi au backend thesis-service via Gateway (génère la trace Zipkin)
-        this.http.post<any>(`${this.API_URL}/offres`, offre).subscribe({
-            next: (saved) => {
-                if (saved && saved.id) offre.id = saved.id;
-            },
-            error: (err) => console.log('Offre enregistrée (mode hors-ligne backend) :', err)
-        });
+  // Un doctorant postule à une offre de financement
+  postuler(candidature: Partial<CandidatureFinancement>): Observable<CandidatureFinancement> {
+    return this.http.post<CandidatureFinancement>(`${this.API_URL}/candidatures`, candidature).pipe(
+      tap((saved) => {
+        this.candidatures.update((list) => [saved, ...list]);
+        // Mettre à jour l'offre correspondante
+        this.offres.update((list) =>
+          list.map((o) => (o.id === saved.offreId ? { ...o, nbCandidatures: (o.nbCandidatures || 0) + 1 } : o))
+        );
+      })
+    );
+  }
 
-        this.offres.update(liste => [offre, ...liste]);
-    }
+  // Le partenaire accepte un doctorant
+  accepterCandidature(candidatureId: number): Observable<any> {
+    return this.http.put(`${this.API_URL}/candidatures/${candidatureId}/accepter`, {}).pipe(
+      tap(() => {
+        this.candidatures.update((list) =>
+          list.map((c) => (c.id === candidatureId ? { ...c, statut: 'LAUREAT' } : c))
+        );
+        this.loadTravaux().subscribe();
+      })
+    );
+  }
 
-    // Sélectionner un doctorant lauréat
-    selectionnerLaureat(candidatureId: number) {
-        this.candidatures.update(items => items.map(c => c.id === candidatureId ? { ...c, statut: 'LAUREAT' } : c));
-    }
+  // Le partenaire refuse un doctorant
+  refuserCandidature(candidatureId: number): Observable<any> {
+    return this.http.put(`${this.API_URL}/candidatures/${candidatureId}/refuser`, {}).pipe(
+      tap(() => {
+        this.candidatures.update((list) =>
+          list.map((c) => (c.id === candidatureId ? { ...c, statut: 'REFUSEE' } : c))
+        );
+      })
+    );
+  }
 }
