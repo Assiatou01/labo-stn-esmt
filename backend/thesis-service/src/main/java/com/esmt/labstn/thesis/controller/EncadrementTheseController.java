@@ -31,7 +31,7 @@ public class EncadrementTheseController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTEUR_RECHERCHE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTION')")
     public ResponseEntity<EncadrementThese> create(@RequestBody EncadrementThese encadrement) {
         return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(encadrement));
     }

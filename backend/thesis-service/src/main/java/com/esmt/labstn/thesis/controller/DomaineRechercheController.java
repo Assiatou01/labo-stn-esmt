@@ -33,7 +33,7 @@ public class DomaineRechercheController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTEUR_RECHERCHE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTION')")
     public ResponseEntity<DomaineRecherche> create(@RequestBody DomaineRecherche domaine) {
         return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(domaine));
     }

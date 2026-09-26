@@ -8,9 +8,6 @@ import java.util.List;
 
 @Repository
 public interface ContributionTheseRepository extends JpaRepository<ContributionThese, Long> {
-
     List<ContributionThese> findByTheseId(Long theseId);
-
     List<ContributionThese> findByProjetRechercheId(Long projetRechercheId);
-
 }

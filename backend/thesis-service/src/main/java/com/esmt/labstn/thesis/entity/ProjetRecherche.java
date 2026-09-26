@@ -6,7 +6,7 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
-@Table
+@Table(name = "t_projet_recherche")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -32,4 +32,22 @@ public class ProjetRecherche {
 
     @Column(name = "axe_recherche_id")
     private Long axeRechercheId;
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getTitre() { return titre; }
+    public void setTitre(String titre) { this.titre = titre; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public LocalDate getDateDebut() { return dateDebut; }
+    public void setDateDebut(LocalDate dateDebut) { this.dateDebut = dateDebut; }
+
+    public String getStatut() { return statut; }
+    public void setStatut(String statut) { this.statut = statut; }
+
+    public Long getAxeRechercheId() { return axeRechercheId; }
+    public void setAxeRechercheId(Long axeRechercheId) { this.axeRechercheId = axeRechercheId; }
 }

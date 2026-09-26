@@ -1,12 +1,13 @@
 package com.esmt.labstn.thesis.dto;
 
 import com.esmt.labstn.thesis.entity.StatutThese;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class TheseResponse {
 
@@ -26,5 +27,8 @@ public class TheseResponse {
 
     private Long encadreurId;
 
-
+    /**
+     * Identifiant du domaine de recherche.
+     */
+    private Long domaineRechercheId;
 }

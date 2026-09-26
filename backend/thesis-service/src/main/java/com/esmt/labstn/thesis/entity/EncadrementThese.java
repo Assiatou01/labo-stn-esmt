@@ -6,7 +6,7 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "encadrement_these")
+@Table(name = "t_encadrement_these")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -33,4 +33,22 @@ public class EncadrementThese {
     @Column(name = "est_responsable_principal")
     @Builder.Default
     private Boolean estResponsablePrincipal = false;
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public Long getTheseId() { return theseId; }
+    public void setTheseId(Long theseId) { this.theseId = theseId; }
+
+    public Long getEncadreurId() { return encadreurId; }
+    public void setEncadreurId(Long encadreurId) { this.encadreurId = encadreurId; }
+
+    public LocalDate getDateAffectation() { return dateAffectation; }
+    public void setDateAffectation(LocalDate dateAffectation) { this.dateAffectation = dateAffectation; }
+
+    public String getRoleEncadrement() { return roleEncadrement; }
+    public void setRoleEncadrement(String roleEncadrement) { this.roleEncadrement = roleEncadrement; }
+
+    public Boolean getEstResponsablePrincipal() { return estResponsablePrincipal; }
+    public void setEstResponsablePrincipal(Boolean estResponsablePrincipal) { this.estResponsablePrincipal = estResponsablePrincipal; }
 }

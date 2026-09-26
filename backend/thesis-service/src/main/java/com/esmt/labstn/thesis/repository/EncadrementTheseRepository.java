@@ -8,8 +8,6 @@ import java.util.List;
 
 @Repository
 public interface EncadrementTheseRepository extends JpaRepository<EncadrementThese, Long> {
-
-
     List<EncadrementThese> findByTheseId(Long theseId);
     List<EncadrementThese> findByEncadreurId(Long encadreurId);
 }

@@ -31,7 +31,7 @@ public class ContributionTheseController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ENCADREUR', 'ADMIN', 'DIRECTEUR_RECHERCHE')")
+    @PreAuthorize("hasAnyRole('ENCADREUR', 'ADMIN', 'DIRECTION')")
     public ResponseEntity<ContributionThese> create(@RequestBody ContributionThese contribution) {
         return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(contribution));
     }

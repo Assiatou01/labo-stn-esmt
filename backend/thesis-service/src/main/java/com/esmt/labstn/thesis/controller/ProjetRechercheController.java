@@ -33,7 +33,7 @@ public class ProjetRechercheController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ENCADREUR', 'ADMIN', 'DIRECTEUR_RECHERCHE')")
+    @PreAuthorize("hasAnyRole('ENCADREUR', 'ADMIN', 'DIRECTION')")
     public ResponseEntity<ProjetRecherche> create(@RequestBody ProjetRecherche projet) {
         return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(projet));
     }

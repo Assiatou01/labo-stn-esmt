@@ -8,8 +8,6 @@ import java.util.List;
 
 @Repository
 public interface ParticipationProjetRepository extends JpaRepository<ParticipationProjet, Long> {
-
     List<ParticipationProjet> findByProjetRechercheId(Long projetRechercheId);
-
     List<ParticipationProjet> findByPartenaireId(Long partenaireId);
 }

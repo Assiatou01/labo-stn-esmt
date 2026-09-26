@@ -30,7 +30,7 @@ public class AxeRechercheController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTEUR_RECHERCHE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTION')")
     public ResponseEntity<AxeRecherche> create(@RequestBody AxeRecherche axe) {
         return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(axe));
     }

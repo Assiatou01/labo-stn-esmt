@@ -9,8 +9,6 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
 @Builder
 public class TheseCreateRequest {
 
@@ -30,4 +28,8 @@ public class TheseCreateRequest {
     @NotNull(message = "L'identifiant de l'encadreur est obligatoire")
     private Long encadreurId;
 
+    /**
+     * Domaine de recherche auquel la thèse est rattachée.
+     */
+    private Long domaineRechercheId;
 }

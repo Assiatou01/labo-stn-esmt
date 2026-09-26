@@ -31,7 +31,7 @@ public class ParticipationProjetController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTEUR_RECHERCHE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTION')")
     public ResponseEntity<ParticipationProjet> create(@RequestBody ParticipationProjet participation) {
         return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(participation));
     }

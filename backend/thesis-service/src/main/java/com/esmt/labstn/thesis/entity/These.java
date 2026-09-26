@@ -4,17 +4,16 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
-@Table(name ="these")
+@Table(name = "these")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class These {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -44,5 +43,4 @@ public class These {
 
     @Column(name = "domaine_recherche_id")
     private Long domaineRechercheId;
-
 }
