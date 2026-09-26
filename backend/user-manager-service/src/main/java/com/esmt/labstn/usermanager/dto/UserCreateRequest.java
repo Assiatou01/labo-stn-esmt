@@ -1,6 +1,5 @@
 package com.esmt.labstn.usermanager.dto;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -25,7 +24,6 @@ public class UserCreateRequest {
     private String telephone;
 
     @NotBlank(message = "Le rôle est obligatoire")
-    @JsonAlias({"role", "roleLibelle"})
     private String roleLibelle;
 
     // Mot de passe temporaire (facultatif)
@@ -43,15 +41,4 @@ public class UserCreateRequest {
     private String organisation;
     private String typePartenaire;
 
-    public void setRole(String role) {
-        if (role != null) {
-            this.roleLibelle = role.replace("ROLE_", "");
-        }
-    }
-
-    public void setRoleLibelle(String roleLibelle) {
-        if (roleLibelle != null) {
-            this.roleLibelle = roleLibelle.replace("ROLE_", "");
-        }
-    }
 }

@@ -9,7 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,8 +24,7 @@ public class UserManagerController {
 
 
     /**
-     * CrÃ©ation d'un utilisateur.
-     * Accessible uniquement Ã  l'administrateur.
+     * Création d'un utilisateur.
      */
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -41,8 +41,7 @@ public class UserManagerController {
 
 
     /**
-     * Liste des utilisateurs.
-     * Accessible uniquement Ã  l'administrateur.
+     * Récupération de tous les utilisateurs.
      */
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -55,8 +54,7 @@ public class UserManagerController {
 
 
     /**
-     * RÃ©cupÃ©ration d'un utilisateur.
-     * Accessible uniquement Ã  l'administrateur.
+     * Récupération d'un utilisateur par son ID.
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -70,16 +68,25 @@ public class UserManagerController {
 
 
     /**
-     * RÃ©cupÃ©ration du profil de l'utilisateur connectÃ©.
-     * L'identitÃ© est obtenue Ã  partir du JWT Keycloak.
+     * Récupération de l'utilisateur actuellement connecté.
+     *
+     * L'adresse e-mail est récupérée directement
+     * depuis le JWT Keycloak.
      */
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserResponse> getCurrentUser(
-            Authentication authentication) {
+            @AuthenticationPrincipal Jwt jwt) {
 
         String email =
-                authentication.getName();
+                jwt.getClaimAsString("email");
+
+        if (email == null || email.isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "L'adresse e-mail est absente du token Keycloak."
+            );
+        }
 
         return ResponseEntity.ok(
                 userManagerService.getCurrentUser(email)
@@ -87,10 +94,8 @@ public class UserManagerController {
     }
 
 
-
     /**
      * Modification d'un utilisateur.
-     * Accessible uniquement Ã  l'administrateur.
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -104,16 +109,5 @@ public class UserManagerController {
                         request
                 )
         );
-    }
-
-    /**
-     * Suppression d'un utilisateur.
-     * Accessible uniquement à l'administrateur.
-     */
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userManagerService.deleteUser(id);
-        return ResponseEntity.noContent().build();
     }
 }
