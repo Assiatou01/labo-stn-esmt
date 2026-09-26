@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "document_embeddings", indexes = {
-        @Index(name = "idx_doc_embedding_livrable", columnList = "livrableId"),
-        @Index(name = "idx_doc_embedding_these", columnList = "theseId")
+    @Index(name = "idx_doc_embedding_livrable", columnList = "livrableId"),
+    @Index(name = "idx_doc_embedding_these", columnList = "theseId")
 })
 @Getter
 @Setter
@@ -63,5 +63,29 @@ public class DocumentEmbedding {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-
+    // Getters & Setters explicites pour garantir la compatibilité
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public Long getLivrableId() { return livrableId; }
+    public void setLivrableId(Long livrableId) { this.livrableId = livrableId; }
+    public Long getTheseId() { return theseId; }
+    public void setTheseId(Long theseId) { this.theseId = theseId; }
+    public String getTitreDocument() { return titreDocument; }
+    public void setTitreDocument(String titreDocument) { this.titreDocument = titreDocument; }
+    public String getNomAuteur() { return nomAuteur; }
+    public void setNomAuteur(String nomAuteur) { this.nomAuteur = nomAuteur; }
+    public String getTypeLivrable() { return typeLivrable; }
+    public void setTypeLivrable(String typeLivrable) { this.typeLivrable = typeLivrable; }
+    public Integer getNiveauTRL() { return niveauTRL; }
+    public void setNiveauTRL(Integer niveauTRL) { this.niveauTRL = niveauTRL; }
+    public Integer getChunkIndex() { return chunkIndex; }
+    public void setChunkIndex(Integer chunkIndex) { this.chunkIndex = chunkIndex; }
+    public String getChunkContent() { return chunkContent; }
+    public void setChunkContent(String chunkContent) { this.chunkContent = chunkContent; }
+    public String getEmbeddingVector() { return embeddingVector; }
+    public void setEmbeddingVector(String embeddingVector) { this.embeddingVector = embeddingVector; }
+    public StatutIndexation getStatut() { return statut; }
+    public void setStatut(StatutIndexation statut) { this.statut = statut; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

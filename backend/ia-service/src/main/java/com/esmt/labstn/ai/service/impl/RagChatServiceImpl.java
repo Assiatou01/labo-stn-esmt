@@ -83,7 +83,7 @@ public class RagChatServiceImpl implements RagChatService {
                 .question(question)
                 .answer(answer)
                 .modelUsed(modelName)
-                .responseTimeMs(String.valueOf(execTime))
+                .responseTimeMs(execTime)
                 .sources(citations)
                 .generatedAt(LocalDateTime.now())
                 .build();

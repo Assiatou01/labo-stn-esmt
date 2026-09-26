@@ -1,5 +1,6 @@
 package com.esmt.labstn.ai.service;
 
+import java.util.List;
 
 /**
  * Service de génération d'embeddings vectoriels et de calcul de similarité cosinus.

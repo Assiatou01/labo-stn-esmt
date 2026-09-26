@@ -2,11 +2,13 @@ package com.esmt.labstn.ai.service.impl;
 
 import com.esmt.labstn.ai.dto.IndexRequest;
 import com.esmt.labstn.ai.dto.IndexResponse;
+import com.esmt.labstn.ai.entity.AiAuditLog;
 import com.esmt.labstn.ai.entity.DocumentEmbedding;
 import com.esmt.labstn.ai.entity.StatutIndexation;
 import com.esmt.labstn.ai.exception.AiProcessingException;
 import com.esmt.labstn.ai.repository.AiAuditLogRepository;
 import com.esmt.labstn.ai.repository.DocumentEmbeddingRepository;
+import com.esmt.labstn.ai.service.DocumentParserService;
 import com.esmt.labstn.ai.service.EmbeddingService;
 import com.esmt.labstn.ai.service.TextChunkerService;
 import com.esmt.labstn.ai.service.VectorIndexService;
@@ -33,7 +35,7 @@ public class VectorIndexServiceImpl implements VectorIndexService {
 
     private final DocumentEmbeddingRepository embeddingRepository;
     private final AiAuditLogRepository auditLogRepository;
-    private final com.esmt.labstn.ai.service.DocumentParserService parserService;
+    private final DocumentParserService parserService;
     private final TextChunkerService chunkerService;
     private final EmbeddingService embeddingService;
     private final MinioClient minioClient;
@@ -116,7 +118,7 @@ public class VectorIndexServiceImpl implements VectorIndexService {
         log.info("Indexation réussie : {} chunks vectorisés en {} ms", embeddingsToSave.size(), execTime);
 
         // Journal d'audit pour la gouvernance IA
-        auditLogRepository.save(com.esmt.labstn.ai.entity.AiAuditLog.builder()
+        auditLogRepository.save(AiAuditLog.builder()
                 .actionType("INDEXATION")
                 .queryText("Livrable ID: " + request.getLivrableId() + " (" + request.getTitreDocument() + ")")
                 .resultsCount(embeddingsToSave.size())

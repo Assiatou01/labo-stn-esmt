@@ -20,4 +20,12 @@ public class SemanticSearchRequest {
 
     private Integer minTRL;
 
+    public String getQuery() { return query; }
+    public void setQuery(String query) { this.query = query; }
+    public Integer getTopK() { return (topK != null && topK > 0) ? topK : 5; }
+    public void setTopK(Integer topK) { this.topK = topK; }
+    public Long getTheseIdFilter() { return theseIdFilter; }
+    public void setTheseIdFilter(Long theseIdFilter) { this.theseIdFilter = theseIdFilter; }
+    public Integer getMinTRL() { return minTRL; }
+    public void setMinTRL(Integer minTRL) { this.minTRL = minTRL; }
 }

@@ -18,4 +18,3 @@ public interface VectorIndexService {
 
     boolean isIndexed(Long livrableId);
 }
-

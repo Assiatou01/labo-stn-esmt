@@ -16,4 +16,3 @@ public interface AiAuditLogRepository extends JpaRepository<AiAuditLog, Long> {
 
     List<AiAuditLog> findByActionTypeOrderByCreatedAtDesc(String actionType);
 }
-

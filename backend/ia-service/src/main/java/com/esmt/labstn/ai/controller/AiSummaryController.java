@@ -26,7 +26,7 @@ public class AiSummaryController {
      * Génère un résumé automatique d'un livrable indexé.
      */
     @PostMapping("/livrable")
-    @PreAuthorize("hasAnyRole('ENCADREUR', 'DIRECTEUR_RECHERCHE', 'ADMIN', 'DOCTORANT', 'PARTENAIRE')")
+    @PreAuthorize("hasAnyRole('ENCADREUR', 'DIRECTION', 'ADMIN', 'DOCTORANT', 'PARTENAIRE')")
     public ResponseEntity<SummaryResponse> generateSummary(@Valid @RequestBody SummaryRequest request) {
         SummaryResponse response = summarizerService.generateSummary(request);
         return ResponseEntity.ok(response);

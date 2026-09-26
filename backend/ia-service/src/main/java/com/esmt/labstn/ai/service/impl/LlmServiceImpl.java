@@ -50,8 +50,8 @@ public class LlmServiceImpl implements LlmService {
         String effectiveSystemPrompt = (systemPrompt != null && !systemPrompt.isEmpty())
                 ? systemPrompt
                 : "Tu es l'assistant d'Intelligence Artificielle de la plateforme STN du laboratoire de recherche de l'ESMT. " +
-                "Réponds précisément à la question en utilisant EXCLUSIVEMENT les extraits documentaires fournis ci-dessus. " +
-                "Si l'information n'est pas présente dans les extraits, indique-le clairement avec bienveillance sans inventer.";
+                  "Réponds précisément à la question en utilisant EXCLUSIVEMENT les extraits documentaires fournis ci-dessus. " +
+                  "Si l'information n'est pas présente dans les extraits, indique-le clairement avec bienveillance sans inventer.";
 
         // Tentative d'appel à l'API LLM si clé configurée
         if ("openai".equalsIgnoreCase(provider) && apiKey != null && !apiKey.startsWith("demo-") && !apiKey.isEmpty()) {
@@ -141,9 +141,9 @@ public class LlmServiceImpl implements LlmService {
         String firstSentences = clean.length() > 400 ? clean.substring(0, 400) + "..." : clean;
 
         return String.format("### Résumé %s du Livrable\n\n" +
-                        "**Objectif principal** : Ce travail s'inscrit dans les axes de recherche de l'ESMT (laboratoire STN).\n\n" +
-                        "**Contenu synthétique** : %s\n\n" +
-                        "**Conclusion & Perspectives** : Les travaux présentent une méthodologie scientifique rigoureuse conforme aux critères d'évaluation de l'ESMT.",
+                "**Objectif principal** : Ce travail s'inscrit dans les axes de recherche de l'ESMT (laboratoire STN).\n\n" +
+                "**Contenu synthétique** : %s\n\n" +
+                "**Conclusion & Perspectives** : Les travaux présentent une méthodologie scientifique rigoureuse conforme aux critères d'évaluation de l'ESMT.",
                 style, firstSentences);
     }
 }

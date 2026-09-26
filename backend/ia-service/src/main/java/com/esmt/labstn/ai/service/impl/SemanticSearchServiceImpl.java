@@ -6,8 +6,8 @@ import com.esmt.labstn.ai.dto.SemanticSearchResponse;
 import com.esmt.labstn.ai.entity.AiAuditLog;
 import com.esmt.labstn.ai.entity.DocumentEmbedding;
 import com.esmt.labstn.ai.entity.StatutIndexation;
-import com.esmt.labstn.ai.repository.AiAuditLogRepository;
 import com.esmt.labstn.ai.repository.DocumentEmbeddingRepository;
+import com.esmt.labstn.ai.service.AuditLoggerService;
 import com.esmt.labstn.ai.service.EmbeddingService;
 import com.esmt.labstn.ai.service.SemanticSearchService;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +30,10 @@ public class SemanticSearchServiceImpl implements SemanticSearchService {
 
     private final DocumentEmbeddingRepository embeddingRepository;
     private final EmbeddingService embeddingService;
-    private final AiAuditLogRepository auditLogRepository;
+    private final AuditLoggerService auditLoggerService;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public SemanticSearchResponse search(SemanticSearchRequest request) {
         long startTime = System.currentTimeMillis();
         String query = request.getQuery();
@@ -93,17 +93,13 @@ public class SemanticSearchServiceImpl implements SemanticSearchService {
 
         long execTime = System.currentTimeMillis() - startTime;
 
-        // 5. Journalisation d'audit (Gouvernance IA)
-        try {
-            auditLogRepository.save(AiAuditLog.builder()
-                    .actionType("RECHERCHE_SEMANTIQUE")
-                    .queryText(query)
-                    .resultsCount(topResults.size())
-                    .executionTimeMs(execTime)
-                    .build());
-        } catch (Exception e) {
-            log.warn("Erreur d'enregistrement du log d'audit : {}", e.getMessage());
-        }
+        // 5. Journalisation d'audit isolée (REQUIRES_NEW)
+        auditLoggerService.log(AiAuditLog.builder()
+                .actionType("RECHERCHE_SEMANTIQUE")
+                .queryText(query)
+                .resultsCount(topResults.size())
+                .executionTimeMs(execTime)
+                .build());
 
         return SemanticSearchResponse.builder()
                 .query(query)

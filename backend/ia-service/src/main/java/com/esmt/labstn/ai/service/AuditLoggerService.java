@@ -24,7 +24,7 @@ public class AuditLoggerService {
         try {
             auditLogRepository.save(auditLog);
         } catch (Exception e) {
-            log.warn("Impossible d'enregistrer le log d'audit (action={}) : {}",
+            log.warn("Impossible d'enregistrer le log d'audit (action={}) : {}", 
                     auditLog.getActionType(), e.getMessage());
         }
     }

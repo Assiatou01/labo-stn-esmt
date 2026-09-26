@@ -1,6 +1,5 @@
 package com.esmt.labstn.ai.controller;
 
-
 import com.esmt.labstn.ai.dto.SemanticSearchRequest;
 import com.esmt.labstn.ai.dto.SemanticSearchResponse;
 import com.esmt.labstn.ai.service.SemanticSearchService;
@@ -47,4 +46,3 @@ public class AiSearchController {
         return ResponseEntity.ok(searchService.search(request));
     }
 }
-

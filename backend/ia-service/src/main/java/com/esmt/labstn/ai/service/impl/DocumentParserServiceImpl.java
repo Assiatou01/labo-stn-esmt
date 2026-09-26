@@ -1,8 +1,7 @@
 package com.esmt.labstn.ai.service.impl;
 
-
-import com.esmt.labstn.ai.service.DocumentParserService;
 import com.esmt.labstn.ai.exception.AiProcessingException;
+import com.esmt.labstn.ai.service.DocumentParserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;

@@ -42,5 +42,21 @@ public class AiAuditLog {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-
+    // Getters & Setters explicites
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+    public String getActionType() { return actionType; }
+    public void setActionType(String actionType) { this.actionType = actionType; }
+    public String getQueryText() { return queryText; }
+    public void setQueryText(String queryText) { this.queryText = queryText; }
+    public Integer getResultsCount() { return resultsCount; }
+    public void setResultsCount(Integer resultsCount) { this.resultsCount = resultsCount; }
+    public Long getExecutionTimeMs() { return executionTimeMs; }
+    public void setExecutionTimeMs(Long executionTimeMs) { this.executionTimeMs = executionTimeMs; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }
