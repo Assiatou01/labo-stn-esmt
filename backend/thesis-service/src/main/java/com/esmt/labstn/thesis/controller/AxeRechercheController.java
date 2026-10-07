@@ -35,6 +35,17 @@ public class AxeRechercheController {
         return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(axe));
     }
 
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTEUR_RECHERCHE')")
+    public ResponseEntity<AxeRecherche> update(@PathVariable Long id, @RequestBody AxeRecherche request) {
+        return repository.findById(id).map(axe -> {
+            if (request.getLibelle() != null) axe.setLibelle(request.getLibelle());
+            if (request.getDescription() != null) axe.setDescription(request.getDescription());
+            if (request.getCodeCouleur() != null) axe.setCodeCouleur(request.getCodeCouleur());
+            return ResponseEntity.ok(repository.save(axe));
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

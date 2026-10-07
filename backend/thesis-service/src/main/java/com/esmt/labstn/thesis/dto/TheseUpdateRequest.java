@@ -19,4 +19,6 @@ public class TheseUpdateRequest {
     private StatutThese statut;
 
     private Long encadreurId;
+
+    private Long domaineRechercheId;
 }

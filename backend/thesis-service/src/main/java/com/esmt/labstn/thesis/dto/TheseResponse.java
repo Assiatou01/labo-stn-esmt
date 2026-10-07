@@ -26,5 +26,12 @@ public class TheseResponse {
 
     private Long encadreurId;
 
+    private Long domaineRechercheId;
+
+    /** Progression calculée : ratio livrables validés / total (0-100). */
+    private Integer progressionPourcentage;
+
+    /** Niveau TRL actuel issu de la dernière évaluation validée. */
+    private Integer niveauTrlActuel;
 
 }

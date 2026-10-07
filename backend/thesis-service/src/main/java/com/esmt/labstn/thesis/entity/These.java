@@ -4,11 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
-@Table(name ="these")
+@Table(name = "these")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -44,5 +42,22 @@ public class These {
 
     @Column(name = "domaine_recherche_id")
     private Long domaineRechercheId;
+
+    /**
+     * Progression calculée automatiquement :
+     * ratio = (livrables validés / total livrables) * 100.
+     * Mise à jour par TheseServiceImpl.recalculerProgression().
+     */
+    @Column(name = "progression_pourcentage")
+    @Builder.Default
+    private Integer progressionPourcentage = 0;
+
+    /**
+     * Niveau TRL actuel de la thèse.
+     * Mis à jour automatiquement lors de chaque évaluation TRL soumise.
+     */
+    @Column(name = "niveau_trl_actuel")
+    @Builder.Default
+    private Integer niveauTrlActuel = 0;
 
 }

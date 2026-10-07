@@ -22,5 +22,12 @@ public class AxeRecherche {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    /**
+     * A1 — Code couleur hexadécimal pour l'affichage dans la cartographie.
+     * Ex : "#1E90FF", "#2ECC71", "#E74C3C". Valeur par défaut : bleu STN.
+     */
+    @Column(name = "code_couleur", length = 20)
+    @Builder.Default
+    private String codeCouleur = "#0f1b56";
 
 }

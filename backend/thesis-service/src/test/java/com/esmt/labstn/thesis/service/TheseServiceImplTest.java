@@ -30,6 +30,10 @@ class TheseServiceImplTest {
     @Mock
     private TheseRepository theseRepository;
 
+    // --- AJOUT DU MOCK MANQUANT ICI ---
+    @Mock
+    private NotificationService notificationService;
+
     @InjectMocks
     private TheseServiceImpl theseService;
 
@@ -61,13 +65,19 @@ class TheseServiceImplTest {
 
         when(theseRepository.save(any(These.class))).thenReturn(sampleThese);
 
+        // Optionnel : On s'assure que la méthode de notification s'exécute sans rien faire (void)
+        doNothing().when(notificationService).notifierEncadreurCreationThese(any(These.class));
+
         TheseResponse response = theseService.createThese(request);
 
         assertThat(response).isNotNull();
         assertThat(response.getId()).isEqualTo(1L);
         assertThat(response.getTitre()).isEqualTo("Optimisation des réseaux 5G");
         assertThat(response.getStatut()).isEqualTo(StatutThese.EN_COURS);
+
         verify(theseRepository, times(1)).save(any(These.class));
+        // Optionnel : On vérifie que la notification a bien été déclenchée
+        verify(notificationService, times(1)).notifierEncadreurCreationThese(any(These.class));
     }
 
     @Test
@@ -109,10 +119,15 @@ class TheseServiceImplTest {
         when(theseRepository.findById(1L)).thenReturn(Optional.of(sampleThese));
         when(theseRepository.save(any(These.class))).thenReturn(sampleThese);
 
+        // Optionnel : On configure le comportement pour la notification de changement de statut
+        doNothing().when(notificationService).notifierDoctorantChangementStatut(any(These.class));
+
         TheseResponse response = theseService.updateThese(1L, updateRequest);
 
         assertThat(response).isNotNull();
         verify(theseRepository, times(1)).save(sampleThese);
+        // Optionnel : On s'assure que la notification a été appelée
+        verify(notificationService, times(1)).notifierDoctorantChangementStatut(any(These.class));
     }
 
     @Test

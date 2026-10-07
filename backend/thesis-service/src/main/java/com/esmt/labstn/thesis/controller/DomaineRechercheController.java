@@ -38,6 +38,17 @@ public class DomaineRechercheController {
         return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(domaine));
     }
 
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTEUR_RECHERCHE')")
+    public ResponseEntity<DomaineRecherche> update(@PathVariable Long id, @RequestBody DomaineRecherche request) {
+        return repository.findById(id).map(domaine -> {
+            if (request.getNom() != null) domaine.setNom(request.getNom());
+            if (request.getMotscles() != null) domaine.setMotscles(request.getMotscles());
+            if (request.getAxeRechercheId() != null) domaine.setAxeRechercheId(request.getAxeRechercheId());
+            return ResponseEntity.ok(repository.save(domaine));
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

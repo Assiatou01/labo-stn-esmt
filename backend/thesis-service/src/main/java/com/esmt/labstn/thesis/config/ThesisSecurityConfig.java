@@ -33,10 +33,16 @@ public class ThesisSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/api/v1/theses/**", "/api/v1/jalons/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/theses/**").hasAnyRole("ADMIN", "DIRECTEUR_RECHERCHE", "ENCADREUR")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/theses/**").hasAnyRole("ADMIN", "DIRECTEUR_RECHERCHE", "ENCADREUR")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/theses/**").hasRole("ADMIN")
+                        .requestMatchers(
+                                "/actuator/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/theses/**", "/api/v1/jalons/**", "/api/v1/axes-recherche/**", "/api/v1/domaines-recherche/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/theses/**").hasAnyRole("ADMIN", "DOCTORANT")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/theses/**").hasAnyRole("ADMIN", "DOCTORANT")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/theses/**").hasAnyRole("ADMIN", "DIRECTEUR_RECHERCHE")
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

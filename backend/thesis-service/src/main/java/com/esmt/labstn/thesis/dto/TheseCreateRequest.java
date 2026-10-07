@@ -30,4 +30,6 @@ public class TheseCreateRequest {
     @NotNull(message = "L'identifiant de l'encadreur est obligatoire")
     private Long encadreurId;
 
+    private Long domaineRechercheId;
+
 }
