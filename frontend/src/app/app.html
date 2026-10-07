@@ -1,0 +1,37 @@
+@if (isLoginPage()) {
+  <router-outlet></router-outlet>
+} @else {
+  <div class="min-h-screen bg-slate-50 flex">
+    <app-sidebar></app-sidebar>
+
+    <div class="flex-1 ml-72 flex flex-col min-h-screen">
+      <app-navbar></app-navbar>
+
+      <main class="flex-1 p-6 sm:p-8 max-w-7xl w-full mx-auto">
+        <router-outlet></router-outlet>
+      </main>
+
+      <footer class="mt-auto w-full border-t border-slate-200 bg-white">
+        <div class="mx-auto flex w-full max-w-7xl flex-col gap-5 px-5 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+          <div class="flex min-w-0 items-center gap-3">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white p-1.5 shadow-sm">
+              <img src="logo-esmt.png" alt="Logo de l’ESMT" class="h-full w-full object-contain" />
+            </div>
+            <div class="min-w-0">
+              <p class="truncate text-sm font-bold tracking-tight text-[#0f1b56]">Laboratoire STN · ESMT Dakar</p>
+              <p class="mt-0.5 text-xs leading-relaxed text-slate-500">Plateforme de suivi de la recherche et des travaux doctoraux</p>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2 border-t border-slate-100 pt-4 text-xs text-slate-500 sm:items-end sm:border-0 sm:pt-0">
+            <p>© {{ currentYear }} ESMT · Tous droits réservés</p>
+            <p class="inline-flex items-center gap-2">
+              <span class="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden="true"></span>
+              Accès réservé aux utilisateurs autorisés
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+}
