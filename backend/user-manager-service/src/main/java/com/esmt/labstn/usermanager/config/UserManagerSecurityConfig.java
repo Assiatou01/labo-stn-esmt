@@ -33,9 +33,12 @@ public class UserManagerSecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // Endpoint de santé
+                        // Endpoint de santé & Swagger / OpenAPI
                         .requestMatchers(
-                                "/actuator/health"
+                                "/actuator/health",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
                         ).permitAll()
 
                         // Toutes les autres requêtes

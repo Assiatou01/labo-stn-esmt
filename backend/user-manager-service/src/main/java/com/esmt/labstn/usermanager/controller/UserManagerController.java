@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping({"/api/users", "/api/v1/users"})
 @RequiredArgsConstructor
 public class UserManagerController {
 
@@ -23,8 +23,8 @@ public class UserManagerController {
 
 
     /**
-     * CrÃ©ation d'un utilisateur.
-     * Accessible uniquement Ã  l'administrateur.
+     * Création d'un utilisateur.
+     * Accessible uniquement par l'administrateur.
      */
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -41,11 +41,11 @@ public class UserManagerController {
 
 
     /**
-     * Liste des utilisateurs.
-     * Accessible uniquement Ã  l'administrateur.
+     * Liste des utilisateurs et de l'annuaire académique du laboratoire.
+     * Accessible aux profils académiques (Admin, Directeur, Encadreur, Doctorant).
      */
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTEUR_RECHERCHE', 'ENCADREUR', 'DOCTORANT', 'PARTENAIRE')")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
 
         return ResponseEntity.ok(
@@ -55,11 +55,10 @@ public class UserManagerController {
 
 
     /**
-     * RÃ©cupÃ©ration d'un utilisateur.
-     * Accessible uniquement Ã  l'administrateur.
+     * Récupération d'un utilisateur par identifiant.
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DIRECTEUR_RECHERCHE', 'ENCADREUR', 'DOCTORANT', 'PARTENAIRE')")
     public ResponseEntity<UserResponse> getUser(
             @PathVariable Long id) {
 
@@ -70,8 +69,8 @@ public class UserManagerController {
 
 
     /**
-     * RÃ©cupÃ©ration du profil de l'utilisateur connectÃ©.
-     * L'identitÃ© est obtenue Ã  partir du JWT Keycloak.
+     * Récupération du profil de l'utilisateur connecté.
+     * L'identité est obtenue à partir du JWT Keycloak.
      */
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
@@ -89,8 +88,25 @@ public class UserManagerController {
 
 
     /**
+     * Recherche d'un utilisateur par son username Keycloak (preferred_username).
+     * Utilisé par le frontend après connexion pour construire le profil utilisateur.
+     */
+    @GetMapping("/username/{username}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<UserResponse> getUserByUsername(
+            @PathVariable String username) {
+        try {
+            return ResponseEntity.ok(
+                    userManagerService.getUserByUsername(username)
+            );
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
      * Modification d'un utilisateur.
-     * Accessible uniquement Ã  l'administrateur.
+     * Accessible uniquement à l'administrateur.
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")

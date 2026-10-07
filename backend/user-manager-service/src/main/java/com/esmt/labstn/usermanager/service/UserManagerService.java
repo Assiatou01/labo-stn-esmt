@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -486,6 +487,30 @@ public class UserManagerService {
     }
 
 
+
+    /**
+     * Récupération d'un utilisateur par son username Keycloak (preferred_username).
+     * Le frontend utilise cette route après connexion pour construire le profil utilisateur.
+     * Recherche d'abord par email (username@esmt.sn), ensuite par nom/username direct.
+     */
+    public UserResponse getUserByUsername(String username) {
+        // Tentative 1 : username est un email complet
+        Optional<Utilisateur> byEmail = utilisateurRepository.findByEmail(username);
+        if (byEmail.isPresent()) {
+            return toResponse(byEmail.get());
+        }
+        // Tentative 2 : chercher username@esmt.sn (format Keycloak preferred_username)
+        Optional<Utilisateur> byEmailGuess = utilisateurRepository.findByEmail(username + "@esmt.sn");
+        if (byEmailGuess.isPresent()) {
+            return toResponse(byEmailGuess.get());
+        }
+        // Tentative 3 : chercher par nom
+        Optional<Utilisateur> byNom = utilisateurRepository.findByEmailOrNom(username, username);
+        if (byNom.isPresent()) {
+            return toResponse(byNom.get());
+        }
+        throw new IllegalArgumentException("Utilisateur introuvable pour le username : " + username);
+    }
 
     /**
      * Suppression d'un utilisateur par l'administrateur.

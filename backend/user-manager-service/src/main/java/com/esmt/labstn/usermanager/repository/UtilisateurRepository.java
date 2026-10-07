@@ -15,4 +15,7 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> 
     // Vérifier si un email existe déjà dans la base (pour l'inscription / register)
     Boolean existsByEmail(String email);
 
+    // Recherche par email OU nom d'utilisateur Keycloak (preferred_username)
+    Optional<Utilisateur> findByEmailOrNom(String email, String nom);
+
 }
