@@ -1,0 +1,96 @@
+/* ==========================================================================
+   Thème de Connexion Officiel Keycloak - ESMT Dakar / Laboratoire STN
+   Couleurs : Bleu Nuit (#0f1b56), Bleu Cyan (#3989c9), Doré (#fdec4f)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+body {
+    background: radial-gradient(circle at 20% 20%, #1e3a8a 0%, #0f1b56 60%, #080f33 100%) !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    color: #1e293b !important;
+    min-height: 100vh;
+}
+
+/* Card Container */
+.login-pf page-body,
+.card-pf {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border-radius: 1.25rem !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 25px 50px -12px rgba(15, 27, 86, 0.35) !important;
+    padding: 2.5rem !important;
+    max-width: 480px !important;
+    margin: 2rem auto !important;
+}
+
+/* Header & Brand Title */
+#kc-header-wrapper {
+    font-size: 1.5rem !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
+    text-align: center !important;
+    letter-spacing: -0.025em !important;
+    text-transform: uppercase !important;
+    margin-bottom: 1.5rem !important;
+}
+
+#kc-page-title {
+    color: #0f1b56 !important;
+    font-weight: 800 !important;
+    font-size: 1.5rem !important;
+    text-align: center !important;
+    margin-bottom: 1rem !important;
+}
+
+/* Inputs */
+.form-control {
+    border-radius: 0.75rem !important;
+    border: 1px solid #cbd5e1 !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 0.875rem !important;
+    transition: all 0.2s ease !important;
+    background-color: #f8fafc !important;
+}
+
+.form-control:focus {
+    border-color: #0f1b56 !important;
+    box-shadow: 0 0 0 3px rgba(15, 27, 86, 0.15) !important;
+    background-color: #ffffff !important;
+}
+
+/* Submit Button */
+.btn-primary,
+#kc-login {
+    background: linear-gradient(135deg, #0f1b56 0%, #1e3a8a 100%) !important;
+    border: none !important;
+    border-radius: 0.75rem !important;
+    padding: 0.85rem 1.5rem !important;
+    font-weight: 700 !important;
+    font-size: 0.875rem !important;
+    letter-spacing: 0.025em !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px 0 rgba(15, 27, 86, 0.39) !important;
+    transition: all 0.2s ease !important;
+    cursor: pointer !important;
+}
+
+#kc-login:hover {
+    background: linear-gradient(135deg, #162873 0%, #2563eb 100%) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 20px rgba(15, 27, 86, 0.45) !important;
+}
+
+/* Links & Help */
+a {
+    color: #0f1b56 !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+}
+
+a:hover {
+    color: #3989c9 !important;
+    text-decoration: underline !important;
+}
