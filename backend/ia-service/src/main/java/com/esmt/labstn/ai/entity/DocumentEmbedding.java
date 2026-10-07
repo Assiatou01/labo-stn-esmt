@@ -1,14 +1,21 @@
 package com.esmt.labstn.ai.entity;
 
+import com.pgvector.PGvector;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Array;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 
 /**
- * Entité stockant les fragments de texte (chunks) et leurs vecteurs sémantiques (embeddings)
- * issus des livrables validés pour PGVector et la recherche RAG.
+ * Entite stockant les fragments de texte (chunks) et leurs vecteurs semantiques (embeddings)
+ * issus des livrables valides pour PGVector et la recherche RAG.
+ *
+ * La colonne embeddingVector utilise le TYPE NATIF VECTOR(1536) de l'extension pgvector
+ * de PostgreSQL pour la recherche vectorielle par similarite cosinus (<=> operateur).
  */
 @Entity
 @Table(name = "document_embeddings", indexes = {
@@ -48,11 +55,18 @@ public class DocumentEmbedding {
     private String chunkContent;
 
     /**
-     * Vecteur d'embedding représenté sous forme de chaîne formatée ou de tableau sérialisé
-     * pour compatibilité native PostgreSQL et PGVector.
+     * Vecteur d'embedding au format natif pgvector : VECTOR(1536).
+     * Necessite que l'extension pgvector soit activee dans PostgreSQL :
+     *   CREATE EXTENSION IF NOT EXISTS vector;
+     * Et que la colonne soit creee avec : embedding_vector vector(1536)
+     *
+     * Pour la migration depuis TEXT, utiliser la requete :
+     *   ALTER TABLE document_embeddings ALTER COLUMN embedding_vector TYPE vector(1536) USING embedding_vector::vector;
      */
-    @Column(columnDefinition = "TEXT")
-    private String embeddingVector;
+    @Column(columnDefinition = "vector(1536)")
+    @JdbcTypeCode(SqlTypes.VECTOR)
+    @Array(length = 1536)
+    private float[] embeddingVector;
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
@@ -62,6 +76,4 @@ public class DocumentEmbedding {
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
-
-
 }

@@ -69,8 +69,12 @@ public class VectorIndexServiceImpl implements VectorIndexService {
                             .build())) {
                 fullText = parserService.extractText(stream, request.getMinioObjectName());
             } catch (Exception e) {
-                log.warn("Impossible de lire depuis MinIO ({}), fallback sur texte brut : {}", request.getMinioObjectName(), e.getMessage());
-                fullText = request.getRawTextContent() != null ? request.getRawTextContent() : request.getTitreDocument();
+                if (request.getRawTextContent() != null && !request.getRawTextContent().isBlank()) {
+                    log.warn("Lecture MinIO impossible pour {}; utilisation du texte brut fourni : {}", request.getMinioObjectName(), e.getMessage());
+                    fullText = request.getRawTextContent();
+                } else {
+                    throw new AiProcessingException("Impossible de lire le fichier déposé dans MinIO pour l’indexer.", e);
+                }
             }
         } else if (request.getRawTextContent() != null && !request.getRawTextContent().trim().isEmpty()) {
             fullText = request.getRawTextContent();
@@ -103,7 +107,7 @@ public class VectorIndexServiceImpl implements VectorIndexService {
                     .niveauTRL(request.getNiveauTRL())
                     .chunkIndex(i)
                     .chunkContent(chunk)
-                    .embeddingVector(embeddingService.vectorToString(vector))
+                    .embeddingVector(vector)
                     .statut(StatutIndexation.INDEXE)
                     .build();
 

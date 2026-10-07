@@ -21,7 +21,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Implémentation du moteur de recherche sémantique avec calcul cosinus et filtrage par métadonnées.
+ * Implementation du moteur de recherche semantique avec vecteurs pgvector natifs.
+ * Le vecteur est stocke en type VECTOR(1536) PostgreSQL via PGvectorConverter.
+ * La similarite cosinus est calculee en Java (ou peut migrer vers l'operateur <=> de pgvector).
  */
 @Service
 @RequiredArgsConstructor
@@ -39,15 +41,15 @@ public class SemanticSearchServiceImpl implements SemanticSearchService {
         String query = request.getQuery();
         int topK = request.getTopK();
 
-        log.info("Exécution de la recherche sémantique pour : « {} » (topK={})", query, topK);
+        log.info("Recherche semantique pgvector pour : '{}' (topK={})", query, topK);
 
-        // 1. Calcul du vecteur d'embedding pour la requête utilisateur
+        // 1. Calcul du vecteur d'embedding pour la requete utilisateur
         float[] queryVector = embeddingService.getEmbedding(query);
 
-        // 2. Récupération des embeddings indexés depuis la base de données
+        // 2. Recuperation des embeddings indexes depuis la base de donnees
         List<DocumentEmbedding> allEmbeddings = embeddingRepository.findByStatut(StatutIndexation.INDEXE);
 
-        // Filtrage optionnel par thèse ou niveau TRL
+        // Filtrage optionnel par these ou niveau TRL
         if (request.getTheseIdFilter() != null) {
             allEmbeddings = allEmbeddings.stream()
                     .filter(e -> request.getTheseIdFilter().equals(e.getTheseId()))
@@ -59,18 +61,21 @@ public class SemanticSearchServiceImpl implements SemanticSearchService {
                     .collect(Collectors.toList());
         }
 
-        // 3. Calcul du score de similarité cosinus pour chaque fragment
+        // 3. Calcul du score de similarite cosinus — vecteurs natifs float[] (pgvector)
         List<SearchResultItem> scoredResults = new ArrayList<>();
         for (DocumentEmbedding docEmb : allEmbeddings) {
-            float[] docVector = embeddingService.stringToVector(docEmb.getEmbeddingVector());
+            // embeddingVector est maintenant float[] via PGvectorConverter (pas besoin de stringToVector)
+            float[] docVector = docEmb.getEmbeddingVector();
+            if (docVector == null || docVector.length == 0) continue;
+
             double score = embeddingService.computeCosineSimilarity(queryVector, docVector);
 
             String excerpt = docEmb.getChunkContent();
-            if (excerpt.length() > 300) {
+            if (excerpt != null && excerpt.length() > 300) {
                 excerpt = excerpt.substring(0, 300) + "...";
             }
 
-            SearchResultItem item = SearchResultItem.builder()
+            scoredResults.add(SearchResultItem.builder()
                     .livrableId(docEmb.getLivrableId())
                     .theseId(docEmb.getTheseId())
                     .titreDocument(docEmb.getTitreDocument())
@@ -80,12 +85,10 @@ public class SemanticSearchServiceImpl implements SemanticSearchService {
                     .chunkIndex(docEmb.getChunkIndex())
                     .excerpt(excerpt)
                     .similarityScore(Math.round(score * 1000.0) / 1000.0)
-                    .build();
-
-            scoredResults.add(item);
+                    .build());
         }
 
-        // 4. Tri par score décroissant et sélection du top K
+        // 4. Tri par score decroissant et selection du top K
         List<SearchResultItem> topResults = scoredResults.stream()
                 .sorted(Comparator.comparingDouble(SearchResultItem::getSimilarityScore).reversed())
                 .limit(topK)
@@ -96,13 +99,13 @@ public class SemanticSearchServiceImpl implements SemanticSearchService {
         // 5. Journalisation d'audit (Gouvernance IA)
         try {
             auditLogRepository.save(AiAuditLog.builder()
-                    .actionType("RECHERCHE_SEMANTIQUE")
+                    .actionType("RECHERCHE_SEMANTIQUE_PGVECTOR")
                     .queryText(query)
                     .resultsCount(topResults.size())
                     .executionTimeMs(execTime)
                     .build());
         } catch (Exception e) {
-            log.warn("Erreur d'enregistrement du log d'audit : {}", e.getMessage());
+            log.warn("Erreur enregistrement log audit : {}", e.getMessage());
         }
 
         return SemanticSearchResponse.builder()

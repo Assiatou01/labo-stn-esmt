@@ -124,15 +124,15 @@ public class LlmServiceImpl implements LlmService {
 
         StringBuilder response = new StringBuilder();
         response.append("### Réponse de l'Assistant IA STN (ESMT)\n\n");
-        response.append("En analysant les travaux de recherche et livrables validés au sein du laboratoire STN :\n\n");
+        response.append("Voici les extraits les plus proches de votre question dans les documents indexés :\n\n");
 
         for (int i = 0; i < Math.min(3, contextChunks.size()); i++) {
             String chunk = contextChunks.get(i);
             String snippet = chunk.length() > 220 ? chunk.substring(0, 220) + "..." : chunk;
-            response.append(String.format("• **Point clé %d** : %s\n", i + 1, snippet));
+            response.append(String.format("• **Extrait pertinent %d** : %s\n", i + 1, snippet));
         }
 
-        response.append("\n**Synthèse** : Les documents répertoriés apportent des éléments de réponse à votre question concernant *« ").append(question).append(" »*. Consultez les sources référencées ci-dessous pour plus de détails techniques.");
+        response.append("\nCes passages proviennent des sources affichées sous la réponse. Le mode local présente les extraits retrouvés sans en déduire de conclusions qui ne figurent pas dans le document.");
         return response.toString();
     }
 

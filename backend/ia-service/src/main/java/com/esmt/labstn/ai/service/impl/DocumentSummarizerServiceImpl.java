@@ -52,9 +52,12 @@ public class DocumentSummarizerServiceImpl implements DocumentSummarizerService 
 
         String summaryText = llmService.generateSummary(fullText, request.getStyle(), request.getMaxWords());
 
-        List<String> keyPoints = new ArrayList<>();
-        keyPoints.add("Contribution principale : Conception et implémentation dans le cadre des recherches STN.");
-        keyPoints.add("Méthodologie : Approche scientifique expérimentale avec validation des livrables.");
+        List<String> keyPoints = fullText.lines()
+                .map(String::trim)
+                .filter(line -> line.length() > 40)
+                .limit(3)
+                .map(line -> line.length() > 240 ? line.substring(0, 237) + "..." : line)
+                .collect(Collectors.toCollection(ArrayList::new));
         if (trl != null) {
             keyPoints.add("Maturité technologique : Niveau TRL évalué à " + trl + "/9.");
         }
@@ -73,7 +76,6 @@ public class DocumentSummarizerServiceImpl implements DocumentSummarizerService 
                 .titreDocument(titre)
                 .summaryText(summaryText)
                 .keyPoints(keyPoints)
-                .methodologyDetected("Recherche appliquée & développement logiciel distribué")
                 .estimatedTRL(trl)
                 .style(request.getStyle())
                 .generatedAt(LocalDateTime.now())

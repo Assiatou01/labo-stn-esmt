@@ -15,9 +15,9 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Configuration
@@ -31,7 +31,16 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/actuator/**", "/api/ai/public/**").permitAll()
+                        // Routes publiques : Monitoring Actuator, endpoints IA publics et documentation Swagger UI
+                        .requestMatchers(
+                                "/actuator/**",
+                                "/api/ai/public/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
+
+                        // Toutes les autres requêtes de l'assistant IA nécessitent une authentification
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
@@ -53,14 +62,32 @@ public class SecurityConfig {
 
     @SuppressWarnings("unchecked")
     private Collection<GrantedAuthority> extractAuthorities(Jwt jwt) {
-        Map<String, Object> realmAccess = jwt.getClaim("realm_access");
-        if (realmAccess == null || !realmAccess.containsKey("roles")) {
-            return Collections.emptyList();
+        Set<String> roles = new HashSet<>();
+        addRoles(jwt.getClaim("realm_access"), roles);
+
+        Map<String, Object> resourceAccess = jwt.getClaim("resource_access");
+        if (resourceAccess != null) {
+            addRoles(resourceAccess.get("stn-frontend"), roles);
         }
 
-        List<String> roles = (List<String>) realmAccess.get("roles");
         return roles.stream()
-                .map(role -> (GrantedAuthority) new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
+                .map(role -> (GrantedAuthority) new SimpleGrantedAuthority(
+                        role.startsWith("ROLE_") ? role : "ROLE_" + role))
                 .collect(Collectors.toList());
+    }
+
+    private void addRoles(Object accessClaim, Set<String> roles) {
+        if (!(accessClaim instanceof Map<?, ?> access)) {
+            return;
+        }
+        Object roleClaim = access.get("roles");
+        if (!(roleClaim instanceof Collection<?> roleValues)) {
+            return;
+        }
+        roleValues.stream()
+                .filter(String.class::isInstance)
+                .map(String.class::cast)
+                .map(String::toUpperCase)
+                .forEach(roles::add);
     }
 }
