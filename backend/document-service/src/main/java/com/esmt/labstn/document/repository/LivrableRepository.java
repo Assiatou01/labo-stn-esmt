@@ -19,4 +19,14 @@ public interface LivrableRepository extends JpaRepository<Livrable, Long> {
     List<Livrable> findByStatutValidation(StatutLivrable statutValidation);
 
     List<Livrable> findByTheseIdAndStatutValidation(Long theseId, StatutLivrable statutValidation);
+
+    List<Livrable> findByDoctorantIdAndStatutValidation(Long doctorantId, StatutLivrable statutValidation);
+
+    List<Livrable> findByTheseIdAndDoctorantId(Long theseId, Long doctorantId);
+
+    List<Livrable> findByTheseIdAndDoctorantIdAndStatutValidation(
+            Long theseId,
+            Long doctorantId,
+            StatutLivrable statutValidation
+    );
 }

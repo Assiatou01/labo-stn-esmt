@@ -1,6 +1,7 @@
 package com.esmt.labstn.document.service;
 
-import com.esmt.labstn.document.client.AiServiceClient;
+import com.esmt.labstn.document.client.ThesisClient;
+import com.esmt.labstn.document.client.UserManagerClient;
 import com.esmt.labstn.document.dto.LivrableDepotRequest;
 import com.esmt.labstn.document.dto.LivrableResponse;
 import com.esmt.labstn.document.dto.LivrableValidationRequest;
@@ -16,6 +17,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,7 +38,16 @@ class LivrableServiceTest {
     private StorageService storageService;
 
     @Mock
-    private AiServiceClient aiServiceClient;
+    private ThesisClient thesisClient;
+
+    @Mock
+    private UserManagerClient userManagerClient;
+
+    @Mock
+    private Authentication authentication;
+
+    @Mock
+    private Jwt jwt;
 
     @Mock
     private NotificationService notificationService;
@@ -90,8 +102,6 @@ class LivrableServiceTest {
                 .type("PDF")
                 .description("Premier livrable de thèse")
                 .theseId(1L)
-                .doctorantId(10L)
-                .encadreurId(20L)
                 .build();
 
         MockMultipartFile file = new MockMultipartFile(
@@ -100,8 +110,13 @@ class LivrableServiceTest {
 
         when(storageService.storeFile(any())).thenReturn("12345_rapport.pdf");
         when(livrableRepository.save(any(Livrable.class))).thenReturn(testLivrable);
+        when(authentication.getPrincipal()).thenReturn(jwt);
+        when(jwt.getTokenValue()).thenReturn("test-token");
+        when(userManagerClient.getCurrentUser("Bearer test-token"))
+                .thenReturn(java.util.Map.of("id", 10L));
+        when(thesisClient.getThese(1L)).thenReturn(java.util.Map.of("encadreurId", 20L));
 
-        LivrableResponse response = livrableService.deposerLivrable(request, file);
+        LivrableResponse response = livrableService.deposerLivrable(request, file, authentication);
 
         assertNotNull(response);
         assertEquals("Rapport d'étape 1", response.getTitre());

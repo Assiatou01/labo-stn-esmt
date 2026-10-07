@@ -28,6 +28,12 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/actuator/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
                         .requestMatchers("/api/v1/livrables/**").authenticated()
                         .anyRequest().authenticated()
                 )
@@ -47,21 +53,34 @@ public class SecurityConfig {
 
     static class KeycloakRealmRoleConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
         @Override
-        @SuppressWarnings("unchecked")
         public Collection<GrantedAuthority> convert(Jwt jwt) {
-            Map<String, Object> realmAccess = (Map<String, Object>) jwt.getClaims().get("realm_access");
-            if (realmAccess == null || realmAccess.isEmpty()) {
-                return Collections.emptyList();
-            }
+            Set<String> roles = new HashSet<>();
+            addRoles(jwt.getClaim("realm_access"), roles);
 
-            List<String> roles = (List<String>) realmAccess.get("roles");
-            if (roles == null) {
-                return Collections.emptyList();
+            Map<String, Object> resourceAccess = jwt.getClaim("resource_access");
+            if (resourceAccess != null) {
+                addRoles(resourceAccess.get("stn-frontend"), roles);
             }
 
             return roles.stream()
-                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                    .map(role -> new SimpleGrantedAuthority(
+                            role.startsWith("ROLE_") ? role : "ROLE_" + role))
                     .collect(Collectors.toList());
+        }
+
+        private void addRoles(Object accessClaim, Set<String> roles) {
+            if (!(accessClaim instanceof Map<?, ?> access)) {
+                return;
+            }
+            Object roleClaim = access.get("roles");
+            if (!(roleClaim instanceof Collection<?> roleValues)) {
+                return;
+            }
+            roleValues.stream()
+                    .filter(String.class::isInstance)
+                    .map(String.class::cast)
+                    .map(String::toUpperCase)
+                    .forEach(roles::add);
         }
     }
 }

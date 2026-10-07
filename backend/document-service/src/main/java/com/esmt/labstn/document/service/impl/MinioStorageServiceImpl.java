@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +20,7 @@ import java.util.UUID;
 
 @Slf4j
 @Service("minioStorageService")
+@Primary
 @ConditionalOnProperty(name = "storage.type", havingValue = "minio", matchIfMissing = true)
 @RequiredArgsConstructor
 public class MinioStorageServiceImpl implements StorageService {

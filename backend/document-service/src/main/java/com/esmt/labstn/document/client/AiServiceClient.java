@@ -28,9 +28,9 @@ public class AiServiceClient {
     private final RestTemplate restTemplate = new RestTemplate();
 
     /**
-     * Envoie une requête d'indexation vectorielle vers ai-service (non bloquant).
+     * Envoie une requête d'indexation vectorielle à ai-service et remonte ses erreurs au client.
      */
-    public void indexLivrableAsync(Long livrableId, Long theseId, String titreDocument, String nomStocke, String typeLivrable) {
+    public Map<String, Object> indexLivrable(Long livrableId, Long theseId, String titreDocument, String nomAuteur, String nomStocke, String typeLivrable) {
         try {
             String url = aiServiceUrl + "/api/ai/index/livrable";
 
@@ -42,6 +42,7 @@ public class AiServiceClient {
                     .livrableId(livrableId)
                     .theseId(theseId)
                     .titreDocument(titreDocument)
+                    .nomAuteur(nomAuteur)
                     .minioObjectName(nomStocke)
                     .typeLivrable(typeLivrable)
                     .build();
@@ -49,10 +50,12 @@ public class AiServiceClient {
             HttpEntity<IndexRequestPayload> requestEntity = new HttpEntity<>(payload, headers);
 
             log.info("Envoi de la demande d'indexation IA pour le livrable ID={} vers ai-service ({})", livrableId, url);
-            restTemplate.postForEntity(url, requestEntity, Map.class);
+            var response = restTemplate.postForEntity(url, requestEntity, Map.class);
             log.info("Indexation IA initiée avec succès pour le livrable ID={}", livrableId);
+            return response.getBody() != null ? response.getBody() : Map.of("message", "Indexation terminée.");
         } catch (Exception e) {
-            log.warn("Impossible d'invoquer ai-service pour l'indexation du livrable ID={} : {}", livrableId, e.getMessage());
+            log.error("Échec de l'indexation IA du livrable ID={}", livrableId, e);
+            throw new IllegalStateException("Le service IA n'a pas pu indexer ce livrable.", e);
         }
     }
 
@@ -101,6 +104,7 @@ public class AiServiceClient {
         private Long livrableId;
         private Long theseId;
         private String titreDocument;
+        private String nomAuteur;
         private String minioObjectName;
         private String typeLivrable;
     }

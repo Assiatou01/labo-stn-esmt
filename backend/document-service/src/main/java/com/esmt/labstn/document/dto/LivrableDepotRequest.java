@@ -19,11 +19,4 @@ public class LivrableDepotRequest {
 
     @NotNull(message = "L'ID de la thèse est obligatoire")
     private Long theseId;
-
-    @NotNull(message = "L'ID du doctorant est obligatoire")
-    private Long doctorantId;
-
-    private Long encadreurId;
-
-
 }
