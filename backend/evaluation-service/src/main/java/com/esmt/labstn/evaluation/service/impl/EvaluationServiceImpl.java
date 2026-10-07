@@ -1,5 +1,6 @@
 package com.esmt.labstn.evaluation.service.impl;
 
+import com.esmt.labstn.evaluation.client.ThesisFeignClient;
 import com.esmt.labstn.evaluation.dto.*;
 import com.esmt.labstn.evaluation.entity.EvaluationMaturite;
 import com.esmt.labstn.evaluation.entity.StatutEvaluation;
@@ -9,6 +10,7 @@ import com.esmt.labstn.evaluation.repository.EvaluationMaturiteRepository;
 import com.esmt.labstn.evaluation.service.EvaluationService;
 import com.esmt.labstn.evaluation.service.NotificationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,10 +21,12 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EvaluationServiceImpl implements EvaluationService {
 
     private final EvaluationMaturiteRepository evaluationRepository;
     private final NotificationService notificationService;
+    private final ThesisFeignClient thesisFeignClient;
 
     @Override
     public GrilleTRLResponse getGrilleTRL(Long theseId) {
@@ -114,6 +118,18 @@ public class EvaluationServiceImpl implements EvaluationService {
         evaluation.setDateValidation(LocalDateTime.now());
 
         EvaluationMaturite updated = evaluationRepository.save(evaluation);
+
+        // Si l'évaluation est validée, mettre à jour le niveau TRL de la thèse dans thesis-service
+        if (StatutEvaluation.VALIDE.equals(updated.getStatut()) && updated.getTheseId() != null) {
+            try {
+                thesisFeignClient.updateNiveauTrl(updated.getTheseId(), updated.getNiveau());
+                log.info("[TRL SYNC] Niveau TRL mis à jour dans thesis-service pour theseId={} -> TRL {}",
+                        updated.getTheseId(), updated.getNiveau());
+            } catch (Exception e) {
+                log.warn("[TRL SYNC] Échec de la mise à jour TRL dans thesis-service pour theseId={}: {}",
+                        updated.getTheseId(), e.getMessage());
+            }
+        }
 
         // Notification Encadreur + Doctorant
         notificationService.notifierEncadreurEtDoctorantDecision(updated);

@@ -1,5 +1,7 @@
 package com.esmt.labstn.evaluation.config;
 
+import feign.RequestInterceptor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -12,6 +14,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.*;
@@ -23,11 +27,31 @@ import java.util.stream.Collectors;
 public class SecurityConfig {
 
     @Bean
+    public RequestInterceptor relayJwtToThesisService() {
+        return requestTemplate -> {
+            var authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication instanceof JwtAuthenticationToken jwtAuthentication) {
+                requestTemplate.header(HttpHeaders.AUTHORIZATION,
+                        "Bearer " + jwtAuthentication.getToken().getTokenValue());
+            }
+        };
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // Routes publiques autorisées : Monitoring Actuator et Swagger UI
+                        .requestMatchers(
+                                "/actuator/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
+
+                        // Endpoints sécurisés de l'évaluation TRL
                         .requestMatchers("/api/v1/evaluations/**").authenticated()
                         .anyRequest().authenticated()
                 )
@@ -60,7 +84,7 @@ public class SecurityConfig {
             }
 
             return roles.stream()
-                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
                     .collect(Collectors.toList());
         }
     }

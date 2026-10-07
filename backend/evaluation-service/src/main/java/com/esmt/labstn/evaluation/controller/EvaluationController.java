@@ -25,7 +25,7 @@ public class EvaluationController {
 
     // Étapes 05-07 : Charger la grille TRL pour une thèse (Encadreur)
     @GetMapping("/grille-trl")
-    @PreAuthorize("hasAnyRole('ENCADREUR', 'ADMIN', 'DIRECTEUR_RECHERCHE')")
+    @PreAuthorize("hasAnyRole('DOCTORANT', 'ENCADREUR', 'ADMIN', 'DIRECTEUR_RECHERCHE')")
     public ResponseEntity<GrilleTRLResponse> getGrilleTRL(@RequestParam(required = false) Long theseId) {
         return ResponseEntity.ok(evaluationService.getGrilleTRL(theseId));
     }
